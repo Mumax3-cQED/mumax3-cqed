@@ -20,10 +20,14 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 	// 	B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
 	// 	alpha.DevPtr(0), alpha.Mul(0), N, util.Bextra_vector, cfg)
 
+	//	var float dt;
+	//	var float32 time;
+	var wc float32 = 2e9
+
 	k_lltorque2_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
-		alpha.DevPtr(0), alpha.Mul(0), N, cfg)
+		alpha.DevPtr(0), alpha.Mul(0), N, Dt_cuda, Time_cuda, wc, cfg)
 
 	//debug.PrintStack()
 }

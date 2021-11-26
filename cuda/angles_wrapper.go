@@ -5,50 +5,50 @@ package cuda
  EDITING IS FUTILE.
 */
 
-import(
-	"unsafe"
+import (
 	"github.com/mumax/3/cuda/cu"
 	"github.com/mumax/3/timer"
 	"sync"
+	"unsafe"
 )
 
 // CUDA handle for setrxyphitheta kernel
 var setrxyphitheta_code cu.Function
 
 // Stores the arguments for setrxyphitheta kernel invocation
-type setrxyphitheta_args_t struct{
-	 arg_rxy unsafe.Pointer
-	 arg_phi unsafe.Pointer
-	 arg_theta unsafe.Pointer
-	 arg_mx unsafe.Pointer
-	 arg_my unsafe.Pointer
-	 arg_mz unsafe.Pointer
-	 arg_Nx int
-	 arg_Ny int
-	 arg_Nz int
-	 argptr [9]unsafe.Pointer
+type setrxyphitheta_args_t struct {
+	arg_rxy   unsafe.Pointer
+	arg_phi   unsafe.Pointer
+	arg_theta unsafe.Pointer
+	arg_mx    unsafe.Pointer
+	arg_my    unsafe.Pointer
+	arg_mz    unsafe.Pointer
+	arg_Nx    int
+	arg_Ny    int
+	arg_Nz    int
+	argptr    [9]unsafe.Pointer
 	sync.Mutex
 }
 
 // Stores the arguments for setrxyphitheta kernel invocation
 var setrxyphitheta_args setrxyphitheta_args_t
 
-func init(){
+func init() {
 	// CUDA driver kernel call wants pointers to arguments, set them up once.
-	 setrxyphitheta_args.argptr[0] = unsafe.Pointer(&setrxyphitheta_args.arg_rxy)
-	 setrxyphitheta_args.argptr[1] = unsafe.Pointer(&setrxyphitheta_args.arg_phi)
-	 setrxyphitheta_args.argptr[2] = unsafe.Pointer(&setrxyphitheta_args.arg_theta)
-	 setrxyphitheta_args.argptr[3] = unsafe.Pointer(&setrxyphitheta_args.arg_mx)
-	 setrxyphitheta_args.argptr[4] = unsafe.Pointer(&setrxyphitheta_args.arg_my)
-	 setrxyphitheta_args.argptr[5] = unsafe.Pointer(&setrxyphitheta_args.arg_mz)
-	 setrxyphitheta_args.argptr[6] = unsafe.Pointer(&setrxyphitheta_args.arg_Nx)
-	 setrxyphitheta_args.argptr[7] = unsafe.Pointer(&setrxyphitheta_args.arg_Ny)
-	 setrxyphitheta_args.argptr[8] = unsafe.Pointer(&setrxyphitheta_args.arg_Nz)
-	 }
+	setrxyphitheta_args.argptr[0] = unsafe.Pointer(&setrxyphitheta_args.arg_rxy)
+	setrxyphitheta_args.argptr[1] = unsafe.Pointer(&setrxyphitheta_args.arg_phi)
+	setrxyphitheta_args.argptr[2] = unsafe.Pointer(&setrxyphitheta_args.arg_theta)
+	setrxyphitheta_args.argptr[3] = unsafe.Pointer(&setrxyphitheta_args.arg_mx)
+	setrxyphitheta_args.argptr[4] = unsafe.Pointer(&setrxyphitheta_args.arg_my)
+	setrxyphitheta_args.argptr[5] = unsafe.Pointer(&setrxyphitheta_args.arg_mz)
+	setrxyphitheta_args.argptr[6] = unsafe.Pointer(&setrxyphitheta_args.arg_Nx)
+	setrxyphitheta_args.argptr[7] = unsafe.Pointer(&setrxyphitheta_args.arg_Ny)
+	setrxyphitheta_args.argptr[8] = unsafe.Pointer(&setrxyphitheta_args.arg_Nz)
+}
 
 // Wrapper for setrxyphitheta CUDA kernel, asynchronous.
-func k_setrxyphitheta_async ( rxy unsafe.Pointer, phi unsafe.Pointer, theta unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, Nx int, Ny int, Nz int,  cfg *config) {
-	if Synchronous{ // debug
+func k_setrxyphitheta_async(rxy unsafe.Pointer, phi unsafe.Pointer, theta unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, Nx int, Ny int, Nz int, cfg *config) {
+	if Synchronous { // debug
 		Sync()
 		timer.Start("setrxyphitheta")
 	}
@@ -56,46 +56,45 @@ func k_setrxyphitheta_async ( rxy unsafe.Pointer, phi unsafe.Pointer, theta unsa
 	setrxyphitheta_args.Lock()
 	defer setrxyphitheta_args.Unlock()
 
-	if setrxyphitheta_code == 0{
+	if setrxyphitheta_code == 0 {
 		setrxyphitheta_code = fatbinLoad(setrxyphitheta_map, "setrxyphitheta")
 	}
 
-	 setrxyphitheta_args.arg_rxy = rxy
-	 setrxyphitheta_args.arg_phi = phi
-	 setrxyphitheta_args.arg_theta = theta
-	 setrxyphitheta_args.arg_mx = mx
-	 setrxyphitheta_args.arg_my = my
-	 setrxyphitheta_args.arg_mz = mz
-	 setrxyphitheta_args.arg_Nx = Nx
-	 setrxyphitheta_args.arg_Ny = Ny
-	 setrxyphitheta_args.arg_Nz = Nz
-	
+	setrxyphitheta_args.arg_rxy = rxy
+	setrxyphitheta_args.arg_phi = phi
+	setrxyphitheta_args.arg_theta = theta
+	setrxyphitheta_args.arg_mx = mx
+	setrxyphitheta_args.arg_my = my
+	setrxyphitheta_args.arg_mz = mz
+	setrxyphitheta_args.arg_Nx = Nx
+	setrxyphitheta_args.arg_Ny = Ny
+	setrxyphitheta_args.arg_Nz = Nz
 
 	args := setrxyphitheta_args.argptr[:]
 	cu.LaunchKernel(setrxyphitheta_code, cfg.Grid.X, cfg.Grid.Y, cfg.Grid.Z, cfg.Block.X, cfg.Block.Y, cfg.Block.Z, 0, stream0, args)
 
-	if Synchronous{ // debug
+	if Synchronous { // debug
 		Sync()
 		timer.Stop("setrxyphitheta")
 	}
 }
 
 // maps compute capability on PTX code for setrxyphitheta kernel.
-var setrxyphitheta_map = map[int]string{ 0: "" ,
-30: setrxyphitheta_ptx_30 ,
-35: setrxyphitheta_ptx_35 ,
-37: setrxyphitheta_ptx_37 ,
-50: setrxyphitheta_ptx_50 ,
-52: setrxyphitheta_ptx_52 ,
-53: setrxyphitheta_ptx_53 ,
-60: setrxyphitheta_ptx_60 ,
-61: setrxyphitheta_ptx_61 ,
-70: setrxyphitheta_ptx_70 ,
-75: setrxyphitheta_ptx_75  }
+var setrxyphitheta_map = map[int]string{0: "",
+	30: setrxyphitheta_ptx_30,
+	35: setrxyphitheta_ptx_35,
+	37: setrxyphitheta_ptx_37,
+	50: setrxyphitheta_ptx_50,
+	52: setrxyphitheta_ptx_52,
+	53: setrxyphitheta_ptx_53,
+	60: setrxyphitheta_ptx_60,
+	61: setrxyphitheta_ptx_61,
+	70: setrxyphitheta_ptx_70,
+	75: setrxyphitheta_ptx_75}
 
 // setrxyphitheta PTX code for various compute capabilities.
-const(
-  setrxyphitheta_ptx_30 = `
+const (
+	setrxyphitheta_ptx_30 = `
 .version 6.4
 .target sm_30
 .address_size 64
@@ -274,7 +273,7 @@ BB0_7:
 
 
 `
-   setrxyphitheta_ptx_35 = `
+	setrxyphitheta_ptx_35 = `
 .version 6.4
 .target sm_35
 .address_size 64
@@ -453,7 +452,7 @@ BB0_7:
 
 
 `
-   setrxyphitheta_ptx_37 = `
+	setrxyphitheta_ptx_37 = `
 .version 6.4
 .target sm_37
 .address_size 64
@@ -632,7 +631,7 @@ BB0_7:
 
 
 `
-   setrxyphitheta_ptx_50 = `
+	setrxyphitheta_ptx_50 = `
 .version 6.4
 .target sm_50
 .address_size 64
@@ -811,7 +810,7 @@ BB0_7:
 
 
 `
-   setrxyphitheta_ptx_52 = `
+	setrxyphitheta_ptx_52 = `
 .version 6.4
 .target sm_52
 .address_size 64
@@ -990,7 +989,7 @@ BB0_7:
 
 
 `
-   setrxyphitheta_ptx_53 = `
+	setrxyphitheta_ptx_53 = `
 .version 6.4
 .target sm_53
 .address_size 64
@@ -1169,7 +1168,7 @@ BB0_7:
 
 
 `
-   setrxyphitheta_ptx_60 = `
+	setrxyphitheta_ptx_60 = `
 .version 6.4
 .target sm_60
 .address_size 64
@@ -1348,7 +1347,7 @@ BB0_7:
 
 
 `
-   setrxyphitheta_ptx_61 = `
+	setrxyphitheta_ptx_61 = `
 .version 6.4
 .target sm_61
 .address_size 64
@@ -1527,7 +1526,7 @@ BB0_7:
 
 
 `
-   setrxyphitheta_ptx_70 = `
+	setrxyphitheta_ptx_70 = `
 .version 6.4
 .target sm_70
 .address_size 64
@@ -1706,7 +1705,7 @@ BB0_7:
 
 
 `
-   setrxyphitheta_ptx_75 = `
+	setrxyphitheta_ptx_75 = `
 .version 6.4
 .target sm_75
 .address_size 64
@@ -1885,4 +1884,4 @@ BB0_7:
 
 
 `
- )
+)
