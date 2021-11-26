@@ -164,6 +164,7 @@ func goServeGUI() string {
 // print version to stdout
 func printVersion() {
 	engine.LogOut(engine.UNAME)
+	engine.LogOut("Extra paramenters modification for B field developed by ICMA - UNIZAR update")
 	engine.LogOut(cuda.GPUInfo, ", using CC", cuda.UseCC, " PTX")
 	engine.LogOut("(c) Arne Vansteenkiste, Dynamat LAB, Ghent University, Belgium")
 	engine.LogOut("This is free software without any warranty. See license.txt")

@@ -13,11 +13,19 @@ import (
 func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 	N := torque.Len()
 	cfg := make1DConf(N)
+	//Ext := 1
+
+	// k_lltorque2_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
+	// 	m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
+	// 	B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
+	// 	alpha.DevPtr(0), alpha.Mul(0), N, util.Bextra_vector, cfg)
 
 	k_lltorque2_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
 		alpha.DevPtr(0), alpha.Mul(0), N, cfg)
+
+	//debug.PrintStack()
 }
 
 // Landau-Lifshitz torque with precession disabled.

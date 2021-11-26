@@ -3,11 +3,12 @@ package mag
 import (
 	"bufio"
 	"fmt"
+	"math"
+	"os"
+
 	d "github.com/mumax/3/data"
 	"github.com/mumax/3/oommf"
 	"github.com/mumax/3/util"
-	"math"
-	"os"
 )
 
 func MFMKernel(mesh *d.Mesh, lift, tipsize float64, cacheDir string) (kernel [3]*d.Slice) {
@@ -35,10 +36,11 @@ func MFMKernel(mesh *d.Mesh, lift, tipsize float64, cacheDir string) (kernel [3]
 			break
 		}
 	}
+
 	if errLoad != nil {
-		util.Log("//Did not use cached kernel:", errLoad)
+		//	util.Log("//Did not use cached kernel:", errLoad)
 	} else {
-		util.Log("//Using cached kernel:", basename)
+		//util.Log("//Using cached kernel:", basename)
 		return kernel
 	}
 

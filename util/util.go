@@ -7,6 +7,9 @@ import (
 	"strings"
 )
 
+//var Ext_param int = 0
+var Bextra_vector [3]float64
+
 // Remove extension from file name.
 func NoExt(file string) string {
 	ext := path.Ext(file)
