@@ -69,7 +69,7 @@ func init() {
 }
 
 // Wrapper for lltorque2 CUDA kernel, asynchronous.
-func k_lltorque2_async(tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, hx unsafe.Pointer, hy unsafe.Pointer, hz unsafe.Pointer, alpha_ unsafe.Pointer, alpha_mul float32, N int, dt float32, time float32, wc float32, brms_x float32, brms_y float32, brms_z float32, cfg *config) {
+func k_lltorque2_async(tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, hx unsafe.Pointer, hy unsafe.Pointer, hz unsafe.Pointer, alpha_ unsafe.Pointer, alpha_mul float32, N int, cfg *config) {
 	if Synchronous { // debug
 		Sync()
 		timer.Start("lltorque2")
@@ -94,13 +94,13 @@ func k_lltorque2_async(tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, 
 	lltorque2_args.arg_alpha_ = alpha_
 	lltorque2_args.arg_alpha_mul = alpha_mul
 	lltorque2_args.arg_N = N
-	lltorque2_args.arg_dt = dt
-	lltorque2_args.arg_time = time
-	lltorque2_args.arg_wc = wc
+	lltorque2_args.arg_dt = Dt_cuda
+	lltorque2_args.arg_time = Time_cuda
+	lltorque2_args.arg_wc = Wc_cuda
 	lltorque2_args.arg_si_sum = 1.0
-	lltorque2_args.arg_brms_x = brms_x
-	lltorque2_args.arg_brms_x = brms_y
-	lltorque2_args.arg_brms_x = brms_z
+	lltorque2_args.arg_brms_x = Brms_x_cuda
+	lltorque2_args.arg_brms_x = Brms_y_cuda
+	lltorque2_args.arg_brms_x = Brms_z_cuda
 
 	args := lltorque2_args.argptr[:]
 	cu.LaunchKernel(lltorque2_code, cfg.Grid.X, cfg.Grid.Y, cfg.Grid.Z, cfg.Block.X, cfg.Block.Y, cfg.Block.Z, 0, stream0, args)

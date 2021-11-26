@@ -22,15 +22,15 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 
 //	var float dt;
 //	var float32 time;
-	var wc float32 = 2e9
-  var brms_x float32 = 1.0
-	var brms_y float32 = 1.0
-	var brms_z float32 = 1.0
+	Wc_cuda = 2e9
+  Brms_x_cuda = 1.0
+	Brms_y_cuda = 1.0
+	Brms_z_cuda = 1.0
 
 	k_lltorque2_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
-		alpha.DevPtr(0), alpha.Mul(0), N, Dt_cuda, Time_cuda, wc, brms_x, brms_y, brms_z, cfg)
+		alpha.DevPtr(0), alpha.Mul(0), N, cfg)
 
 	//debug.PrintStack()
 }
