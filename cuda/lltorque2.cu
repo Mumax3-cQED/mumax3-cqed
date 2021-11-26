@@ -8,6 +8,8 @@ __device__ __constant__ float h_bar = 1.054571817e-34f; // h-bar planck value
 __device__ __constant__ float muB = 9.274009994e-24f; // Bohr magneton
 __device__ __constant__ float gs = 2.0f;
 
+__device__ float si_sum_total = 0.0;
+
 __device__ float dot(float scalar, float3 vect) {
 
   float res = 0.0f;//vect[0] * scalar + vect[1] *scalar + vect[2]*scalar;
@@ -26,7 +28,7 @@ extern "C" __global__ void
 lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
           float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
           float* __restrict__  hx, float* __restrict__  hy, float* __restrict__  hz,
-          float* __restrict__  alpha_, float alpha_mul, int N, float dt, float wc, float si_sum, float brms_x, float brms_y, float brms_z) {
+          float* __restrict__  alpha_, float alpha_mul, int N, float dt, float time, float wc, float si_sum, float brms_x, float brms_y, float brms_z) {
 
     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
 
@@ -34,7 +36,7 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
 
         float3 m = {mx[i], my[i], mz[i]};
         float3 H = {hx[i], hy[i], hz[i]};
-        printf("%s\n", H);
+
         float alpha = amul(alpha_, alpha_mul, i);
 
         float3 mxH = cross(m, H);
@@ -42,15 +44,14 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         // float3 torque = gilb * (mxH + alpha * cross(m, mxH));
 
         float constant_term = ((pow(gs,2)*pow(muB,2))/pow(h_bar,3));
-        float3 brms = {1.0f , 1.0f , 1.0f};
+        float3 brms = {brms_x , brms_y, brms_z};
         float3 mxBrms = cross(m, brms); // Si = m
 
         //float spin_torque_val = spin_torque(wc, m);
-        //si_sum += spin_torque(wc, m) * dt;
+        si_sum_total += spin_torque(wc*(time - dt), m) * dt;
         // si_sum += sin(wc_frec) * m * dt;
-        si_sum += 1;
 
-        float3 torque = gilb * (mxH + alpha * cross(m, mxH)) - 2 * constant_term * mxBrms * si_sum;
+        float3 torque = gilb * (mxH + alpha * cross(m, mxH)) - 2 * constant_term * mxBrms * si_sum_total;
 
         tx[i] = torque.x;
         ty[i] = torque.y;
