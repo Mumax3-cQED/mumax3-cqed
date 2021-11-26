@@ -32,10 +32,13 @@ type lltorque2_args_t struct {
 	arg_alpha_mul float32
 	arg_N         int
 	arg_dt        float32
-	arg_time      float32
+	arg_time			float32
 	arg_wc        float32
 	arg_si_sum    float32
-	argptr        [16]unsafe.Pointer
+  arg_brms_x		float32
+	arg_brms_y		float32
+	arg_brms_z		float32
+	argptr        [19]unsafe.Pointer
 	sync.Mutex
 }
 
@@ -60,10 +63,13 @@ func init() {
 	lltorque2_args.argptr[13] = unsafe.Pointer(&lltorque2_args.arg_time)
 	lltorque2_args.argptr[14] = unsafe.Pointer(&lltorque2_args.arg_wc)
 	lltorque2_args.argptr[15] = unsafe.Pointer(&lltorque2_args.arg_si_sum)
+	lltorque2_args.argptr[16] = unsafe.Pointer(&lltorque2_args.arg_brms_x)
+	lltorque2_args.argptr[17] = unsafe.Pointer(&lltorque2_args.arg_brms_y)
+	lltorque2_args.argptr[18] = unsafe.Pointer(&lltorque2_args.arg_brms_z)
 }
 
 // Wrapper for lltorque2 CUDA kernel, asynchronous.
-func k_lltorque2_async(tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, hx unsafe.Pointer, hy unsafe.Pointer, hz unsafe.Pointer, alpha_ unsafe.Pointer, alpha_mul float32, N int, dt float32, time float32, wc float32, cfg *config) {
+func k_lltorque2_async(tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, hx unsafe.Pointer, hy unsafe.Pointer, hz unsafe.Pointer, alpha_ unsafe.Pointer, alpha_mul float32, N int, dt float32, time float32, wc float32, brms_x float32, brms_y float32, brms_z float32, cfg *config) {
 	if Synchronous { // debug
 		Sync()
 		timer.Start("lltorque2")
@@ -92,14 +98,17 @@ func k_lltorque2_async(tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, 
 	lltorque2_args.arg_time = time
 	lltorque2_args.arg_wc = wc
 	lltorque2_args.arg_si_sum = 1.0
+	lltorque2_args.arg_brms_x = brms_x
+	lltorque2_args.arg_brms_x = brms_y
+	lltorque2_args.arg_brms_x = brms_z
 
 	args := lltorque2_args.argptr[:]
 	cu.LaunchKernel(lltorque2_code, cfg.Grid.X, cfg.Grid.Y, cfg.Grid.Z, cfg.Block.X, cfg.Block.Y, cfg.Block.Z, 0, stream0, args)
 	log.Println("si_sum: ", lltorque2_args.arg_si_sum)
 
 	//log.Println("items arg_bext_vec_sum_x: ", lltorque2_args.arg_bext_vec_sum_x, lltorque2_args.arg_bext_vec_sum_y, lltorque2_args.arg_bext_vec_sum_z)
-	log.Println("arg_dt: ", lltorque2_args.arg_dt)
-	log.Println("time: ", lltorque2_args.arg_time)
+log.Println("arg_dt: ", lltorque2_args.arg_dt)
+log.Println("time: ", lltorque2_args.arg_time)
 
 	if Synchronous { // debug
 		Sync()

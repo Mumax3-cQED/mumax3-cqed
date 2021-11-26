@@ -37,7 +37,10 @@
 	.param .u32 lltorque2_param_11,
 	.param .f32 lltorque2_param_12,
 	.param .f32 lltorque2_param_13,
-	.param .f32 lltorque2_param_14
+	.param .f32 lltorque2_param_14,
+	.param .f32 lltorque2_param_15,
+	.param .f32 lltorque2_param_16,
+	.param .f32 lltorque2_param_17
 )
 {
 	.local .align 8 .b8 	__local_depot0[16];

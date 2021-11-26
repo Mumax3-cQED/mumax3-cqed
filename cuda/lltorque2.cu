@@ -26,7 +26,7 @@ extern "C" __global__ void
 lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
           float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
           float* __restrict__  hx, float* __restrict__  hy, float* __restrict__  hz,
-          float* __restrict__  alpha_, float alpha_mul, int N, float dt, float wc, float si_sum) {
+          float* __restrict__  alpha_, float alpha_mul, int N, float dt, float wc, float si_sum, float brms_x, float brms_y, float brms_z) {
 
     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
 
