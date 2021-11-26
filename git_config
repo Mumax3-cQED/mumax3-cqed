@@ -1,0 +1,16 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+[remote "origin"]
+	url = ssh://git@podling:6480/sergiomtzlosa/mumax3-modifications-time-dependant.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[remote "all"]
+        url = ssh://git@podling:6480/sergiomtzlosa/mumax3-modifications-time-dependant.git
+        url = ssh://git@gitserver:9422/sergiomtzlosa/mumax3-modifications-time-dependant.git
