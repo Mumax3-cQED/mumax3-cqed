@@ -10,8 +10,8 @@ import (
 	"sync"
 	"unsafe"
 
-	"github.com/mumax/3/cuda/cu"
 	"github.com/mumax/3/timer"
+	"github.com/mumax/3/cuda/cu"
 )
 
 // CUDA handle for lltorque2 kernel
@@ -82,6 +82,11 @@ func k_lltorque2_async(tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, 
 		lltorque2_code = fatbinLoad(lltorque2_map, "lltorque2")
 	}
 
+	var Wc_input = float32(Wc_cuda)
+  var Brms_x_input float32 = float32(Brms_cuda[0])
+	var Brms_y_input float32 = float32(Brms_cuda[1])
+	var Brms_z_input float32 = float32(Brms_cuda[2])
+
 	lltorque2_args.arg_tx = tx
 	lltorque2_args.arg_ty = ty
 	lltorque2_args.arg_tz = tz
@@ -96,19 +101,23 @@ func k_lltorque2_async(tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, 
 	lltorque2_args.arg_N = N
 	lltorque2_args.arg_dt = Dt_cuda
 	lltorque2_args.arg_time = Time_cuda
-	lltorque2_args.arg_wc = Wc_cuda
+	lltorque2_args.arg_wc = Wc_input
 	lltorque2_args.arg_si_sum = 1.0
-	lltorque2_args.arg_brms_x = Brms_x_cuda
-	lltorque2_args.arg_brms_x = Brms_y_cuda
-	lltorque2_args.arg_brms_x = Brms_z_cuda
+	lltorque2_args.arg_brms_x = Brms_x_input
+	lltorque2_args.arg_brms_y = Brms_y_input
+	lltorque2_args.arg_brms_z = Brms_z_input
 
 	args := lltorque2_args.argptr[:]
 	cu.LaunchKernel(lltorque2_code, cfg.Grid.X, cfg.Grid.Y, cfg.Grid.Z, cfg.Block.X, cfg.Block.Y, cfg.Block.Z, 0, stream0, args)
 	log.Println("si_sum: ", lltorque2_args.arg_si_sum)
 
 	//log.Println("items arg_bext_vec_sum_x: ", lltorque2_args.arg_bext_vec_sum_x, lltorque2_args.arg_bext_vec_sum_y, lltorque2_args.arg_bext_vec_sum_z)
-log.Println("arg_dt: ", lltorque2_args.arg_dt)
-log.Println("time: ", lltorque2_args.arg_time)
+	log.Println("arg_dt: ", lltorque2_args.arg_dt)
+	log.Println("time: ", lltorque2_args.arg_time)
+	log.Println("brms_x: ", lltorque2_args.arg_brms_x)
+	log.Println("brms_y: ", lltorque2_args.arg_brms_y)
+	log.Println("brms_z: ", lltorque2_args.arg_brms_z)
+	log.Println("Wc: ", lltorque2_args.arg_wc)
 
 	if Synchronous { // debug
 		Sync()

@@ -29,6 +29,7 @@ var (
 )
 
 func init() {
+
 	DeclFunc("Run", Run, "Run the simulation for a time in seconds")
 	DeclFunc("Steps", Steps, "Run the simulation for a number of time steps")
 	DeclFunc("RunWhile", RunWhile, "Run while condition function is true")
@@ -46,6 +47,9 @@ func init() {
 	_ = NewScalarValue("LastErr", "", "Error of last step", func() float64 { return LastErr })
 	_ = NewScalarValue("PeakErr", "", "Overall maxium error per step", func() float64 { return PeakErr })
 	_ = NewScalarValue("NEval", "", "Total number of torque evaluations", func() float64 { return float64(NEvals) })
+
+	// log.Println(util.Brms_vector)
+	// log.Println(util.Wc)
 }
 
 // Time stepper like Euler, Heun, RK23
@@ -151,6 +155,8 @@ func adaptDt(corr float64) {
 		Dt_si = alarm - Time
 	}
 
+	cuda.SetBrms(util.Brms_vector)
+	cuda.SetWc(util.Wc)
 	cuda.SetTimingCuda(Time, Dt_si)
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }

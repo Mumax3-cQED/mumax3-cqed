@@ -7,8 +7,13 @@ import (
 	"strings"
 )
 
+//var Brms_vector[3]float64
+//var Wc float64 = 0.0
 //var Ext_param int = 0
-var Bextra_vector [3]float64
+//var Bextra_vector [3]float64
+
+var Brms_vector [3]float64
+var Wc float64 = 0.0
 
 // Remove extension from file name.
 func NoExt(file string) string {
