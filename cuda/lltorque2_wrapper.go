@@ -34,11 +34,10 @@ type lltorque2_args_t struct {
 	arg_dt        float32
 	arg_time			float32
 	arg_wc        float32
-	arg_si_sum    float32
   arg_brms_x		float32
 	arg_brms_y		float32
 	arg_brms_z		float32
-	argptr        [19]unsafe.Pointer
+	argptr        [18]unsafe.Pointer
 	sync.Mutex
 }
 
@@ -62,10 +61,9 @@ func init() {
 	lltorque2_args.argptr[12] = unsafe.Pointer(&lltorque2_args.arg_dt)
 	lltorque2_args.argptr[13] = unsafe.Pointer(&lltorque2_args.arg_time)
 	lltorque2_args.argptr[14] = unsafe.Pointer(&lltorque2_args.arg_wc)
-	lltorque2_args.argptr[15] = unsafe.Pointer(&lltorque2_args.arg_si_sum)
-	lltorque2_args.argptr[16] = unsafe.Pointer(&lltorque2_args.arg_brms_x)
-	lltorque2_args.argptr[17] = unsafe.Pointer(&lltorque2_args.arg_brms_y)
-	lltorque2_args.argptr[18] = unsafe.Pointer(&lltorque2_args.arg_brms_z)
+	lltorque2_args.argptr[15] = unsafe.Pointer(&lltorque2_args.arg_brms_x)
+	lltorque2_args.argptr[16] = unsafe.Pointer(&lltorque2_args.arg_brms_y)
+	lltorque2_args.argptr[17] = unsafe.Pointer(&lltorque2_args.arg_brms_z)
 }
 
 // Wrapper for lltorque2 CUDA kernel, asynchronous.
@@ -102,14 +100,21 @@ func k_lltorque2_async(tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, 
 	lltorque2_args.arg_dt = Dt_cuda
 	lltorque2_args.arg_time = Time_cuda
 	lltorque2_args.arg_wc = Wc_input
-	lltorque2_args.arg_si_sum = 1.0
+
+	// var counter float32 = 1.0
+
+	//cc := unsafe.Pointer(&counter)
+	// lltorque2_args.arg_si_sum = unsafe.Pointer(&counter)
 	lltorque2_args.arg_brms_x = Brms_x_input
 	lltorque2_args.arg_brms_y = Brms_y_input
 	lltorque2_args.arg_brms_z = Brms_z_input
 
 	args := lltorque2_args.argptr[:]
 	cu.LaunchKernel(lltorque2_code, cfg.Grid.X, cfg.Grid.Y, cfg.Grid.Z, cfg.Block.X, cfg.Block.Y, cfg.Block.Z, 0, stream0, args)
-	log.Println("si_sum: ", lltorque2_args.arg_si_sum)
+
+//	si_val := unsafe.Slice((*float64)(buf), desiredSliceLen)
+	// si_val := *(*float32)(lltorque2_args.arg_si_sum)
+	// log.Println("si_sum: ", si_val)
 
 	//log.Println("items arg_bext_vec_sum_x: ", lltorque2_args.arg_bext_vec_sum_x, lltorque2_args.arg_bext_vec_sum_y, lltorque2_args.arg_bext_vec_sum_z)
 	log.Println("arg_dt: ", lltorque2_args.arg_dt)
@@ -118,6 +123,12 @@ func k_lltorque2_async(tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, 
 	log.Println("brms_y: ", lltorque2_args.arg_brms_y)
 	log.Println("brms_z: ", lltorque2_args.arg_brms_z)
 	log.Println("Wc: ", lltorque2_args.arg_wc)
+	log.Println("tx: ", lltorque2_args.arg_tx)
+	log.Println("ty: ", lltorque2_args.arg_ty)
+	log.Println("tz: ", lltorque2_args.arg_tz)
+
+	// tz_val := *(*float32)(tz)
+	// log.Println("tz: ", tz_val)
 
 	if Synchronous { // debug
 		Sync()
