@@ -47,9 +47,6 @@ func init() {
 	_ = NewScalarValue("LastErr", "", "Error of last step", func() float64 { return LastErr })
 	_ = NewScalarValue("PeakErr", "", "Overall maxium error per step", func() float64 { return PeakErr })
 	_ = NewScalarValue("NEval", "", "Total number of torque evaluations", func() float64 { return float64(NEvals) })
-
-	// log.Println(util.Brms_vector)
-	// log.Println(util.Wc)
 }
 
 // Time stepper like Euler, Heun, RK23
