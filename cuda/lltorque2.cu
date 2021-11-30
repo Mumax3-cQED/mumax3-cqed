@@ -10,8 +10,8 @@ __device__ __constant__ float h_bar = 1.054571817e-34f; // h-bar planck value
 __device__ __constant__ float muB = 9.274009994e-24f; // Bohr magneton
 __device__ __constant__ float gs = 2.0f;
 
-__device__ float si_sum_total = 0.0;
-__device__ int exec_threads = 0;
+// __device__ float si_sum_total = 0.0;
+// __device__ int exec_threads = 0;
 
 __device__ float mul_vect(float scalar, float *vect, int v_len) {
 
@@ -36,13 +36,13 @@ extern "C" __global__ void
 lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
           float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
           float* __restrict__  hx, float* __restrict__  hy, float* __restrict__  hz,
-          float* __restrict__  alpha_, float alpha_mul, int N, float dt, float time, float wc, float brms_x, float brms_y, float brms_z) {
+          float* __restrict__  alpha_, float alpha_mul, int N, float dt, float time, float wc, float brms_x, float brms_y, float brms_z, float* __restrict__ si_sum_total, float* __restrict__ exec_threads) {
 
     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
 
     if (i < N) {
 
-        exec_threads += 1;
+        (*exec_threads) = (*exec_threads) + 1;
 
         float3 m = {mx[i], my[i], mz[i]};
         float3 H = {hx[i], hy[i], hz[i]};
@@ -69,20 +69,30 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         h_vect[1] = my[i];
         h_vect[2] = mz[i];
 
-        si_sum_total += spin_torque(wc*(time - dt), h_vect, n_lenght) * dt;
+        float val_sim_sum_total = spin_torque(wc*(time - dt), h_vect, n_lenght) * dt;
 
-        float3 full_term;
+        (*si_sum_total) = (*si_sum_total) + val_sim_sum_total;
 
-        for (int z = 0; z < exec_threads; z++) {
-          full_term +=  brms * si_sum_total;
+        float full_term_zero, full_term_one, full_term_two;
+
+        for (int z = 0; z < *exec_threads; z++) {
+          full_term_zero += brms.x * val_sim_sum_total;
+          full_term_one +=  brms.y * val_sim_sum_total;
+          full_term_two +=  brms.z * val_sim_sum_total;
         }
 
-        free(h_vect);
+        // float3 items_term = {full_term_zero, full_term_one, full_term_two};
+        float vect_modulus = sqrt(pow(full_term_zero, 2) + pow(full_term_one, 2) + pow(full_term_two, 2));
 
-        float3 torque = gilb * (mxH + alpha * cross(m, mxH)) - 2 * constant_term * full_term;
+        float3 torque = gilb * (mxH + alpha * cross(m, mxH))- 2 * constant_term * mxBrms * vect_modulus;
 
         tx[i] = torque.x;
         ty[i] = torque.y;
         tz[i] = torque.z;
+
+        exec_threads[i] = exec_threads[i] + 1;
+
+        free(h_vect);
+
     }
 }

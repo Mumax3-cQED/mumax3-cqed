@@ -5,6 +5,8 @@ var (
   Dt_cuda float32
   Wc_cuda float32
   Brms_cuda [3]float64
+  Si_sum_total float32 = 0.0;
+  Exec_threads float32 = 0.0;
 )
 
 func SetTimingCuda(time float64, dt float64) {

@@ -37,7 +37,9 @@ type lltorque2_args_t struct {
   arg_brms_x		float32
 	arg_brms_y		float32
 	arg_brms_z		float32
-	argptr        [18]unsafe.Pointer
+	arg_si_sum_total  unsafe.Pointer
+	arg_exec_threads  unsafe.Pointer
+	argptr        [20]unsafe.Pointer
 	sync.Mutex
 }
 
@@ -64,6 +66,8 @@ func init() {
 	lltorque2_args.argptr[15] = unsafe.Pointer(&lltorque2_args.arg_brms_x)
 	lltorque2_args.argptr[16] = unsafe.Pointer(&lltorque2_args.arg_brms_y)
 	lltorque2_args.argptr[17] = unsafe.Pointer(&lltorque2_args.arg_brms_z)
+	lltorque2_args.argptr[18] = unsafe.Pointer(&lltorque2_args.arg_si_sum_total)
+	lltorque2_args.argptr[19] = unsafe.Pointer(&lltorque2_args.arg_exec_threads)
 }
 
 // Wrapper for lltorque2 CUDA kernel, asynchronous.
@@ -108,13 +112,11 @@ func k_lltorque2_async(tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, 
 	lltorque2_args.arg_brms_x = Brms_x_input
 	lltorque2_args.arg_brms_y = Brms_y_input
 	lltorque2_args.arg_brms_z = Brms_z_input
+	lltorque2_args.arg_si_sum_total = unsafe.Pointer(&Si_sum_total)
+	lltorque2_args.arg_exec_threads = unsafe.Pointer(&Exec_threads)
 
 	args := lltorque2_args.argptr[:]
 	cu.LaunchKernel(lltorque2_code, cfg.Grid.X, cfg.Grid.Y, cfg.Grid.Z, cfg.Block.X, cfg.Block.Y, cfg.Block.Z, 0, stream0, args)
-
-//	si_val := unsafe.Slice((*float64)(buf), desiredSliceLen)
-	// si_val := *(*float32)(lltorque2_args.arg_si_sum)
-	// log.Println("si_sum: ", si_val)
 
 	//log.Println("items arg_bext_vec_sum_x: ", lltorque2_args.arg_bext_vec_sum_x, lltorque2_args.arg_bext_vec_sum_y, lltorque2_args.arg_bext_vec_sum_z)
 	log.Println("arg_dt: ", lltorque2_args.arg_dt)
@@ -127,6 +129,18 @@ func k_lltorque2_async(tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, 
 	log.Println("ty: ", lltorque2_args.arg_ty)
 	log.Println("tz: ", lltorque2_args.arg_tz)
 
+	//si_val := unsafe.Slice((*float64)(buf), desiredSliceLen)
+	// si_val := *(*float32)(lltorque2_args.arg_si_sum_total)
+	log.Println("si_sum: ", lltorque2_args.arg_si_sum_total)
+
+	// exec_t := *(*float32)(lltorque2_args.arg_exec_threads)
+	log.Println("exec_threads: ", lltorque2_args.arg_exec_threads)
+
+ 	// Si_sum_total =  *(*float32)(args[18])
+	// Exec_threads =   *(*float32)(args[19])
+// log.Println("Si_sum_total: ", Si_sum_total)
+// log.Println("Exec_threads: ", Exec_threads)
+// log.Println("stream0: ", stream0)
 	// tz_val := *(*float32)(tz)
 	// log.Println("tz: ", tz_val)
 
