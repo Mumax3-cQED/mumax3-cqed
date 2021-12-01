@@ -36,13 +36,11 @@ extern "C" __global__ void
 lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
           float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
           float* __restrict__  hx, float* __restrict__  hy, float* __restrict__  hz,
-          float* __restrict__  alpha_, float alpha_mul, int N, float dt, float time, float wc, float brms_x, float brms_y, float brms_z, float* __restrict__ si_sum_total, float* __restrict__ exec_threads) {
+          float* __restrict__  alpha_, float alpha_mul, int N, float dt, float time, float wc, float brms_x, float brms_y, float brms_z, float* __restrict__ si_sum_total, float exec_threads) {
 
     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
 
     if (i < N) {
-
-        (*exec_threads) = (*exec_threads) + 1;
 
         float3 m = {mx[i], my[i], mz[i]};
         float3 H = {hx[i], hy[i], hz[i]};
@@ -75,7 +73,7 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
 
         float full_term_zero, full_term_one, full_term_two;
 
-        for (int z = 0; z < *exec_threads; z++) {
+        for (int z = 0; z < exec_threads; z++) {
           full_term_zero += brms.x * val_sim_sum_total;
           full_term_one +=  brms.y * val_sim_sum_total;
           full_term_two +=  brms.z * val_sim_sum_total;
@@ -89,8 +87,6 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         tx[i] = torque.x;
         ty[i] = torque.y;
         tz[i] = torque.z;
-
-        exec_threads[i] = exec_threads[i] + 1;
 
         free(h_vect);
 
