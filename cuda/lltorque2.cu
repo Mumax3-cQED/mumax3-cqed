@@ -73,7 +73,7 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
 
         float full_term_zero, full_term_one, full_term_two;
 
-        for (int z = 0; z < exec_threads; z++) {
+        for (int z = 0; z < (int)exec_threads; z++) {
           full_term_zero += brms.x * val_sim_sum_total;
           full_term_one +=  brms.y * val_sim_sum_total;
           full_term_two +=  brms.z * val_sim_sum_total;

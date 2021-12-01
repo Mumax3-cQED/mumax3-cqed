@@ -154,7 +154,8 @@ func adaptDt(corr float64) {
 
 	cuda.SetBrms(util.Brms_vector)
 	cuda.SetWc(util.Wc)
-	cuda.SetTimingCuda(Time, Dt_si)
+	cuda.SetTimeCuda(Time)
+	cuda.SetDtCuda(Dt_si)
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }
 
@@ -213,6 +214,7 @@ func step(output bool) {
 // Typically used, e.g., to manipulate the magnetization.
 func PostStep(f func()) {
 	postStep = append(postStep, f)
+
 }
 
 // inject code into engine and wait for it to complete.
