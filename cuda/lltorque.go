@@ -42,8 +42,8 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 	// log.Println("Exec_threads AFTERRRR: ", Exec_threads)
 	//			var v float64 =  *((*float64)(m.DevPtr(Y)))
 	//log.Println(" m.DevPtr(Y):", v)
-	// value := *((*int32)( unsafe.Pointer(&Si_sum_total)))
-	//	  log.Println("lltorque2_args.arg_si_sum_total: ", value)
+	// value := *((*float64)(Step_Times.DevPtr(X)))
+	// log.Println("value: ", value)
 	// debug.PrintStack()
 	//debug.PrintStack()
 }

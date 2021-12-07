@@ -9,7 +9,6 @@ var (
 	Fixed_dt_cuda  float32
 	Wc_cuda        float32
 	Brms_cuda      [3]float32
-	Si_sum_total   float32
 	Stop_time_cuda float32
 	Step_Times     *data.Slice
 )
