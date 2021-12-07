@@ -28,6 +28,7 @@ func (rk *RK45DP) Step() {
 	// first step ever: one-time k1 init and eval
 	if rk.k1 == nil {
 		rk.k1 = cuda.NewSlice(3, size)
+		// log.Println("buffer1: ", M.Buffer().Size())
 		torqueFn(rk.k1)
 	}
 
