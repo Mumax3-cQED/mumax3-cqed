@@ -14,9 +14,8 @@ var (
 	Step_Times     *data.Slice
 )
 
-func SetCopyTorque(torqueDst *data.Slice) {
-	tempVar := torqueDst
-	Step_Times = tempVar
+func SetStepTimes(torqueDst *data.Slice) {
+	Step_Times = torqueDst
 }
 
 func SetTimingCuda(time float64, dt float64) {

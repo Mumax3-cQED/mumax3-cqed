@@ -2,11 +2,12 @@ package engine
 
 import (
 	"fmt"
+	"math"
+	"os"
+
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
 	"github.com/mumax/3/util"
-	"math"
-	"os"
 )
 
 // Solver globals
@@ -94,6 +95,11 @@ func SetSolver(typ int) {
 
 // write torque to dst and increment NEvals
 func torqueFn(dst *data.Slice) {
+
+	if cuda.Step_Times == nil {
+		cuda.SetStepTimes(cuda.NewSlice(3, M.Buffer().Size()))
+	}
+
 	SetTorque(dst)
 	NEvals++
 }

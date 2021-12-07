@@ -9,8 +9,7 @@ import (
 )
 
 type RK45DP struct {
-	k1  *data.Slice // torque at end of step is kept for beginning of next step
-	k22 *data.Slice
+	k1 *data.Slice // torque at end of step is kept for beginning of next step
 }
 
 func (rk *RK45DP) Step() {
@@ -29,8 +28,6 @@ func (rk *RK45DP) Step() {
 	// first step ever: one-time k1 init and eval
 	if rk.k1 == nil {
 		rk.k1 = cuda.NewSlice(3, size)
-		rk.k22 = cuda.NewSlice(3, size)
-		cuda.SetCopyTorque(rk.k22)
 		torqueFn(rk.k1)
 	}
 
