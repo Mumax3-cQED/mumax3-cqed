@@ -1,10 +1,11 @@
 package engine
 
 import (
+	"reflect"
+
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
 	"github.com/mumax/3/util"
-	"reflect"
 )
 
 var (
@@ -41,6 +42,7 @@ func init() {
 
 // Sets dst to the current total torque
 func SetTorque(dst *data.Slice) {
+	cuda.SetCopyTorque(dst)
 	SetLLTorque(dst)
 	AddSTTorque(dst)
 	FreezeSpins(dst)

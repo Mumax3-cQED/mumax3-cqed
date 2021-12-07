@@ -5,10 +5,11 @@ package data
 import (
 	"bytes"
 	"fmt"
-	"github.com/mumax/3/util"
 	"log"
 	"reflect"
 	"unsafe"
+
+	"github.com/mumax/3/util"
 )
 
 // Slice is like a [][]float32, but may be stored in GPU or host memory.

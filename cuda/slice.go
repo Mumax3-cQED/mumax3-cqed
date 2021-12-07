@@ -8,10 +8,14 @@ import (
 	"github.com/mumax/3/data"
 	"github.com/mumax/3/timer"
 	"github.com/mumax/3/util"
+	//	"runtime/debug"
 )
 
 // Make a GPU Slice with nComp components each of size length.
 func NewSlice(nComp int, size [3]int) *data.Slice {
+	//log.Println("ncomp: ", nComp)
+	//log.Println("size: ", size)
+	//	debug.PrintStack()
 	return newSlice(nComp, size, MemAlloc, data.GPUMemory)
 }
 
