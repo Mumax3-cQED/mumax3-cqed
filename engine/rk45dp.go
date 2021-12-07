@@ -1,14 +1,16 @@
 package engine
 
 import (
+	"math"
+
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
 	"github.com/mumax/3/util"
-	"math"
 )
 
 type RK45DP struct {
-	k1 *data.Slice // torque at end of step is kept for beginning of next step
+	k1  *data.Slice // torque at end of step is kept for beginning of next step
+	k22 *data.Slice
 }
 
 func (rk *RK45DP) Step() {
@@ -27,6 +29,8 @@ func (rk *RK45DP) Step() {
 	// first step ever: one-time k1 init and eval
 	if rk.k1 == nil {
 		rk.k1 = cuda.NewSlice(3, size)
+		rk.k22 = cuda.NewSlice(3, size)
+		cuda.SetCopyTorque(rk.k22)
 		torqueFn(rk.k1)
 	}
 

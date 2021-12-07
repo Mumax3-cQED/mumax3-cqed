@@ -39,7 +39,6 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
     if (i < N) {
 
         int idx = i;
-        deltas[i] = dt;
 
         float3 m = {mx[i], my[i], mz[i]};
         float3 H = {hx[i], hy[i], hz[i]};
@@ -50,30 +49,15 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         float gilb = -1.0f / (1.0f + alpha * alpha);
         // float3 torque = gilb * (mxH + alpha * cross(m, mxH));
 
-        //double h_bar = 1.054571817E-34; // h-bar planck value
-        //double muB = 9.274009994E-24; // Bohr magneton
-        //double gs = 2.0;
-        float constant_term = (float)(powf(GS,2)*powf(MUB,2))/(powf(HBAR,3)); //  2.9334e+56;
-        //float constant_term = (float)powf(gs,2)*pow(muB,2);//(float)(powf(gs,2)*powf(muB,2))/powf(h_bar,3);
-      //  constant_term = fdividef(constant_term, powf(h_bar, 3));
-
         float3 brms = {brms_x , brms_y, brms_z};
         float3 mxBrms = cross(m, brms); // Si = m
 
+        deltas[i] = dt;
         float si_sum_total = 0.0;
 
         for (int z = 0; z <= idx; z++) {
-      //  for (float dtz = 0.0; dtz <= time; dtz+=dt) {
           si_sum_total += spin_torque(sin(wc*(time - deltas[z])), mx[z], my[z], mz[z]) * fixed_dt;
         }
-        // si_sum_total = d_si_sum_total;
-
-        // float value_sum = d_si_sum_total;
-        //
-        // d_si_sum_total = si_sum_total;
-        // d_si_sum_total += (si_sum_total + val_sim_sum_total); //????
-        //d_si_sum_total += val_sim_sum_total;
-        //si_sum_total = d_si_sum_total;
 
         float full_term_zero = 0.0;
         float full_term_one = 0.0;
@@ -88,16 +72,18 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         // float3 items_term = {full_term_zero, full_term_one, full_term_two};
         float vect_modulus = sqrt(pow(full_term_zero, 2) + pow(full_term_one, 2) + pow(full_term_two, 2));
 
+        float constant_term = (float)(powf(GS,2)*powf(MUB,2))/(powf(HBAR,3)); //  2.9334e+56;
+
         float3 append_term = 2 * mxBrms * vect_modulus;
         // append_term = append_term * constant_term;
 
         float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - (append_term);
 
-    //float3 torque = gilb * (mxH + alpha * cross(m, mxH));
+        // float3 torque = gilb * (mxH + alpha * cross(m, mxH));
         tx[i] = torque.x;
         ty[i] = torque.y;
         tz[i] = torque.z;
 
-    //    __syncthreads();
+        //__syncthreads();
     }
 }

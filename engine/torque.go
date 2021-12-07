@@ -42,7 +42,6 @@ func init() {
 
 // Sets dst to the current total torque
 func SetTorque(dst *data.Slice) {
-	cuda.SetCopyTorque(dst)
 	SetLLTorque(dst)
 	AddSTTorque(dst)
 	FreezeSpins(dst)
