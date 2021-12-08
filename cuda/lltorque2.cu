@@ -20,9 +20,9 @@ __device__ __constant__ double GS = 2.0;
 //     return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
 // }
 
-__device__ float spin_torque(float wc_frec, float mx_val, float my_val, float mz_val) {
+__device__ float spin_torque(float calc_term, float mx_val, float my_val, float mz_val) {
 
-  float sum_term = mx_val * wc_frec + my_val * wc_frec + mz_val * wc_frec;
+  float sum_term = mx_val * calc_term + my_val * calc_term + mz_val * calc_term;
   return sum_term;
 }
 
@@ -53,10 +53,18 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         float3 mxBrms = cross(m, brms); // Si = m
 
         deltas[i] = dt;
+
+        __syncthreads();
+
         float si_sum_total = 0.0;
 
         for (int z = 0; z <= idx; z++) {
-          si_sum_total += spin_torque(sin(wc*(time - deltas[z])), mx[z], my[z], mz[z]) * fixed_dt;
+
+          float single_delta = deltas[z];
+
+          if (single_delta > 0) {
+              si_sum_total += spin_torque(sin(wc*(time - single_delta)), mx[z], my[z], mz[z]) * fixed_dt;
+          }
         }
 
         float full_term_zero = 0.0;
@@ -84,6 +92,6 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         ty[i] = torque.y;
         tz[i] = torque.z;
 
-        //__syncthreads();
+        // __syncthreads();
     }
 }

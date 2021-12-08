@@ -13,6 +13,8 @@ import (
 func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 	N := torque.Len()
 	cfg := make1DConf(N)
+
+	// log.Println("torque len: ", N)
 	//Ext := 1
 	//		log.Println("Exec_threads before: ", Exec_threads)
 	// k_lltorque2_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
