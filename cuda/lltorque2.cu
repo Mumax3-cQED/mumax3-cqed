@@ -71,7 +71,7 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         float constant_term = (float)(powf(GS,2)*powf(MUB,2))/(powf(HBAR,3)); // 2.9334e+56;
 
         float3 new_term = 2 * mxBrms * vect_modulus;
-        // new_term = append_term * constant_term;
+        // new_term = new_term * constant_term;
 
         float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - (new_term);
 
