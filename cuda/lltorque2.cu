@@ -65,11 +65,8 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
           kvect += (brms.z * si_sum_total);
         }
 
-        // float3 items_term = {full_term_zero, full_term_one, full_term_two};
         float vect_modulus = sqrt(pow(ivect, 2) + pow(jvect, 2) + pow(kvect, 2));
-
         float constant_term = (float)(pow(GS,2)*pow(MUB,2))/(pow(HBAR,3));
-
         float3 new_term = 2 * constant_term * mxBrms * vect_modulus;
 
         float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - (new_term);
