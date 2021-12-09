@@ -57,19 +57,19 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
           }
         }
 
-        float ivect = 0.0;
-        float jvect = 0.0;
-        float kvect = 0.0;
+        float vectx = 0.0;
+        float vecty = 0.0;
+        float vectz = 0.0;
 
         // Summatory for all cells
         for (int z = 0; z <= idx; z++) {
 
-          ivect += (brms.x * si_sum_total);
-          jvect += (brms.y * si_sum_total);
-          kvect += (brms.z * si_sum_total);
+          vectx += (brms.x * si_sum_total);
+          vecty += (brms.y * si_sum_total);
+          vectz += (brms.z * si_sum_total);
         }
 
-        float vect_modulus = sqrt(pow(ivect, 2) + pow(jvect, 2) + pow(kvect, 2));
+        float vect_modulus = sqrt(pow(vectx, 2) + pow(vecty, 2) + pow(vectz, 2));
         float constant_term = (float)(pow(GS,2)*pow(MUB,2))/(pow(HBAR,3)); // Constant value (gs^2*mub^2)/hbar^3
 
         float3 new_term = 2 * constant_term * mxBrms * vect_modulus; // LLG equation with full new time-dependant term to plug in equation
