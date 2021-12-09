@@ -36,7 +36,6 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
 
         float3 mxH = cross(m, H);
         float gilb = -1.0f / (1.0f + alpha * alpha);
-        // float3 torque = gilb * (mxH + alpha * cross(m, mxH));
 
         float3 brms = {brms_x , brms_y, brms_z};
         float3 mxBrms = cross(m, brms); // Si = m
@@ -69,12 +68,12 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         // float3 items_term = {full_term_zero, full_term_one, full_term_two};
         float vect_modulus = sqrt(pow(ivect, 2) + pow(jvect, 2) + pow(kvect, 2));
 
-        float constant_term = (float)(powf(GS,2)*powf(MUB,2))/(powf(HBAR,3)); //  2.9334e+56;
+        float constant_term = (float)(powf(GS,2)*powf(MUB,2))/(powf(HBAR,3)); // 2.9334e+56;
 
-        float3 append_term = 2 * mxBrms * vect_modulus;
-        // append_term = append_term * constant_term;
+        float3 new_term = 2 * mxBrms * vect_modulus;
+        // new_term = append_term * constant_term;
 
-        float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - (append_term);
+        float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - (new_term);
 
         // float3 torque = gilb * (mxH + alpha * cross(m, mxH));
         tx[i] = torque.x;
