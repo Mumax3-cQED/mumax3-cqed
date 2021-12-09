@@ -27,6 +27,8 @@ var (
 	FixDt                   float64                      // fixed time step?
 	stepper                 Stepper                      // generic step, can be EulerStep, HeunStep, etc
 	solvertype              int
+
+	len_single [3]int = [3]int{1, 1, 1}
 )
 
 func init() {
@@ -164,15 +166,13 @@ func adaptDt(corr float64) {
 	cuda.SetWc(util.Wc)
 
 	if cuda.Time_cuda == nil {
-		len := [3]int{1, 1, 1}
-		cuda.Time_cuda = cuda.NewSlice(1, len)
+		cuda.Time_cuda = cuda.NewSlice(1, len_single)
 	}
 
 	cuda.SetTimeCuda(Time)
 
 	if cuda.Fixed_dt_cuda == nil {
-		len := [3]int{1, 1, 1}
-		cuda.Fixed_dt_cuda = cuda.NewSlice(1, len)
+		cuda.Fixed_dt_cuda = cuda.NewSlice(1, len_single)
 	}
 
 	cuda.SetDtCuda(Dt_si)
