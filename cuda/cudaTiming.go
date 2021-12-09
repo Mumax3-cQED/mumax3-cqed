@@ -1,12 +1,10 @@
 package cuda
 
-import (
-	"github.com/mumax/3/data"
-)
+import "github.com/mumax/3/data"
 
 var (
-	Time_cuda      float32
-	Fixed_dt_cuda  float32
+	Time_cuda      *data.Slice
+	Fixed_dt_cuda  *data.Slice
 	Wc_cuda        float32
 	Brms_cuda      [3]float32
 	Stop_time_cuda float32
@@ -18,11 +16,13 @@ func SetStepTimes(torqueDst *data.Slice) {
 }
 
 func SetDtCuda(dt float64) {
-	Fixed_dt_cuda = float32(dt)
+
+	SetElem(Fixed_dt_cuda, 0, 0, float32(dt))
 }
 
 func SetTimeCuda(time float64) {
-	Time_cuda = float32(time)
+
+	SetElem(Time_cuda, 0, 0, float32(time))
 }
 
 func SetStopTime(stop_time float64) {

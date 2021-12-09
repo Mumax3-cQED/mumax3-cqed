@@ -162,7 +162,19 @@ func adaptDt(corr float64) {
 
 	cuda.SetBrms(util.Brms_vector)
 	cuda.SetWc(util.Wc)
+
+	if cuda.Time_cuda == nil {
+		len := [3]int{1, 1, 1}
+		cuda.Time_cuda = cuda.NewSlice(1, len)
+	}
+
 	cuda.SetTimeCuda(Time)
+
+	if cuda.Fixed_dt_cuda == nil {
+		len := [3]int{1, 1, 1}
+		cuda.Fixed_dt_cuda = cuda.NewSlice(1, len)
+	}
+
 	cuda.SetDtCuda(Dt_si)
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }
