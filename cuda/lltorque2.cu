@@ -72,8 +72,8 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         float vect_modulus = sqrt(pow(ivect, 2) + pow(jvect, 2) + pow(kvect, 2));
         float constant_term = (float)(pow(GS,2)*pow(MUB,2))/(pow(HBAR,3)); // Constant value (gs^2*mub^2)/hbar^3
 
-        float3 new_term = 2 * constant_term * mxBrms * vect_modulus; // LLG equation with full new term to plug in equation
-
+        float3 new_term = 2 * constant_term * mxBrms * vect_modulus; // LLG equation with full new time-dependant term to plug in equation
+        
         float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - (new_term);
 
         // float3 torque = gilb * (mxH + alpha * cross(m, mxH)); // LLG equation formula
