@@ -9,18 +9,7 @@ __device__ __constant__ double MUB = 9.2740091523E-24;
 __device__ __constant__ double HBAR = 1.054571817E-34;
 __device__ __constant__ double GS = 2.0;
 
-//#define CONSTANT (powf(GS,2)*powf(MUB,2))/(powf(HBAR,3))
-
- // __device__ float d_si_sum_total = 0.0;
-// __device__ int exec_threads = 0;
-
-
-// inline __device__ __device__ float3 operator--(float3 a, float3 b)
-// {
-//     return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
-// }
-
-__device__ float spin_torque(float calc_term, float mx_val, float my_val, float mz_val) {
+__device__ float spinTorque(float calc_term, float mx_val, float my_val, float mz_val) {
 
   float sum_term = mx_val * calc_term + my_val * calc_term + mz_val * calc_term;
   return sum_term;
@@ -63,22 +52,22 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
           float single_delta = deltas[z];
 
           if (single_delta > 0) {
-              si_sum_total += spin_torque(sin(wc*(time - single_delta)), mx[z], my[z], mz[z]) * fixed_dt;
+              si_sum_total += spinTorque(sin(wc*(time - single_delta)), mx[z], my[z], mz[z]) * fixed_dt;
           }
         }
 
-        float full_term_zero = 0.0;
-        float full_term_one = 0.0;
-        float full_term_two = 0.0;
+        float ivect = 0.0;
+        float jvect = 0.0;
+        float kvect = 0.0;
 
         for (int z = 0; z <= idx; z++) {
-          full_term_zero += brms.x * si_sum_total;
-          full_term_one +=  brms.y * si_sum_total;
-          full_term_two +=  brms.z * si_sum_total;
+          ivect += (brms.x * si_sum_total);
+          jvect += (brms.y * si_sum_total);
+          kvect += (brms.z * si_sum_total);
         }
 
         // float3 items_term = {full_term_zero, full_term_one, full_term_two};
-        float vect_modulus = sqrt(pow(full_term_zero, 2) + pow(full_term_one, 2) + pow(full_term_two, 2));
+        float vect_modulus = sqrt(pow(ivect, 2) + pow(jvect, 2) + pow(kvect, 2));
 
         float constant_term = (float)(powf(GS,2)*powf(MUB,2))/(powf(HBAR,3)); //  2.9334e+56;
 
@@ -91,7 +80,5 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         tx[i] = torque.x;
         ty[i] = torque.y;
         tz[i] = torque.z;
-
-        // __syncthreads();
     }
 }
