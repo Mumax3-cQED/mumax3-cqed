@@ -97,7 +97,7 @@ func SetSolver(typ int) {
 func torqueFn(dst *data.Slice) {
 
 	if cuda.Step_Times == nil {
-		cuda.SetStepTimes(cuda.NewSlice(3, M.Buffer().Size()))
+		cuda.SetStepTimes(cuda.NewSlice(1, M.Buffer().Size()))
 
 		// log.Println("buffer2: ", M.Buffer().Size())
 	}
