@@ -22,12 +22,16 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 	// log.Println("Time_cuda:", Time_cuda)
 	// log.Println("Fixed_dt_cuda:", Fixed_dt_cuda)
 	// log.Println("Stop_time_cuda: ", Stop_time_cuda)
-	// log.Println("Time_cuda: ", Time_cuda)
 
 	k_lltorque2_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
 		alpha.DevPtr(0), alpha.Mul(0), N, Time_cuda.DevPtr(0), Fixed_dt_cuda.DevPtr(0), Stop_time_cuda, Wc_cuda, Brms_cuda[X], Brms_cuda[Y], Brms_cuda[Z], Step_Times.DevPtr(X), cfg)
+
+	// log.Println("Time_cuda: ", GetElem(Time_cuda, 0, 0))
+	// log.Println("Fixed_dt_cuda: ", GetElem(Fixed_dt_cuda, 0, 0))
+	// log.Println("Bx: ", GetElem(B, 0, 0))
+
 }
 
 // Landau-Lifshitz torque with precession disabled.
