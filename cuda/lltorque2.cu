@@ -37,13 +37,15 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         float3 mxH = cross(m, H);
         float gilb = -1.0f / (1.0f + alpha * alpha);
 
+        // Adding new time-dependant term to equations
         float3 brms = {brms_x , brms_y, brms_z};
-        float3 mxBrms = cross(m, brms); // Si = m
+        float3 mxBrms = cross(m, brms); // m x Brms
 
         deltas[i] = dt;
 
         __syncthreads();
 
+        // Integral from 0 to T
         float si_sum_total = 0.0;
 
         for (int z = 0; z <= idx; z++) {
@@ -59,19 +61,22 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         float jvect = 0.0;
         float kvect = 0.0;
 
+        // Summatory for all cells
         for (int z = 0; z <= idx; z++) {
+
           ivect += (brms.x * si_sum_total);
           jvect += (brms.y * si_sum_total);
           kvect += (brms.z * si_sum_total);
         }
 
         float vect_modulus = sqrt(pow(ivect, 2) + pow(jvect, 2) + pow(kvect, 2));
-        float constant_term = (float)(pow(GS,2)*pow(MUB,2))/(pow(HBAR,3));
-        float3 new_term = 2 * constant_term * mxBrms * vect_modulus;
+        float constant_term = (float)(pow(GS,2)*pow(MUB,2))/(pow(HBAR,3)); // Constant value (gs^2*mub^2)/hbar^3
+
+        float3 new_term = 2 * constant_term * mxBrms * vect_modulus; // LLG equation with full new term to plug in equation
 
         float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - (new_term);
 
-        // float3 torque = gilb * (mxH + alpha * cross(m, mxH));
+        // float3 torque = gilb * (mxH + alpha * cross(m, mxH)); // LLG equation formula
 
         tx[i] = torque.x;
         ty[i] = torque.y;
