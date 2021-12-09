@@ -46,7 +46,7 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
 
         __syncthreads();
 
-        // Integral from 0 to T
+        // Integral from 0 to t
         float si_sum_total = 0.0;
 
         for (int z = 0; z <= idx; z++) {
