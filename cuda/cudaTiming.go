@@ -17,11 +17,6 @@ func SetStepTimes(torqueDst *data.Slice) {
 	Step_Times = torqueDst
 }
 
-func SetTimingCuda(time float64, dt float64) {
-	Time_cuda = float32(time)
-	Fixed_dt_cuda = float32(dt)
-}
-
 func SetDtCuda(dt float64) {
 	Fixed_dt_cuda = float32(dt)
 }
