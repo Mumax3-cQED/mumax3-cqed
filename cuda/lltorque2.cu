@@ -37,6 +37,7 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
 
         float3 mxH = cross(m, H);
         float gilb = -1.0f / (1.0f + alpha * alpha);
+        // float3 torque = gilb * (mxH + alpha * cross(m, mxH)); // LLG equation
 
         // Adding new time-dependant term to equations
         float3 brms = {brms_x , brms_y, brms_z};
