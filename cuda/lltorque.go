@@ -31,7 +31,7 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 	// log.Println("Time_cuda: ", GetElem(Time_cuda, 0, 0))
 	// log.Println("Fixed_dt_cuda: ", GetElem(Fixed_dt_cuda, 0, 0))
 	// log.Println("Bx: ", GetElem(B, 0, 0))
-
+	// log.Println("Step_Times: ", GetElem(Step_Times, 0, 3))
 }
 
 // Landau-Lifshitz torque with precession disabled.
