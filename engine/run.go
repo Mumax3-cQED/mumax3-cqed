@@ -182,7 +182,7 @@ func adaptDt(corr float64) {
 // Run the simulation for a number of seconds.
 func Run(seconds float64) {
 	stop := Time + seconds
-	cuda.SetStopTime(stop)
+	// cuda.SetStopTime(stop)
 
 	alarm = stop // don't have dt adapt to go over alarm
 	RunWhile(func() bool { return Time < stop })
