@@ -22,7 +22,7 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 	// log.Println("Time_cuda:", Time_cuda)
 	// log.Println("Fixed_dt_cuda:", Fixed_dt_cuda)
 	// log.Println("Stop_time_cuda: ", Stop_time_cuda)
-
+	// log.Println("entra aqui")
 	k_lltorque2_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),

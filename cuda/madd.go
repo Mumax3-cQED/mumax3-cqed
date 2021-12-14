@@ -47,6 +47,21 @@ func Madd2(dst, src1, src2 *data.Slice, factor1, factor2 float32) {
 	}
 }
 
+func MdataTemp(dst, m *data.Slice, time float64) {
+
+	size := m.Size()
+
+	len_vec1 := size[0]
+	len_vec2 := size[1]
+	len_vec3 := size[2]
+
+	N := dst.Len()
+	nComp := dst.NComp()
+	util.Assert(m.NComp() == nComp)
+	cfg := make1DConf(N)
+	k_mdatatemp_async(dst.DevPtr(X), m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z), float32(time), len_vec1, len_vec2, len_vec3, N, cfg)
+}
+
 // multiply-add: dst[i] = src1[i] * factor1 + src2[i] * factor2 + src3 * factor3
 func Madd3(dst, src1, src2, src3 *data.Slice, factor1, factor2, factor3 float32) {
 	N := dst.Len()
