@@ -9,26 +9,19 @@ __device__ __constant__ double MUB = 9.2740091523E-24;
 __device__ __constant__ double HBAR = 1.054571817E-34;
 __device__ __constant__ double GS = 2.0;
 
-__device__ float spinTorque(float calc_term, float mx_val, float my_val, float mz_val) {
-
-  float sum_term = mx_val * calc_term + my_val * calc_term + mz_val * calc_term;
-  return sum_term;
-}
-
 // Landau-Lifshitz torque.
 //- 1/(1+α²) [ m x B +  α m x (m x B) ]
 extern "C" __global__ void
 lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
           float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
           float* __restrict__  hx, float* __restrict__  hy, float* __restrict__  hz,
-          float* __restrict__  alpha_, float alpha_mul, int N,
-          float* __restrict__ tau_temp, float* __restrict__ fixed_dt, float wc, float brms_x, float brms_y, float brms_z, float* __restrict__ tau_array) {
+          float* __restrict__  alpha_, float alpha_mul,
+          float time, float fixed_dt, float wc, float brms_x, float brms_y, float brms_z,
+          float* __restrict__ rk_mx, float* __restrict__ rk_my, float* __restrict__ rk_mz, float* __restrict__ rk_tau, int N) {
 
     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
 
     if (i < N) {
-
-        int idx = i;
 
         float3 m = {mx[i], my[i], mz[i]};
         float3 H = {hx[i], hy[i], hz[i]};
@@ -43,43 +36,17 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         float3 brms = {brms_x , brms_y, brms_z};
         float3 mxBrms = cross(m, brms); // m x Brms
 
-        float current_tau = tau_temp[0];
-        tau_array[i] = current_tau;
-        float fixdt_step = fixed_dt[0];
+        float3 rk_m = {rk_mx[i], rk_my[i], rk_mz[i]};
 
-        __syncthreads();
-
-        // Integral from 0 to t
-        float full_taus = 0.0;
-
-        int tau_array_size = sizeof(tau_array)/sizeof(tau_array[0]);
-
-        for (int sIndex = 0; sIndex < tau_array_size; sIndex++) {
-            full_taus += tau_array[sIndex];
-        }
-
-        float si_sum_total = 0.0;
-
-        for (int z = 0; z < tau_array_size; z++) {
-            si_sum_total += spinTorque(sin(wc*(full_taus - current_tau)), mx[z], my[z], mz[z]) * fixdt_step;
-        }
-
-        float vectx = 0.0;
-        float vecty = 0.0;
-        float vectz = 0.0;
+        float3 si_sum_total = sin(wc*(time - rk_tau[i])) * rk_m * fixed_dt;
 
         // Summatory for all cells
-        for (int z = 0; z <= idx; z++) {
+        // https://developer.download.nvidia.com/cg/dot.html
+        float sum_final = dot(si_sum_total, brms);
 
-          vectx += (brms.x * si_sum_total);
-          vecty += (brms.y * si_sum_total);
-          vectz += (brms.z * si_sum_total);
-        }
-
-        float vect_modulus = sqrt(pow(vectx, 2) + pow(vecty, 2) + pow(vectz, 2));
         float constant_term = 1; //(float)(pow(GS,2)*pow(MUB,2))/(pow(HBAR,3)); // Constant value (gs^2*mub^2)/hbar^3
 
-        float3 new_term = 2 * constant_term * mxBrms * vect_modulus; // LLG equation with full new time-dependant term to plug in equation
+        float3 new_term = 2 * constant_term * mxBrms * sum_final; // LLG equation with full new time-dependant term to plug in equation
 
         float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - (new_term);
 

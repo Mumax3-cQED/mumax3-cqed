@@ -98,10 +98,10 @@ func SetSolver(typ int) {
 // write torque to dst and increment NEvals
 func torqueFn(dst *data.Slice) {
 
-	if cuda.Step_Times == nil {
-		cuda.SetStepTimes(cuda.NewSlice(1, M.Buffer().Size()))
-		// log.Println("buffer2: ", M.Buffer().Size())
-	}
+	// if cuda.Step_Times == nil {
+	// 	cuda.SetStepTimes(cuda.NewSlice(1, M.Buffer().Size()))
+	// 	// log.Println("buffer2: ", M.Buffer().Size())
+	// }
 
 	SetTorque(dst)
 	NEvals++
@@ -164,17 +164,12 @@ func adaptDt(corr float64) {
 	cuda.SetBrms(util.Brms_vector)
 	cuda.SetWc(util.Wc)
 
-	if cuda.Time_cuda == nil {
-		cuda.Time_cuda = cuda.NewSlice(1, len_single)
-	}
+	// log.Println("Time_cuda: ", cuda.Time_cuda)
+	// log.Println("dt_si: ", Dt_si)
 
 	cuda.SetTimeCuda(Time)
-
-	if cuda.Fixed_dt_cuda == nil {
-		cuda.Fixed_dt_cuda = cuda.NewSlice(1, len_single)
-	}
-
 	cuda.SetDtCuda(Dt_si)
+
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }
 

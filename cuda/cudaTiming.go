@@ -5,34 +5,28 @@ import (
 )
 
 var (
-	Time_cuda     *data.Slice
-	Fixed_dt_cuda *data.Slice
+	Time_cuda     float32
+	Fixed_dt_cuda float32
 	Wc_cuda       float32
 	Brms_cuda     [3]float32
 	// Stop_time_cuda float32
-	Step_Times *data.Slice
+	// Step_Times *data.Slice
 	// M_rk45     [][]float32
-	M_rk0 *data.Slice
-	M_rk1 *data.Slice
-	M_rk2 *data.Slice
-	M_rk3 *data.Slice
-	M_rk4 *data.Slice
-	M_rk5 *data.Slice
-	M_rk6 *data.Slice
+	M_rk *data.Slice
 )
 
-func SetStepTimes(torqueDst *data.Slice) {
-	Step_Times = torqueDst
-}
+// func SetStepTimes(torqueDst *data.Slice) {
+// 	Step_Times = torqueDst
+// }
 
 func SetDtCuda(dt float64) {
 
-	SetElem(Fixed_dt_cuda, 0, 0, float32(dt))
+	Fixed_dt_cuda = float32(dt)
 }
 
 func SetTimeCuda(time float64) {
 
-	SetElem(Time_cuda, 0, 0, float32(time))
+	Time_cuda = float32(time)
 }
 
 // func SetStopTime(stop_time float64) {

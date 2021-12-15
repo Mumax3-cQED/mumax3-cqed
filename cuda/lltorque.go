@@ -26,7 +26,8 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 	k_lltorque2_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
-		alpha.DevPtr(0), alpha.Mul(0), N, Time_cuda.DevPtr(0), Fixed_dt_cuda.DevPtr(0), Wc_cuda, Brms_cuda[X], Brms_cuda[Y], Brms_cuda[Z], Step_Times.DevPtr(X), cfg)
+		alpha.DevPtr(0), alpha.Mul(0), Time_cuda, Fixed_dt_cuda, Wc_cuda, Brms_cuda[X], Brms_cuda[Y], Brms_cuda[Z],
+		M_rk.DevPtr(0), M_rk.DevPtr(1), M_rk.DevPtr(2), M_rk.DevPtr(3), N, cfg)
 
 	// log.Println("Time_cuda: ", GetElem(Time_cuda, 0, 0))
 	// log.Println("Time_cuda Len: ", Time_cuda.Len())
