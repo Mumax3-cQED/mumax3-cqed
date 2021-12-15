@@ -18,9 +18,17 @@ func (rk *RK45DP) Step() {
 	m := M.Buffer()
 	size := m.Size()
 
-	if cuda.M_rk == nil {
-		cuda.M_rk = M.Buffer() //cuda.NewSlice(3, size) //make([][]float32, 0)
-	}
+	// if cuda.M_rk45 == nil {
+	// 	cuda.M_rk45 = make([][]float32, 0)
+	// }
+
+	cuda.M_rk0 = cuda.InitRKStepArray(cuda.M_rk0, size)
+	cuda.M_rk1 = cuda.InitRKStepArray(cuda.M_rk1, size)
+	cuda.M_rk2 = cuda.InitRKStepArray(cuda.M_rk2, size)
+	cuda.M_rk3 = cuda.InitRKStepArray(cuda.M_rk3, size)
+	cuda.M_rk4 = cuda.InitRKStepArray(cuda.M_rk4, size)
+	cuda.M_rk5 = cuda.InitRKStepArray(cuda.M_rk5, size)
+	cuda.M_rk6 = cuda.InitRKStepArray(cuda.M_rk6, size)
 
 	if FixDt != 0 {
 		Dt_si = FixDt
@@ -48,6 +56,7 @@ func (rk *RK45DP) Step() {
 	m0 := cuda.Buffer(3, size)
 	defer cuda.Recycle(m0)
 	data.Copy(m0, m)
+	cuda.MdataTemp(cuda.M_rk0, m, Time)
 
 	k2, k3, k4, k5, k6 := cuda.Buffer(3, size), cuda.Buffer(3, size), cuda.Buffer(3, size), cuda.Buffer(3, size), cuda.Buffer(3, size)
 	defer cuda.Recycle(k2)
@@ -64,10 +73,11 @@ func (rk *RK45DP) Step() {
 	// stage 2
 	Time = t0 + (1./5.)*Dt_si
 	cuda.Madd2(m, m, rk.k1, 1, (1./5.)*h) // m = m*1 + k1*h/5
-	cuda.MdataTemp(cuda.M_rk, m, Time)
 
-	cuda.PrintRes(cuda.M_rk)
-	// cuda.AppendData(m, Time, )
+	// log.Println(m.Comp(0))
+	cuda.MdataTemp(cuda.M_rk1, m, Time)
+	// cuda.PrintRes(cuda.M_rk)
+	// cuda.AppendData(m, Time, cuda.M_rk45)
 	// log.Println("m stage2:", cuda.GetElem(m, 0, 0))
 	// log.Println("Time stage2:", Time)
 	M.normalize()
@@ -76,6 +86,7 @@ func (rk *RK45DP) Step() {
 	// stage 3
 	Time = t0 + (3./10.)*Dt_si
 	cuda.Madd3(m, m0, rk.k1, k2, 1, (3./40.)*h, (9./40.)*h)
+	cuda.MdataTemp(cuda.M_rk2, m, Time)
 	// cuda.AppendData(m, Time, cuda.M_rk)
 	// log.Println("m stage3:", cuda.GetElem(m, 0, 0))
 	// log.Println("Time stage3:", Time)
@@ -85,6 +96,7 @@ func (rk *RK45DP) Step() {
 	// stage 4
 	Time = t0 + (4./5.)*Dt_si
 	madd4(m, m0, rk.k1, k2, k3, 1, (44./45.)*h, (-56./15.)*h, (32./9.)*h)
+	cuda.MdataTemp(cuda.M_rk3, m, Time)
 	// cuda.AppendData(m, Time, cuda.M_rk)
 	// log.Println("m stage4:", cuda.GetElem(m, 0, 0))
 	// log.Println("Time stage4:", Time)
@@ -94,6 +106,7 @@ func (rk *RK45DP) Step() {
 	// stage 5
 	Time = t0 + (8./9.)*Dt_si
 	madd5(m, m0, rk.k1, k2, k3, k4, 1, (19372./6561.)*h, (-25360./2187.)*h, (64448./6561.)*h, (-212./729.)*h)
+	cuda.MdataTemp(cuda.M_rk4, m, Time)
 	// cuda.AppendData(m, Time, cuda.M_rk)
 	// log.Println("m stage5:", cuda.GetElem(m, 0, 0))
 	// log.Println("Time stage5:", Time)
@@ -103,6 +116,7 @@ func (rk *RK45DP) Step() {
 	// stage 6
 	Time = t0 + (1.)*Dt_si
 	madd6(m, m0, rk.k1, k2, k3, k4, k5, 1, (9017./3168.)*h, (-355./33.)*h, (46732./5247.)*h, (49./176.)*h, (-5103./18656.)*h)
+	cuda.MdataTemp(cuda.M_rk5, m, Time)
 	// cuda.AppendData(m, Time, cuda.M_rk)
 	// log.Println("m stage6:", cuda.GetElem(m, 0, 0))
 	// log.Println("Time stage6:", Time)
@@ -113,6 +127,7 @@ func (rk *RK45DP) Step() {
 	Time = t0 + (1.)*Dt_si
 	// no k2
 	madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
+	cuda.MdataTemp(cuda.M_rk6, m, Time)
 	// cuda.AppendData(m, Time, cuda.M_rk)
 	M.normalize()
 	k7 := k2     // re-use k2

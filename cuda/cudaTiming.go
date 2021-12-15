@@ -1,8 +1,6 @@
 package cuda
 
 import (
-	"log"
-
 	"github.com/mumax/3/data"
 )
 
@@ -13,8 +11,14 @@ var (
 	Brms_cuda     [3]float32
 	// Stop_time_cuda float32
 	Step_Times *data.Slice
-	// M_rk       [][]float32
-	M_rk *data.Slice
+	// M_rk45     [][]float32
+	M_rk0 *data.Slice
+	M_rk1 *data.Slice
+	M_rk2 *data.Slice
+	M_rk3 *data.Slice
+	M_rk4 *data.Slice
+	M_rk5 *data.Slice
+	M_rk6 *data.Slice
 )
 
 func SetStepTimes(torqueDst *data.Slice) {
@@ -43,9 +47,21 @@ func SetWc(wc float64) {
 	Wc_cuda = float32(wc)
 }
 
-func PrintRes(m *data.Slice) {
-	comp := m.Comp(0)
-	log.Println(comp)
+// func PrintRes(mm *data.Slice) {
+// 	// comp := mm.Comp(0)
+// 	// vv := GetCell(mm, 0, 0, 0, 0)
+//
+// 	// mm.Vectors()
+// 	// log.Println(mm.Size())
+// }
+
+func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
+
+	if rk_step == nil {
+		rk_step = NewSlice(4, size)
+	}
+
+	return rk_step
 }
 
 // func AppendData(m *data.Slice, time float64, destArray [][]float32) {

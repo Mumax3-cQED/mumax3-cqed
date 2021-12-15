@@ -38,6 +38,15 @@ func EnableGPU(free, freeHost func(unsafe.Pointer),
 	memCpyHtoD = cpyHtoD
 }
 
+// func NewExtendedSlice(nComp int, size [3]int) *Slice {
+// 	// length := prod(size)
+// 	ptrs := make([]unsafe.Pointer, nComp)
+// 	for i := range ptrs {
+// 		ptrs[i] = unsafe.Pointer(&(make([]float32, 0)[0]))
+// 	}
+// 	return SliceFromPtrs(size, CPUMemory, ptrs)
+// }
+
 // Make a CPU Slice with nComp components of size length.
 func NewSlice(nComp int, size [3]int) *Slice {
 	length := prod(size)
