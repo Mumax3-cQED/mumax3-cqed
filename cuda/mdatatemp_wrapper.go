@@ -115,7 +115,7 @@ const(
 )
 {
 	.reg .pred 	%p<2>;
-	.reg .f32 	%f<5>;
+	.reg .f32 	%f<11>;
 	.reg .b32 	%r<9>;
 	.reg .b64 	%rd<23>;
 
@@ -142,22 +142,28 @@ const(
 	cvta.to.global.u64 	%rd8, %rd5;
 	mul.wide.s32 	%rd9, %r1, 4;
 	add.s64 	%rd10, %rd8, %rd9;
-	ld.global.f32 	%f2, [%rd10];
 	cvta.to.global.u64 	%rd11, %rd1;
 	add.s64 	%rd12, %rd11, %rd9;
-	st.global.f32 	[%rd12], %f2;
+	ld.global.f32 	%f2, [%rd12];
+	ld.global.f32 	%f3, [%rd10];
+	add.f32 	%f4, %f3, %f2;
+	st.global.f32 	[%rd12], %f4;
 	cvta.to.global.u64 	%rd13, %rd6;
 	add.s64 	%rd14, %rd13, %rd9;
-	ld.global.f32 	%f3, [%rd14];
 	cvta.to.global.u64 	%rd15, %rd2;
 	add.s64 	%rd16, %rd15, %rd9;
-	st.global.f32 	[%rd16], %f3;
+	ld.global.f32 	%f5, [%rd16];
+	ld.global.f32 	%f6, [%rd14];
+	add.f32 	%f7, %f6, %f5;
+	st.global.f32 	[%rd16], %f7;
 	cvta.to.global.u64 	%rd17, %rd7;
 	add.s64 	%rd18, %rd17, %rd9;
-	ld.global.f32 	%f4, [%rd18];
 	cvta.to.global.u64 	%rd19, %rd3;
 	add.s64 	%rd20, %rd19, %rd9;
-	st.global.f32 	[%rd20], %f4;
+	ld.global.f32 	%f8, [%rd20];
+	ld.global.f32 	%f9, [%rd18];
+	add.f32 	%f10, %f9, %f8;
+	st.global.f32 	[%rd20], %f10;
 	cvta.to.global.u64 	%rd21, %rd4;
 	add.s64 	%rd22, %rd21, %rd9;
 	st.global.f32 	[%rd22], %f1;
@@ -188,7 +194,7 @@ BB0_2:
 )
 {
 	.reg .pred 	%p<2>;
-	.reg .f32 	%f<5>;
+	.reg .f32 	%f<11>;
 	.reg .b32 	%r<9>;
 	.reg .b64 	%rd<23>;
 
@@ -215,22 +221,28 @@ BB0_2:
 	cvta.to.global.u64 	%rd8, %rd5;
 	mul.wide.s32 	%rd9, %r1, 4;
 	add.s64 	%rd10, %rd8, %rd9;
-	ld.global.nc.f32 	%f2, [%rd10];
 	cvta.to.global.u64 	%rd11, %rd1;
 	add.s64 	%rd12, %rd11, %rd9;
-	st.global.f32 	[%rd12], %f2;
+	ld.global.f32 	%f2, [%rd12];
+	ld.global.nc.f32 	%f3, [%rd10];
+	add.f32 	%f4, %f3, %f2;
+	st.global.f32 	[%rd12], %f4;
 	cvta.to.global.u64 	%rd13, %rd6;
 	add.s64 	%rd14, %rd13, %rd9;
-	ld.global.nc.f32 	%f3, [%rd14];
 	cvta.to.global.u64 	%rd15, %rd2;
 	add.s64 	%rd16, %rd15, %rd9;
-	st.global.f32 	[%rd16], %f3;
+	ld.global.f32 	%f5, [%rd16];
+	ld.global.nc.f32 	%f6, [%rd14];
+	add.f32 	%f7, %f6, %f5;
+	st.global.f32 	[%rd16], %f7;
 	cvta.to.global.u64 	%rd17, %rd7;
 	add.s64 	%rd18, %rd17, %rd9;
-	ld.global.nc.f32 	%f4, [%rd18];
 	cvta.to.global.u64 	%rd19, %rd3;
 	add.s64 	%rd20, %rd19, %rd9;
-	st.global.f32 	[%rd20], %f4;
+	ld.global.f32 	%f8, [%rd20];
+	ld.global.nc.f32 	%f9, [%rd18];
+	add.f32 	%f10, %f9, %f8;
+	st.global.f32 	[%rd20], %f10;
 	cvta.to.global.u64 	%rd21, %rd4;
 	add.s64 	%rd22, %rd21, %rd9;
 	st.global.f32 	[%rd22], %f1;
@@ -261,7 +273,7 @@ BB0_2:
 )
 {
 	.reg .pred 	%p<2>;
-	.reg .f32 	%f<5>;
+	.reg .f32 	%f<11>;
 	.reg .b32 	%r<9>;
 	.reg .b64 	%rd<23>;
 
@@ -288,22 +300,28 @@ BB0_2:
 	cvta.to.global.u64 	%rd8, %rd5;
 	mul.wide.s32 	%rd9, %r1, 4;
 	add.s64 	%rd10, %rd8, %rd9;
-	ld.global.nc.f32 	%f2, [%rd10];
 	cvta.to.global.u64 	%rd11, %rd1;
 	add.s64 	%rd12, %rd11, %rd9;
-	st.global.f32 	[%rd12], %f2;
+	ld.global.f32 	%f2, [%rd12];
+	ld.global.nc.f32 	%f3, [%rd10];
+	add.f32 	%f4, %f3, %f2;
+	st.global.f32 	[%rd12], %f4;
 	cvta.to.global.u64 	%rd13, %rd6;
 	add.s64 	%rd14, %rd13, %rd9;
-	ld.global.nc.f32 	%f3, [%rd14];
 	cvta.to.global.u64 	%rd15, %rd2;
 	add.s64 	%rd16, %rd15, %rd9;
-	st.global.f32 	[%rd16], %f3;
+	ld.global.f32 	%f5, [%rd16];
+	ld.global.nc.f32 	%f6, [%rd14];
+	add.f32 	%f7, %f6, %f5;
+	st.global.f32 	[%rd16], %f7;
 	cvta.to.global.u64 	%rd17, %rd7;
 	add.s64 	%rd18, %rd17, %rd9;
-	ld.global.nc.f32 	%f4, [%rd18];
 	cvta.to.global.u64 	%rd19, %rd3;
 	add.s64 	%rd20, %rd19, %rd9;
-	st.global.f32 	[%rd20], %f4;
+	ld.global.f32 	%f8, [%rd20];
+	ld.global.nc.f32 	%f9, [%rd18];
+	add.f32 	%f10, %f9, %f8;
+	st.global.f32 	[%rd20], %f10;
 	cvta.to.global.u64 	%rd21, %rd4;
 	add.s64 	%rd22, %rd21, %rd9;
 	st.global.f32 	[%rd22], %f1;
@@ -334,7 +352,7 @@ BB0_2:
 )
 {
 	.reg .pred 	%p<2>;
-	.reg .f32 	%f<5>;
+	.reg .f32 	%f<11>;
 	.reg .b32 	%r<9>;
 	.reg .b64 	%rd<23>;
 
@@ -361,22 +379,28 @@ BB0_2:
 	cvta.to.global.u64 	%rd8, %rd5;
 	mul.wide.s32 	%rd9, %r1, 4;
 	add.s64 	%rd10, %rd8, %rd9;
-	ld.global.nc.f32 	%f2, [%rd10];
 	cvta.to.global.u64 	%rd11, %rd1;
 	add.s64 	%rd12, %rd11, %rd9;
-	st.global.f32 	[%rd12], %f2;
+	ld.global.f32 	%f2, [%rd12];
+	ld.global.nc.f32 	%f3, [%rd10];
+	add.f32 	%f4, %f3, %f2;
+	st.global.f32 	[%rd12], %f4;
 	cvta.to.global.u64 	%rd13, %rd6;
 	add.s64 	%rd14, %rd13, %rd9;
-	ld.global.nc.f32 	%f3, [%rd14];
 	cvta.to.global.u64 	%rd15, %rd2;
 	add.s64 	%rd16, %rd15, %rd9;
-	st.global.f32 	[%rd16], %f3;
+	ld.global.f32 	%f5, [%rd16];
+	ld.global.nc.f32 	%f6, [%rd14];
+	add.f32 	%f7, %f6, %f5;
+	st.global.f32 	[%rd16], %f7;
 	cvta.to.global.u64 	%rd17, %rd7;
 	add.s64 	%rd18, %rd17, %rd9;
-	ld.global.nc.f32 	%f4, [%rd18];
 	cvta.to.global.u64 	%rd19, %rd3;
 	add.s64 	%rd20, %rd19, %rd9;
-	st.global.f32 	[%rd20], %f4;
+	ld.global.f32 	%f8, [%rd20];
+	ld.global.nc.f32 	%f9, [%rd18];
+	add.f32 	%f10, %f9, %f8;
+	st.global.f32 	[%rd20], %f10;
 	cvta.to.global.u64 	%rd21, %rd4;
 	add.s64 	%rd22, %rd21, %rd9;
 	st.global.f32 	[%rd22], %f1;
@@ -407,7 +431,7 @@ BB0_2:
 )
 {
 	.reg .pred 	%p<2>;
-	.reg .f32 	%f<5>;
+	.reg .f32 	%f<11>;
 	.reg .b32 	%r<9>;
 	.reg .b64 	%rd<23>;
 
@@ -434,22 +458,28 @@ BB0_2:
 	cvta.to.global.u64 	%rd8, %rd5;
 	mul.wide.s32 	%rd9, %r1, 4;
 	add.s64 	%rd10, %rd8, %rd9;
-	ld.global.nc.f32 	%f2, [%rd10];
 	cvta.to.global.u64 	%rd11, %rd1;
 	add.s64 	%rd12, %rd11, %rd9;
-	st.global.f32 	[%rd12], %f2;
+	ld.global.f32 	%f2, [%rd12];
+	ld.global.nc.f32 	%f3, [%rd10];
+	add.f32 	%f4, %f3, %f2;
+	st.global.f32 	[%rd12], %f4;
 	cvta.to.global.u64 	%rd13, %rd6;
 	add.s64 	%rd14, %rd13, %rd9;
-	ld.global.nc.f32 	%f3, [%rd14];
 	cvta.to.global.u64 	%rd15, %rd2;
 	add.s64 	%rd16, %rd15, %rd9;
-	st.global.f32 	[%rd16], %f3;
+	ld.global.f32 	%f5, [%rd16];
+	ld.global.nc.f32 	%f6, [%rd14];
+	add.f32 	%f7, %f6, %f5;
+	st.global.f32 	[%rd16], %f7;
 	cvta.to.global.u64 	%rd17, %rd7;
 	add.s64 	%rd18, %rd17, %rd9;
-	ld.global.nc.f32 	%f4, [%rd18];
 	cvta.to.global.u64 	%rd19, %rd3;
 	add.s64 	%rd20, %rd19, %rd9;
-	st.global.f32 	[%rd20], %f4;
+	ld.global.f32 	%f8, [%rd20];
+	ld.global.nc.f32 	%f9, [%rd18];
+	add.f32 	%f10, %f9, %f8;
+	st.global.f32 	[%rd20], %f10;
 	cvta.to.global.u64 	%rd21, %rd4;
 	add.s64 	%rd22, %rd21, %rd9;
 	st.global.f32 	[%rd22], %f1;
@@ -480,7 +510,7 @@ BB0_2:
 )
 {
 	.reg .pred 	%p<2>;
-	.reg .f32 	%f<5>;
+	.reg .f32 	%f<11>;
 	.reg .b32 	%r<9>;
 	.reg .b64 	%rd<23>;
 
@@ -507,22 +537,28 @@ BB0_2:
 	cvta.to.global.u64 	%rd8, %rd5;
 	mul.wide.s32 	%rd9, %r1, 4;
 	add.s64 	%rd10, %rd8, %rd9;
-	ld.global.nc.f32 	%f2, [%rd10];
 	cvta.to.global.u64 	%rd11, %rd1;
 	add.s64 	%rd12, %rd11, %rd9;
-	st.global.f32 	[%rd12], %f2;
+	ld.global.f32 	%f2, [%rd12];
+	ld.global.nc.f32 	%f3, [%rd10];
+	add.f32 	%f4, %f3, %f2;
+	st.global.f32 	[%rd12], %f4;
 	cvta.to.global.u64 	%rd13, %rd6;
 	add.s64 	%rd14, %rd13, %rd9;
-	ld.global.nc.f32 	%f3, [%rd14];
 	cvta.to.global.u64 	%rd15, %rd2;
 	add.s64 	%rd16, %rd15, %rd9;
-	st.global.f32 	[%rd16], %f3;
+	ld.global.f32 	%f5, [%rd16];
+	ld.global.nc.f32 	%f6, [%rd14];
+	add.f32 	%f7, %f6, %f5;
+	st.global.f32 	[%rd16], %f7;
 	cvta.to.global.u64 	%rd17, %rd7;
 	add.s64 	%rd18, %rd17, %rd9;
-	ld.global.nc.f32 	%f4, [%rd18];
 	cvta.to.global.u64 	%rd19, %rd3;
 	add.s64 	%rd20, %rd19, %rd9;
-	st.global.f32 	[%rd20], %f4;
+	ld.global.f32 	%f8, [%rd20];
+	ld.global.nc.f32 	%f9, [%rd18];
+	add.f32 	%f10, %f9, %f8;
+	st.global.f32 	[%rd20], %f10;
 	cvta.to.global.u64 	%rd21, %rd4;
 	add.s64 	%rd22, %rd21, %rd9;
 	st.global.f32 	[%rd22], %f1;
@@ -553,7 +589,7 @@ BB0_2:
 )
 {
 	.reg .pred 	%p<2>;
-	.reg .f32 	%f<5>;
+	.reg .f32 	%f<11>;
 	.reg .b32 	%r<9>;
 	.reg .b64 	%rd<23>;
 
@@ -580,22 +616,28 @@ BB0_2:
 	cvta.to.global.u64 	%rd8, %rd5;
 	mul.wide.s32 	%rd9, %r1, 4;
 	add.s64 	%rd10, %rd8, %rd9;
-	ld.global.nc.f32 	%f2, [%rd10];
 	cvta.to.global.u64 	%rd11, %rd1;
 	add.s64 	%rd12, %rd11, %rd9;
-	st.global.f32 	[%rd12], %f2;
+	ld.global.f32 	%f2, [%rd12];
+	ld.global.nc.f32 	%f3, [%rd10];
+	add.f32 	%f4, %f3, %f2;
+	st.global.f32 	[%rd12], %f4;
 	cvta.to.global.u64 	%rd13, %rd6;
 	add.s64 	%rd14, %rd13, %rd9;
-	ld.global.nc.f32 	%f3, [%rd14];
 	cvta.to.global.u64 	%rd15, %rd2;
 	add.s64 	%rd16, %rd15, %rd9;
-	st.global.f32 	[%rd16], %f3;
+	ld.global.f32 	%f5, [%rd16];
+	ld.global.nc.f32 	%f6, [%rd14];
+	add.f32 	%f7, %f6, %f5;
+	st.global.f32 	[%rd16], %f7;
 	cvta.to.global.u64 	%rd17, %rd7;
 	add.s64 	%rd18, %rd17, %rd9;
-	ld.global.nc.f32 	%f4, [%rd18];
 	cvta.to.global.u64 	%rd19, %rd3;
 	add.s64 	%rd20, %rd19, %rd9;
-	st.global.f32 	[%rd20], %f4;
+	ld.global.f32 	%f8, [%rd20];
+	ld.global.nc.f32 	%f9, [%rd18];
+	add.f32 	%f10, %f9, %f8;
+	st.global.f32 	[%rd20], %f10;
 	cvta.to.global.u64 	%rd21, %rd4;
 	add.s64 	%rd22, %rd21, %rd9;
 	st.global.f32 	[%rd22], %f1;
@@ -626,7 +668,7 @@ BB0_2:
 )
 {
 	.reg .pred 	%p<2>;
-	.reg .f32 	%f<5>;
+	.reg .f32 	%f<11>;
 	.reg .b32 	%r<9>;
 	.reg .b64 	%rd<23>;
 
@@ -653,22 +695,28 @@ BB0_2:
 	cvta.to.global.u64 	%rd8, %rd5;
 	mul.wide.s32 	%rd9, %r1, 4;
 	add.s64 	%rd10, %rd8, %rd9;
-	ld.global.nc.f32 	%f2, [%rd10];
 	cvta.to.global.u64 	%rd11, %rd1;
 	add.s64 	%rd12, %rd11, %rd9;
-	st.global.f32 	[%rd12], %f2;
+	ld.global.f32 	%f2, [%rd12];
+	ld.global.nc.f32 	%f3, [%rd10];
+	add.f32 	%f4, %f3, %f2;
+	st.global.f32 	[%rd12], %f4;
 	cvta.to.global.u64 	%rd13, %rd6;
 	add.s64 	%rd14, %rd13, %rd9;
-	ld.global.nc.f32 	%f3, [%rd14];
 	cvta.to.global.u64 	%rd15, %rd2;
 	add.s64 	%rd16, %rd15, %rd9;
-	st.global.f32 	[%rd16], %f3;
+	ld.global.f32 	%f5, [%rd16];
+	ld.global.nc.f32 	%f6, [%rd14];
+	add.f32 	%f7, %f6, %f5;
+	st.global.f32 	[%rd16], %f7;
 	cvta.to.global.u64 	%rd17, %rd7;
 	add.s64 	%rd18, %rd17, %rd9;
-	ld.global.nc.f32 	%f4, [%rd18];
 	cvta.to.global.u64 	%rd19, %rd3;
 	add.s64 	%rd20, %rd19, %rd9;
-	st.global.f32 	[%rd20], %f4;
+	ld.global.f32 	%f8, [%rd20];
+	ld.global.nc.f32 	%f9, [%rd18];
+	add.f32 	%f10, %f9, %f8;
+	st.global.f32 	[%rd20], %f10;
 	cvta.to.global.u64 	%rd21, %rd4;
 	add.s64 	%rd22, %rd21, %rd9;
 	st.global.f32 	[%rd22], %f1;
@@ -699,7 +747,7 @@ BB0_2:
 )
 {
 	.reg .pred 	%p<2>;
-	.reg .f32 	%f<5>;
+	.reg .f32 	%f<11>;
 	.reg .b32 	%r<9>;
 	.reg .b64 	%rd<23>;
 
@@ -726,22 +774,28 @@ BB0_2:
 	cvta.to.global.u64 	%rd8, %rd5;
 	mul.wide.s32 	%rd9, %r1, 4;
 	add.s64 	%rd10, %rd8, %rd9;
-	ld.global.nc.f32 	%f2, [%rd10];
 	cvta.to.global.u64 	%rd11, %rd1;
 	add.s64 	%rd12, %rd11, %rd9;
-	st.global.f32 	[%rd12], %f2;
+	ld.global.f32 	%f2, [%rd12];
+	ld.global.nc.f32 	%f3, [%rd10];
+	add.f32 	%f4, %f3, %f2;
+	st.global.f32 	[%rd12], %f4;
 	cvta.to.global.u64 	%rd13, %rd6;
 	add.s64 	%rd14, %rd13, %rd9;
-	ld.global.nc.f32 	%f3, [%rd14];
 	cvta.to.global.u64 	%rd15, %rd2;
 	add.s64 	%rd16, %rd15, %rd9;
-	st.global.f32 	[%rd16], %f3;
+	ld.global.f32 	%f5, [%rd16];
+	ld.global.nc.f32 	%f6, [%rd14];
+	add.f32 	%f7, %f6, %f5;
+	st.global.f32 	[%rd16], %f7;
 	cvta.to.global.u64 	%rd17, %rd7;
 	add.s64 	%rd18, %rd17, %rd9;
-	ld.global.nc.f32 	%f4, [%rd18];
 	cvta.to.global.u64 	%rd19, %rd3;
 	add.s64 	%rd20, %rd19, %rd9;
-	st.global.f32 	[%rd20], %f4;
+	ld.global.f32 	%f8, [%rd20];
+	ld.global.nc.f32 	%f9, [%rd18];
+	add.f32 	%f10, %f9, %f8;
+	st.global.f32 	[%rd20], %f10;
 	cvta.to.global.u64 	%rd21, %rd4;
 	add.s64 	%rd22, %rd21, %rd9;
 	st.global.f32 	[%rd22], %f1;
@@ -772,7 +826,7 @@ BB0_2:
 )
 {
 	.reg .pred 	%p<2>;
-	.reg .f32 	%f<5>;
+	.reg .f32 	%f<11>;
 	.reg .b32 	%r<9>;
 	.reg .b64 	%rd<23>;
 
@@ -799,22 +853,28 @@ BB0_2:
 	cvta.to.global.u64 	%rd8, %rd5;
 	mul.wide.s32 	%rd9, %r1, 4;
 	add.s64 	%rd10, %rd8, %rd9;
-	ld.global.nc.f32 	%f2, [%rd10];
 	cvta.to.global.u64 	%rd11, %rd1;
 	add.s64 	%rd12, %rd11, %rd9;
-	st.global.f32 	[%rd12], %f2;
+	ld.global.f32 	%f2, [%rd12];
+	ld.global.nc.f32 	%f3, [%rd10];
+	add.f32 	%f4, %f3, %f2;
+	st.global.f32 	[%rd12], %f4;
 	cvta.to.global.u64 	%rd13, %rd6;
 	add.s64 	%rd14, %rd13, %rd9;
-	ld.global.nc.f32 	%f3, [%rd14];
 	cvta.to.global.u64 	%rd15, %rd2;
 	add.s64 	%rd16, %rd15, %rd9;
-	st.global.f32 	[%rd16], %f3;
+	ld.global.f32 	%f5, [%rd16];
+	ld.global.nc.f32 	%f6, [%rd14];
+	add.f32 	%f7, %f6, %f5;
+	st.global.f32 	[%rd16], %f7;
 	cvta.to.global.u64 	%rd17, %rd7;
 	add.s64 	%rd18, %rd17, %rd9;
-	ld.global.nc.f32 	%f4, [%rd18];
 	cvta.to.global.u64 	%rd19, %rd3;
 	add.s64 	%rd20, %rd19, %rd9;
-	st.global.f32 	[%rd20], %f4;
+	ld.global.f32 	%f8, [%rd20];
+	ld.global.nc.f32 	%f9, [%rd18];
+	add.f32 	%f10, %f9, %f8;
+	st.global.f32 	[%rd20], %f10;
 	cvta.to.global.u64 	%rd21, %rd4;
 	add.s64 	%rd22, %rd21, %rd9;
 	st.global.f32 	[%rd22], %f1;

@@ -164,10 +164,8 @@ func adaptDt(corr float64) {
 	cuda.SetBrms(util.Brms_vector)
 	cuda.SetWc(util.Wc)
 
-	// log.Println("Time_cuda: ", cuda.Time_cuda)
 	// log.Println("dt_si: ", Dt_si)
 
-	cuda.SetTimeCuda(Time)
 	cuda.SetDtCuda(Dt_si)
 
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
@@ -177,7 +175,8 @@ func adaptDt(corr float64) {
 func Run(seconds float64) {
 	stop := Time + seconds
 	// cuda.SetStopTime(stop)
-
+	cuda.SetTimeCuda(stop)
+	// log.Println("Time_cuda: ", cuda.Time_cuda)
 	alarm = stop // don't have dt adapt to go over alarm
 	RunWhile(func() bool { return Time < stop })
 }
