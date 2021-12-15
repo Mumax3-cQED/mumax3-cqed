@@ -38,6 +38,7 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
 
         float3 rk_m = {rk_mx[i], rk_my[i], rk_mz[i]};
 
+        // Intergal from 0 to t
         float3 si_sum_total = sin(wc*(time - rk_tau[i])) * rk_m * fixed_dt;
 
         // Summatory for all cells
