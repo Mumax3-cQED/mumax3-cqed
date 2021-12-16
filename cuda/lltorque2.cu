@@ -43,7 +43,11 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
 
         // Summatory for all cells
         // https://developer.download.nvidia.com/cg/dot.html
-        float sum_final = dot(si_sum_total, brms);
+        float sum_final = 0.0;
+
+        for (int cell = 0; cell < N; cell++) {
+          sum_final += dot(si_sum_total, brms);
+        }
 
         float constant_term = 1; //(float)(pow(GS,2)*pow(MUB,2))/(pow(HBAR,3)); // Constant value (gs^2*mub^2)/hbar^3
 
