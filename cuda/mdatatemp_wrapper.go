@@ -25,7 +25,7 @@ type mdatatemp_args_t struct{
 	 arg_my_temp unsafe.Pointer
 	 arg_mz_temp unsafe.Pointer
 	 arg_wc float32
-	 arg_full_tau float32
+	 arg_full_tau unsafe.Pointer
 	 arg_dt float32
 	 arg_N int
 	 argptr [11]unsafe.Pointer
@@ -51,7 +51,7 @@ func init(){
 	 }
 
 // Wrapper for mdatatemp CUDA kernel, asynchronous.
-func k_mdatatemp_async ( dst_x unsafe.Pointer, dst_y unsafe.Pointer, dst_z unsafe.Pointer, sin_full_time unsafe.Pointer, mx_temp unsafe.Pointer, my_temp unsafe.Pointer, mz_temp unsafe.Pointer, wc float32, full_tau float32, dt float32, N int,  cfg *config) {
+func k_mdatatemp_async ( dst_x unsafe.Pointer, dst_y unsafe.Pointer, dst_z unsafe.Pointer, sin_full_time unsafe.Pointer, mx_temp unsafe.Pointer, my_temp unsafe.Pointer, mz_temp unsafe.Pointer, wc float32, full_tau unsafe.Pointer, dt float32, N int,  cfg *config) {
 	if Synchronous{ // debug
 		Sync()
 		timer.Start("mdatatemp")

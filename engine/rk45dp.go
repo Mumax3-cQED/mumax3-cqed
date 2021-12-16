@@ -8,8 +8,6 @@ import (
 	"github.com/mumax/3/util"
 )
 
-var time_full_start float64 = 0.0
-
 type RK45DP struct {
 	k1 *data.Slice // torque at end of step is kept for beginning of next step
 
@@ -111,9 +109,7 @@ func (rk *RK45DP) Step() {
 	// no k2
 	madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
 
-	time_full_start += Time
-
-	cuda.MdataTemp(cuda.M_rk, m, cuda.Wc_cuda, time_full_start, Time)
+	cuda.MdataTemp(cuda.M_rk, m, cuda.Wc_cuda, cuda.Time_full_start, Time)
 	M.normalize()
 	k7 := k2     // re-use k2
 	torqueFn(k7) // next torque if OK

@@ -7,9 +7,10 @@ import (
 var (
 	Time_cuda float32
 	// Fixed_dt_cuda float32
-	Wc_cuda   float32
-	Brms_cuda [3]float32
-	M_rk      *data.Slice
+	Wc_cuda         float32
+	Brms_cuda       []float32
+	M_rk            *data.Slice
+	Time_full_start *data.Slice
 )
 
 // func SetStepTimes(torqueDst *data.Slice) {
@@ -31,7 +32,10 @@ func SetTimeCuda(time float64) {
 // }
 
 func SetBrms(brms [3]float64) {
-	Brms_cuda = [3]float32{float32(brms[0]), float32(brms[1]), float32(brms[2])}
+	Brms_cuda = make([]float32, 3)
+	Brms_cuda[0] = float32(brms[0])
+	Brms_cuda[1] = float32(brms[1])
+	Brms_cuda[2] = float32(brms[2])
 }
 
 func SetWc(wc float64) {

@@ -161,8 +161,21 @@ func adaptDt(corr float64) {
 		Dt_si = alarm - Time
 	}
 
-	cuda.SetBrms(util.Brms_vector)
-	cuda.SetWc(util.Wc)
+	if len(cuda.Brms_cuda) == 0 {
+
+		cuda.SetBrms(util.Brms_vector)
+		// log.Println("llena vector: ", cuda.Brms_cuda[0], ", ", cuda.Brms_cuda[1], ", ", cuda.Brms_cuda[2])
+	}
+
+	if cuda.Wc_cuda == 0 {
+
+		cuda.SetWc(util.Wc)
+		// log.Println("llena wc: ", cuda.Wc_cuda)
+	}
+
+	if cuda.Time_full_start == nil {
+		cuda.Time_full_start = cuda.NewSlice(1, M.Buffer().Size())
+	}
 
 	// log.Println("dt_si: ", Dt_si)
 
