@@ -50,6 +50,7 @@ func Madd2(dst, src1, src2 *data.Slice, factor1, factor2 float32) {
 func MdataTemp(dst, m_temp *data.Slice, wc float32, full_tau *data.Slice, dt float64) {
 
 	N := dst.Len()
+	util.Assert(m_temp.Len() == N && full_tau.Len() == N)
 	// nComp := dst.NComp()
 	// util.Assert(m_temp.NComp() == nComp)
 	cfg := make1DConf(N)

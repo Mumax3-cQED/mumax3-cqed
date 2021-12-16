@@ -39,7 +39,7 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         float3 rk_m = {rk_mx[i], rk_my[i], rk_mz[i]};
 
         // Intergal from 0 to t
-        float3 si_sum_total = sin_tau[0] * rk_m * time;
+        float3 si_sum_total = sin_tau[i] * rk_m * time;
 
         // Summatory for all cells
         // https://developer.download.nvidia.com/cg/dot.html
