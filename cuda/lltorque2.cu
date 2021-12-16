@@ -16,8 +16,8 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
           float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
           float* __restrict__  hx, float* __restrict__  hy, float* __restrict__  hz,
           float* __restrict__  alpha_, float alpha_mul,
-          float time, float fixed_dt, float wc, float brms_x, float brms_y, float brms_z,
-          float* __restrict__ rk_mx, float* __restrict__ rk_my, float* __restrict__ rk_mz, float* __restrict__ rk_tau, int N) {
+          float time, float brms_x, float brms_y, float brms_z,
+          float* __restrict__ rk_mx, float* __restrict__ rk_my, float* __restrict__ rk_mz, float* __restrict__ sin_tau, int N) {
 
     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
 
@@ -39,7 +39,7 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
         float3 rk_m = {rk_mx[i], rk_my[i], rk_mz[i]};
 
         // Intergal from 0 to t
-        float3 si_sum_total = sin(wc*(time - rk_tau[i])) * rk_m * fixed_dt;
+        float3 si_sum_total = sin_tau[i] * rk_m * time;
 
         // Summatory for all cells
         // https://developer.download.nvidia.com/cg/dot.html
