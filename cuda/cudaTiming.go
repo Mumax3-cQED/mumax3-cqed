@@ -38,14 +38,6 @@ func SetWc(wc float64) {
 	Wc_cuda = float32(wc)
 }
 
-// func PrintRes(mm *data.Slice) {
-// 	// comp := mm.Comp(0)
-// 	// vv := GetCell(mm, 0, 0, 0, 0)
-//
-// 	// mm.Vectors()
-// 	// log.Println(mm.Size())
-// }
-
 func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
 
 	if rk_step == nil {

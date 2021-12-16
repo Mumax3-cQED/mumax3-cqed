@@ -132,8 +132,7 @@ func (rk *RK45DP) Step() {
 
 	// determine error
 	err := cuda.MaxVecNorm(Err) * float64(h)
-	// count += 1
-	// log.Println("pasa: ", count)
+
 	// adjust next time step
 	if err < MaxErr || Dt_si <= MinDt || FixDt != 0 { // mindt check to avoid infinite loop
 		// step OK
