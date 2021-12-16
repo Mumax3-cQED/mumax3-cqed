@@ -166,7 +166,7 @@ func adaptDt(corr float64) {
 
 	// log.Println("dt_si: ", Dt_si)
 
-	cuda.SetDtCuda(Dt_si)
+	// cuda.SetDtCuda(Dt_si)
 
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }
