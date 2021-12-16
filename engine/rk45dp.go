@@ -18,9 +18,7 @@ func (rk *RK45DP) Step() {
 	m := M.Buffer()
 	size := m.Size()
 
-	// if cuda.M_rk45 == nil {
-	// 	cuda.M_rk45 = make([][]float32, 0)
-	// }
+	// log.Println("Z elem: ", cuda.GetZElem(m))
 
 	cuda.M_rk = cuda.InitRKStepArray(cuda.M_rk, size)
 

@@ -9,10 +9,7 @@ var (
 	Fixed_dt_cuda float32
 	Wc_cuda       float32
 	Brms_cuda     [3]float32
-	// Stop_time_cuda float32
-	// Step_Times *data.Slice
-	// M_rk45     [][]float32
-	M_rk *data.Slice
+	M_rk          *data.Slice
 )
 
 // func SetStepTimes(torqueDst *data.Slice) {
@@ -57,6 +54,12 @@ func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
 
 	return rk_step
 }
+
+// func GetZElem(slice *data.Slice) float32 {
+// 	mz_temp := GetCell(slice, 2, 0, 0, 0)
+//
+// 	return mz_temp
+// }
 
 // func AppendData(m *data.Slice, time float64, destArray [][]float32) {
 //
