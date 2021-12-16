@@ -176,9 +176,6 @@ func adaptDt(corr float64) {
 	if cuda.Time_full_start == nil {
 		cuda.Time_full_start = cuda.NewSlice(1, M.Buffer().Size())
 	}
-
-	// log.Println("dt_si: ", Dt_si)
-
 	// cuda.SetDtCuda(Dt_si)
 
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
