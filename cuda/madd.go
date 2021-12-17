@@ -51,8 +51,8 @@ func MdataTemp(dst, m_temp *data.Slice, wc float32, dt float64) {
 
 	N := dst.Len()
 	util.Assert(m_temp.Len() == N)
-	// nComp := dst.NComp()
-	// util.Assert(m_temp.NComp() == nComp)
+	nComp := dst.NComp()
+	util.Assert(nComp >= m_temp.NComp())
 	cfg := make1DConf(N)
 
 	k_mdatatemp_async(dst.DevPtr(0), dst.DevPtr(1), dst.DevPtr(2), dst.DevPtr(3), dst.DevPtr(4),
