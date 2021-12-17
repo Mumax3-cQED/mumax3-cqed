@@ -7,10 +7,10 @@ import (
 var (
 	Time_cuda float32
 	// Fixed_dt_cuda float32
-	Wc_cuda         float32
-	Brms_cuda       []float32
-	M_rk            *data.Slice
-	Time_full_start *data.Slice
+	Wc_cuda   float32
+	Brms_cuda []float32
+	M_rk      *data.Slice
+	// Time_added    float64
 )
 
 // func SetStepTimes(torqueDst *data.Slice) {
@@ -45,7 +45,7 @@ func SetWc(wc float64) {
 func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
 
 	if rk_step == nil {
-		rk_step = NewSlice(4, size)
+		rk_step = NewSlice(5, size)
 	}
 
 	return rk_step

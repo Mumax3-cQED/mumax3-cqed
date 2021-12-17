@@ -102,7 +102,7 @@ func torqueFn(dst *data.Slice) {
 	// 	cuda.SetStepTimes(cuda.NewSlice(1, M.Buffer().Size()))
 	// 	// log.Println("buffer2: ", M.Buffer().Size())
 	// }
-
+	// log.Println("tiempo: ", Time)
 	SetTorque(dst)
 	NEvals++
 }
@@ -173,11 +173,10 @@ func adaptDt(corr float64) {
 		// log.Println("llena wc: ", cuda.Wc_cuda)
 	}
 
-	if cuda.Time_full_start == nil {
-		cuda.Time_full_start = cuda.NewSlice(1, M.Buffer().Size())
-	}
-	// cuda.SetDtCuda(Dt_si)
-
+	// log.Println("dt_si aqui: ", Dt_si)
+	// log.Println("time aqui: ", Time)
+	// cuda.SetDtCuda(Time)
+	// log.Println("dt_si aqui: ", cuda.Fixed_dt_cuda)
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }
 
@@ -186,6 +185,7 @@ func Run(seconds float64) {
 	stop := Time + seconds
 
 	cuda.SetTimeCuda(stop)
+	// log.Println("llena stop: ", cuda.Time_cuda)
 
 	alarm = stop // don't have dt adapt to go over alarm
 	RunWhile(func() bool { return Time < stop })
