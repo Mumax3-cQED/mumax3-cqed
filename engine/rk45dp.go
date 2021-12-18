@@ -141,7 +141,7 @@ func (rk *RK45DP) Step() {
 
 		if TimeEvolution {
 			// log.Println("time_temp rk45: ", time_temp)
-			cuda.MdataTemp(cuda.M_rk, slice_temp, cuda.Wc_cuda, time_temp)
+			cuda.MdataTemp(cuda.M_rk, slice_temp, float32(cuda.Wc_cuda), time_temp)
 		}
 
 		setLastErr(err)

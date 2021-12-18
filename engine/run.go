@@ -173,15 +173,15 @@ func adaptDt(corr float64) {
 	if TimeEvolution == true {
 
 		if len(cuda.Brms_cuda) == 0 {
-
+			log.Println("Time evolution factor in LLG equation: ", TimeEvolution)
 			cuda.SetBrms(Brms_vector)
-			log.Println("llena vector: ", cuda.Brms_cuda[0], ", ", cuda.Brms_cuda[1], ", ", cuda.Brms_cuda[2])
+			log.Println("Brms vector: ", cuda.Brms_cuda)
 		}
 
 		if cuda.Wc_cuda == 0 {
 
 			cuda.SetWc(Wc)
-			log.Println("llena wc: ", cuda.Wc_cuda)
+			log.Println("Wc: ", cuda.Wc_cuda)
 		}
 	}
 

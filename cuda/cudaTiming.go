@@ -5,10 +5,9 @@ import (
 )
 
 var (
-	Time_cuda float32
-	// Fixed_dt_cuda float32
-	Wc_cuda   float32
-	Brms_cuda []float32
+	Time_cuda float64
+	Wc_cuda   float64
+	Brms_cuda []float64
 	M_rk      *data.Slice
 	TimeEvo   bool
 )
@@ -24,7 +23,7 @@ var (
 
 func SetTimeCuda(time float64) {
 
-	Time_cuda = float32(time)
+	Time_cuda = time
 }
 
 func SetTimeEvoStatus(enableTimeEvo bool) {
@@ -32,14 +31,14 @@ func SetTimeEvoStatus(enableTimeEvo bool) {
 }
 
 func SetBrms(brms [3]float64) {
-	Brms_cuda = make([]float32, 3)
-	Brms_cuda[0] = float32(brms[0])
-	Brms_cuda[1] = float32(brms[1])
-	Brms_cuda[2] = float32(brms[2])
+	Brms_cuda = make([]float64, 3)
+	Brms_cuda[0] = brms[0]
+	Brms_cuda[1] = brms[1]
+	Brms_cuda[2] = brms[2]
 }
 
 func SetWc(wc float64) {
-	Wc_cuda = float32(wc)
+	Wc_cuda = wc
 }
 
 func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
