@@ -7,8 +7,9 @@ import (
 	"strings"
 )
 
-var Brms_vector [3]float64
-var Wc float64 = 0.0
+// var Brms_vector [3]float64
+// var Wc float64 = 0.0
+// var TimeEvolution = false
 
 // Remove extension from file name.
 func NoExt(file string) string {

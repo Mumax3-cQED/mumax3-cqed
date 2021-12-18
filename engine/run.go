@@ -2,6 +2,7 @@ package engine
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"os"
 
@@ -28,10 +29,16 @@ var (
 	stepper                 Stepper                      // generic step, can be EulerStep, HeunStep, etc
 	solvertype              int
 
-	len_single [3]int = [3]int{1, 1, 1}
+	Brms_vector   [3]float64
+	Wc            float64 = 0.0
+	TimeEvolution         = false
 )
 
 func init() {
+
+	DeclVar("B_rms", &Brms_vector, "Brms Extra parameter")
+	DeclVar("Wc", &Wc, "Wc Extra parameter")
+	DeclVar("TimeEvolution", &TimeEvolution, "Enable or disable time evolution in LLG formula. Default value is false")
 
 	DeclFunc("Run", Run, "Run the simulation for a time in seconds")
 	DeclFunc("Steps", Steps, "Run the simulation for a number of time steps")
@@ -163,14 +170,20 @@ func adaptDt(corr float64) {
 
 	if len(cuda.Brms_cuda) == 0 {
 
-		cuda.SetBrms(util.Brms_vector)
-		// log.Println("llena vector: ", cuda.Brms_cuda[0], ", ", cuda.Brms_cuda[1], ", ", cuda.Brms_cuda[2])
+		cuda.SetBrms(Brms_vector)
+		log.Println("llena vector: ", cuda.Brms_cuda[0], ", ", cuda.Brms_cuda[1], ", ", cuda.Brms_cuda[2])
 	}
 
 	if cuda.Wc_cuda == 0 {
 
-		cuda.SetWc(util.Wc)
-		// log.Println("llena wc: ", cuda.Wc_cuda)
+		cuda.SetWc(Wc)
+		log.Println("llena wc: ", cuda.Wc_cuda)
+	}
+
+	if TimeEvolution == true {
+		log.Println("Time evolution true")
+	} else {
+		log.Println("Time evolution false")
 	}
 
 	// log.Println("dt_si aqui: ", Dt_si)
