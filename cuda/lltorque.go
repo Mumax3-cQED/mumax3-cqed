@@ -20,12 +20,21 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 	// 	alpha.DevPtr(0), alpha.Mul(0), N, util.Bextra_vector, cfg)
 
 	// log.Println("entra CUDA")
+	if TimeEvo == true {
+		// log.Println("entra time evo")
+		k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
+			m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
+			B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
+			alpha.DevPtr(0), alpha.Mul(0), float32(Time_cuda), Brms_cuda[X], Brms_cuda[Y], Brms_cuda[Z],
+			M_rk.DevPtr(0), M_rk.DevPtr(1), M_rk.DevPtr(2), M_rk.DevPtr(3), N, cfg)
 
-	k_lltorque2_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
-		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
-		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
-		alpha.DevPtr(0), alpha.Mul(0), float32(Time_cuda), Brms_cuda[X], Brms_cuda[Y], Brms_cuda[Z],
-		M_rk.DevPtr(0), M_rk.DevPtr(1), M_rk.DevPtr(2), M_rk.DevPtr(3), N, cfg)
+	} else {
+		// log.Println("entra time no evo")
+		k_lltorque2_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
+			m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
+			B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
+			alpha.DevPtr(0), alpha.Mul(0), N, cfg)
+	}
 }
 
 // Landau-Lifshitz torque with precession disabled.

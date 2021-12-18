@@ -168,22 +168,21 @@ func adaptDt(corr float64) {
 		Dt_si = alarm - Time
 	}
 
-	if len(cuda.Brms_cuda) == 0 {
-
-		cuda.SetBrms(Brms_vector)
-		log.Println("llena vector: ", cuda.Brms_cuda[0], ", ", cuda.Brms_cuda[1], ", ", cuda.Brms_cuda[2])
-	}
-
-	if cuda.Wc_cuda == 0 {
-
-		cuda.SetWc(Wc)
-		log.Println("llena wc: ", cuda.Wc_cuda)
-	}
+	cuda.SetTimeEvoStatus(TimeEvolution)
 
 	if TimeEvolution == true {
-		log.Println("Time evolution true")
-	} else {
-		log.Println("Time evolution false")
+
+		if len(cuda.Brms_cuda) == 0 {
+
+			cuda.SetBrms(Brms_vector)
+			log.Println("llena vector: ", cuda.Brms_cuda[0], ", ", cuda.Brms_cuda[1], ", ", cuda.Brms_cuda[2])
+		}
+
+		if cuda.Wc_cuda == 0 {
+
+			cuda.SetWc(Wc)
+			log.Println("llena wc: ", cuda.Wc_cuda)
+		}
 	}
 
 	// log.Println("dt_si aqui: ", Dt_si)
@@ -197,8 +196,10 @@ func adaptDt(corr float64) {
 func Run(seconds float64) {
 	stop := Time + seconds
 
-	cuda.SetTimeCuda(stop)
-	// log.Println("llena stop: ", cuda.Time_cuda)
+	if TimeEvolution == true {
+		cuda.SetTimeCuda(stop)
+		// log.Println("llena stop: ", cuda.Time_cuda)
+	}
 
 	alarm = stop // don't have dt adapt to go over alarm
 	RunWhile(func() bool { return Time < stop })

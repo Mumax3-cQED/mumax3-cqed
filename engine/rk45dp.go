@@ -113,11 +113,14 @@ func (rk *RK45DP) Step() {
 	Time = t0 + (1.)*Dt_si
 	// no k2
 	madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
-	// cuda.Time_added += Dt_si                                                                                           //Dt_si
-	// log.Println("time rk45: ", Time)
-	// log.Println("time: ", Dt_si)
-	slice_temp = m
-	time_temp = Time
+
+	if TimeEvolution {
+		// cuda.Time_added += Dt_si                                                                                           //Dt_si
+		// log.Println("time rk45: ", Time)
+		// log.Println("time: ", Dt_si)
+		slice_temp = m
+		time_temp = Time
+	}
 
 	M.normalize()
 	k7 := k2     // re-use k2
@@ -135,8 +138,11 @@ func (rk *RK45DP) Step() {
 	// adjust next time step
 	if err < MaxErr || Dt_si <= MinDt || FixDt != 0 { // mindt check to avoid infinite loop
 		// step OK
-		// log.Println("time_temp rk45: ", time_temp)
-		cuda.MdataTemp(cuda.M_rk, slice_temp, cuda.Wc_cuda, time_temp)
+
+		if TimeEvolution {
+			// log.Println("time_temp rk45: ", time_temp)
+			cuda.MdataTemp(cuda.M_rk, slice_temp, cuda.Wc_cuda, time_temp)
+		}
 
 		setLastErr(err)
 		setMaxTorque(k7)

@@ -10,7 +10,7 @@ var (
 	Wc_cuda   float32
 	Brms_cuda []float32
 	M_rk      *data.Slice
-	// Time_added    float64
+	TimeEvo   bool
 )
 
 // func SetStepTimes(torqueDst *data.Slice) {
@@ -27,9 +27,9 @@ func SetTimeCuda(time float64) {
 	Time_cuda = float32(time)
 }
 
-// func SetStopTime(stop_time float64) {
-// 	Stop_time_cuda = float32(stop_time)
-// }
+func SetTimeEvoStatus(enableTimeEvo bool) {
+	TimeEvo = enableTimeEvo
+}
 
 func SetBrms(brms [3]float64) {
 	Brms_cuda = make([]float32, 3)
