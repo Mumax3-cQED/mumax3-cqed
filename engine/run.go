@@ -57,6 +57,7 @@ func init() {
 	_ = NewScalarValue("LastErr", "", "Error of last step", func() float64 { return LastErr })
 	_ = NewScalarValue("PeakErr", "", "Overall maxium error per step", func() float64 { return PeakErr })
 	_ = NewScalarValue("NEval", "", "Total number of torque evaluations", func() float64 { return float64(NEvals) })
+
 }
 
 // Time stepper like Euler, Heun, RK23
@@ -104,7 +105,7 @@ func SetSolver(typ int) {
 
 // write torque to dst and increment NEvals
 func torqueFn(dst *data.Slice) {
-
+	// debug.PrintStack()
 	// if cuda.Step_Times == nil {
 	// 	cuda.SetStepTimes(cuda.NewSlice(1, M.Buffer().Size()))
 	// 	// log.Println("buffer2: ", M.Buffer().Size())
@@ -168,12 +169,23 @@ func adaptDt(corr float64) {
 		Dt_si = alarm - Time
 	}
 
+	// log.Println("dt_si aqui: ", Dt_si)
+	// log.Println("time aqui: ", Time)
+	// cuda.SetDtCuda(Time)
+	// log.Println("dt_si aqui: ", cuda.Fixed_dt_cuda)
+	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
+}
+
+func SetParametersTimeEvolution() {
+
 	cuda.SetTimeEvoStatus(TimeEvolution)
 
 	if TimeEvolution == true {
 
+		log.Println("Time evolution factor in LLG equation: ", TimeEvolution)
+
 		if len(cuda.Brms_cuda) == 0 {
-			log.Println("Time evolution factor in LLG equation: ", TimeEvolution)
+
 			cuda.SetBrms(Brms_vector)
 			log.Println("Brms vector: ", cuda.Brms_cuda)
 		}
@@ -184,12 +196,6 @@ func adaptDt(corr float64) {
 			log.Println("Wc: ", cuda.Wc_cuda)
 		}
 	}
-
-	// log.Println("dt_si aqui: ", Dt_si)
-	// log.Println("time aqui: ", Time)
-	// cuda.SetDtCuda(Time)
-	// log.Println("dt_si aqui: ", cuda.Fixed_dt_cuda)
-	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }
 
 // Run the simulation for a number of seconds.
@@ -215,16 +221,20 @@ func Steps(n int) {
 func RunWhile(condition func() bool) {
 	SanityCheck()
 	pause = false // may be set by <-Inject
+
+	SetParametersTimeEvolution()
 	const output = true
 	runWhile(condition, output)
 	pause = true
 }
 
 func runWhile(condition func() bool, output bool) {
+
 	DoOutput() // allow t=0 output
 	for condition() && !pause {
 		select {
 		default:
+
 			step(output)
 		// accept tasks form Inject channel
 		case f := <-Inject:
