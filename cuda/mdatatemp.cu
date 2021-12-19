@@ -6,9 +6,9 @@ mdatatemp(float* __restrict__  dst_x, float* __restrict__  dst_y, float* __restr
 
       if(i < N) {
 
-    				dst_x[i] += mx_temp[i];
-    				dst_y[i] += my_temp[i];
-    				dst_z[i] += mz_temp[i];
+            dst_x[i] += mx_temp[i];
+            dst_y[i] += my_temp[i];
+            dst_z[i] += mz_temp[i];
 
             full_tau[i] += dt;
             sin_full_time[i] += sin(wc * (full_tau[i] - dt));
