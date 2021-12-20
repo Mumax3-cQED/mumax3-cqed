@@ -11,6 +11,9 @@ import (
 var (
 	slice_temp *data.Slice
 	time_temp  float64
+
+	mtemps      []*data.Slice = make([]*data.Slice, 0)
+	times_items []float64     = make([]float64, 0)
 )
 
 type RK45DP struct {
@@ -141,7 +144,22 @@ func (rk *RK45DP) Step() {
 
 		if TimeEvolution {
 			// log.Println("time_temp rk45: ", time_temp)
-			cuda.MdataTemp(cuda.M_rk, slice_temp, float32(cuda.Wc_cuda), time_temp)
+
+			mtemps = append(mtemps, slice_temp)
+			times_items = append(times_items, time_temp)
+
+			// log.Println("items: ", len(mtemps))
+			// log.Println("time_temp: ", Time)
+			// cuda.MdataTemp(cuda.M_rk, slice_temp, float32(cuda.Wc_cuda), time_temp)
+
+			// cuda.M_rk --> destino
+			// slice_temp --> m_i actual
+			// mtemps --> array con todas la m_i de todos los pasos
+			// times_items --> array de tiempos asociados a cada mi
+			// time_temp --> tiempo actual
+			cuda.MdataTemp(cuda.M_rk, slice_temp, mtemps, times_items, cuda.Wc_cuda, time_temp)
+
+			// log.Println("time_temp: ", time_temp)
 		}
 
 		setLastErr(err)

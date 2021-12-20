@@ -44,7 +44,7 @@ func SetWc(wc float64) {
 func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
 
 	if rk_step == nil {
-		rk_step = NewSlice(5, size)
+		rk_step = NewSlice(6, size)
 	}
 
 	return rk_step

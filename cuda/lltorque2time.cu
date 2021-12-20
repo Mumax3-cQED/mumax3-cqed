@@ -17,7 +17,8 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
           float* __restrict__  hx, float* __restrict__  hy, float* __restrict__  hz,
           float* __restrict__  alpha_, float alpha_mul,
           float time, float brms_x, float brms_y, float brms_z,
-          float* __restrict__ rk_mx, float* __restrict__ rk_my, float* __restrict__ rk_mz, float* __restrict__ sin_tau, int N) {
+          float* __restrict__ rk_mx, float* __restrict__ rk_my, float* __restrict__ rk_mz,
+          float* __restrict__ rk_mx_current, float* __restrict__ rk_my_current, float* __restrict__ rk_mz_current, int N) {
 
     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
 
@@ -34,12 +35,13 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
 
         // Adding new time-dependant term to equations
         float3 brms = {brms_x , brms_y, brms_z};
-        float3 mxBrms = cross(m, brms); // m x Brms
+        float3 mi_t = {rk_mx_current[i], rk_my_current[i], rk_my_current[i]};
+        float3 mxBrms = cross(mi_t, brms); // m x Brms
 
         float3 rk_m = {rk_mx[i], rk_my[i], rk_mz[i]};
 
         // Intergal from 0 to t
-        float3 si_sum_total = sin_tau[i] * rk_m * time;
+        float3 si_sum_total =  rk_m * time;
 
         // Summatory for all cells
         // https://developer.download.nvidia.com/cg/dot.html
