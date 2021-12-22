@@ -47,21 +47,19 @@ func Madd2(dst, src1, src2 *data.Slice, factor1, factor2 float32) {
 	}
 }
 
-func MdataTemp(dst, current_mi *data.Slice, m_items []*data.Slice, time_items []float64, wc float64, ctime float64) {
+func MdataTemp(dst, m_current *data.Slice, ctime float64, wc float64) {
 
 	N := dst.Len()
-	util.Assert(current_mi.Len() == N)
+	util.Assert(m_current.Len() == N)
+
 	nComp := dst.NComp()
-	util.Assert(nComp >= current_mi.NComp())
+	util.Assert(nComp >= m_current.NComp())
 	cfg := make1DConf(N)
 
-	for p := 0; p < len(time_items); p++ {
+	k_mdatatemp_async(dst.DevPtr(0), dst.DevPtr(1), dst.DevPtr(2), dst.DevPtr(3), dst.DevPtr(4), dst.DevPtr(5),
+		m_current.DevPtr(0), m_current.DevPtr(1), m_current.DevPtr(2),
+		float32(ctime), float32(wc), N, cfg)
 
-		k_mdatatemp_async(dst.DevPtr(0), dst.DevPtr(1), dst.DevPtr(2), dst.DevPtr(3), dst.DevPtr(4), dst.DevPtr(5),
-			m_items[p].DevPtr(0), m_items[p].DevPtr(1), m_items[p].DevPtr(2),
-			current_mi.DevPtr(0), current_mi.DevPtr(1), current_mi.DevPtr(2),
-			float32(time_items[p]), float32(wc), float32(ctime), N, cfg)
-	}
 }
 
 // multiply-add: dst[i] = src1[i] * factor1 + src2[i] * factor2 + src3 * factor3

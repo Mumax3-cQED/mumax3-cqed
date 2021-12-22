@@ -176,6 +176,22 @@ func adaptDt(corr float64) {
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }
 
+func initMRKArray(size [3]int) *data.Slice {
+
+	cuda.M_rk = cuda.InitRKStepArray(cuda.M_rk, size)
+	return cuda.M_rk
+}
+
+func setStatusLock(status bool) {
+	cuda.LockMExec = status
+}
+
+func attachTimeToFormula(m_current *data.Slice, ctime float64, statusLock bool) {
+
+	setStatusLock(statusLock)
+	cuda.MdataTemp(cuda.M_rk, m_current, ctime, cuda.Wc_cuda)
+}
+
 func SetParametersTimeEvolution() {
 
 	cuda.SetTimeEvoStatus(TimeEvolution)
