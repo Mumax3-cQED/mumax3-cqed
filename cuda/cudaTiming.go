@@ -49,7 +49,7 @@ func InitBrmsSlice(size [3]int) *data.Slice {
 
 	if brms_i == nil {
 		brms_i = NewSlice(3, size)
-		// log.Println("inti array")
+		// log.Println("init array")
 	}
 
 	return brms_i
