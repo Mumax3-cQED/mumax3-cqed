@@ -11,6 +11,7 @@ var (
 	M_rk      *data.Slice
 	TimeEvo   bool
 	LockMExec bool = false
+	brms_i    *data.Slice
 )
 
 // func SetStepTimes(torqueDst *data.Slice) {
@@ -32,7 +33,9 @@ func SetTimeEvoStatus(enableTimeEvo bool) {
 }
 
 func SetBrms(brms [3]float64) {
+
 	Brms_cuda = make([]float64, 3)
+
 	Brms_cuda[0] = brms[0]
 	Brms_cuda[1] = brms[1]
 	Brms_cuda[2] = brms[2]
@@ -42,6 +45,15 @@ func SetWc(wc float64) {
 	Wc_cuda = wc
 }
 
+func InitBrmsSlice(size [3]int) *data.Slice {
+
+	if brms_i == nil {
+		brms_i = NewSlice(3, size)
+		// log.Println("inti array")
+	}
+
+	return brms_i
+}
 func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
 
 	if rk_step == nil {
