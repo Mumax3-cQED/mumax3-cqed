@@ -54,6 +54,7 @@ func InitBrmsSlice(size [3]int) *data.Slice {
 
 	return brms_i
 }
+
 func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
 
 	if rk_step == nil {
