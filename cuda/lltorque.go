@@ -38,7 +38,7 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 				m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 				B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
 				alpha.DevPtr(0), alpha.Mul(0), float32(Time_cuda), float32(Wc_cuda), float32(Brms_cuda[X]), float32(Brms_cuda[Y]), float32(Brms_cuda[Z]),
-				brms_i.DevPtr(0), brms_i.DevPtr(1), brms_i.DevPtr(2),
+				Brms_i.DevPtr(0), Brms_i.DevPtr(1), Brms_i.DevPtr(2),
 				M_rk.DevPtr(0), M_rk.DevPtr(1), M_rk.DevPtr(2), M_rk.DevPtr(3), M_rk.DevPtr(4), M_rk.DevPtr(5), N, cfg)
 
 		} else {

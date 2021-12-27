@@ -8,10 +8,10 @@ import (
 	"github.com/mumax/3/util"
 )
 
-var (
-	slice_temp *data.Slice
-	time_temp  float64
-)
+// var (
+// 	slice_temp *data.Slice
+// 	time_temp  float64
+// )
 
 type RK45DP struct {
 	k1 *data.Slice // torque at end of step is kept for beginning of next step
