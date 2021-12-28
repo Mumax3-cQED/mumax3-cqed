@@ -58,11 +58,6 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         float sum_final = dot(si_sum_total, brms);
         //float sum_final = si_sum_total.x * brms.x +  si_sum_total.y * brms.y + si_sum_total.z * brms.z;
 
-
-        // for (int cell = 0; cell < N; cell++) {
-          // sum_final += dot(si_sum_total, brms);
-        // }
-
         float constant_term = 1; //(float)(pow(GS,2)*pow(MUB,2))/(pow(HBAR,3)); // Constant value (gs^2*mub^2)/hbar^3
         // float constant_term = (float)(GS*MUB)/(pow(HBAR,3));
 
