@@ -42,15 +42,15 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 				M_rk.DevPtr(0), M_rk.DevPtr(1), M_rk.DevPtr(2), M_rk.DevPtr(3), M_rk.DevPtr(4), M_rk.DevPtr(5), N, cfg)
 
 		} else {
-			DefaultProcess(torque, m, B, alpha, N, cfg)
+			DefaultTorqueProcess(torque, m, B, alpha, N, cfg)
 		}
 
 	} else {
-		DefaultProcess(torque, m, B, alpha, N, cfg)
+		DefaultTorqueProcess(torque, m, B, alpha, N, cfg)
 	}
 }
 
-func DefaultProcess(torque, m, B *data.Slice, alpha MSlice, N int, cfg *config) {
+func DefaultTorqueProcess(torque, m, B *data.Slice, alpha MSlice, N int, cfg *config) {
 
 	// debug.PrintStack()
 
