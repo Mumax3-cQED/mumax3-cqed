@@ -56,6 +56,8 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         // https://developer.download.nvidia.com/cg/dot.html
         // APPLY THE DOT OPERATOR FOR ALL CELLS
         float sum_final = dot(si_sum_total, brms);
+        //float sum_final = si_sum_total.x * brms.x +  si_sum_total.y * brms.y + si_sum_total.z * brms.z;
+
 
         // for (int cell = 0; cell < N; cell++) {
           // sum_final += dot(si_sum_total, brms);
