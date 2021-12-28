@@ -1,3 +1,4 @@
+// MODIFIED INMA
 extern "C" __global__ void
 mdatatemp(float* __restrict__ dst_sinx, float* __restrict__ dst_siny, float* __restrict__ dst_sinz,
           float* __restrict__ dst_cosx, float* __restrict__ dst_cosy, float* __restrict__ dst_cosz,
