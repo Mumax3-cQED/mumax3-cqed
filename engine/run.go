@@ -190,7 +190,7 @@ func setStatusLock(status bool) {
 func attachTimeToFormula(m_current *data.Slice, ctime float64, statusLock bool) {
 
 	setStatusLock(statusLock)
-	cuda.MdataTemp(cuda.M_rk, m_current, ctime, cuda.Wc_cuda)
+	cuda.CalcMSpinTorque(cuda.M_rk, m_current, ctime, cuda.Wc_cuda)
 }
 
 func SetParametersTimeEvolution() {

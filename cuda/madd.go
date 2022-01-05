@@ -48,7 +48,7 @@ func Madd2(dst, src1, src2 *data.Slice, factor1, factor2 float32) {
 	}
 }
 
-func MdataTemp(dst, m_current *data.Slice, ctime float64, wc float64) {
+func CalcMSpinTorque(dst, m_current *data.Slice, ctime float64, wc float64) {
 
 	N := dst.Len()
 	util.Assert(m_current.Len() == N)
