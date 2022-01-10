@@ -199,6 +199,8 @@ func SetParametersTimeEvolution() {
 
 	if TimeEvolution == true {
 
+		log.Println("")
+		log.Println("----------------------------------------------")
 		log.Println("Time evolution factor in LLG equation: ", TimeEvolution)
 
 		if len(cuda.Brms_cuda) == 0 {
@@ -212,6 +214,9 @@ func SetParametersTimeEvolution() {
 			cuda.SetWc(Wc)
 			log.Println("Wc: ", cuda.Wc_cuda)
 		}
+
+		log.Println("----------------------------------------------")
+		log.Println("")
 	}
 }
 
