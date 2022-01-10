@@ -46,7 +46,7 @@ func SetWc(wc float64) {
 	Wc_cuda = wc
 }
 
-func InitBrmsSlice(size [3]int) *data.Slice {
+func initBrmsSlice(size [3]int) *data.Slice {
 
 	if Brms_i == nil {
 		Brms_i = NewSlice(3, size)

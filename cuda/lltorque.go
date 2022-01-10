@@ -33,7 +33,7 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 
 			// log.Println("entra true aqui")
 			// log.Println("entra time evo")
-			InitBrmsSlice(m.Size())
+			initBrmsSlice(m.Size())
 
 			k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
 				m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
