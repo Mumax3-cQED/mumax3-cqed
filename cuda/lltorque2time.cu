@@ -18,10 +18,10 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
           float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
           float* __restrict__  hx, float* __restrict__  hy, float* __restrict__  hz,
           float* __restrict__  alpha_, float alpha_mul,
-          float time_full, float wc, float brms_x, float brms_y, float brms_z,
+          float delta_time, float wc, float brms_x, float brms_y, float brms_z,
           float* __restrict__ brmsi_x, float* __restrict__ brmsi_y, float* __restrict__ brmsi_z,
           float* __restrict__ rk_sin_mx, float* __restrict__ rk_sin_my, float* __restrict__ rk_sin_mz,
-          float* __restrict__ rk_cos_mx, float* __restrict__ rk_cos_my, float* __restrict__ rk_cos_mz, int N) {
+          float* __restrict__ rk_cos_mx, float* __restrict__ rk_cos_my, float* __restrict__ rk_cos_mz, float* __restrict__ ctime, int N) {
 
     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
 
@@ -50,7 +50,7 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         float3 rk_cos_m = {rk_cos_mx[i], rk_cos_my[i], rk_cos_mz[i]};
 
         // Intergal from 0 to t
-        float3 si_sum_total =  time_full * ((cos(wc*time_full) * rk_cos_m) - (sin(wc*time_full) * rk_sin_m));
+        float3 si_sum_total = delta_time * ((cos(wc*ctime[i]) * rk_sin_m) - (sin(wc*ctime[i]) * rk_cos_m));
 
         // Summatory for all cells
         // https://developer.download.nvidia.com/cg/dot.html
@@ -58,8 +58,8 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         float sum_final = dot(si_sum_total, brms);
         //float sum_final = si_sum_total.x * brms.x +  si_sum_total.y * brms.y + si_sum_total.z * brms.z;
 
-        float constant_term = 1; //(float)(pow(GS,2)*pow(MUB,2))/(pow(HBAR,3)); // Constant value (gs^2*mub^2)/hbar^3
-        //float constant_term = (float)(GS*MUB)/(pow(HBAR,3));
+        //float constant_term = 1; //(float)(pow(GS,2)*pow(MUB,2))/(pow(HBAR,3)); // Constant value (gs^2*mub^2)/hbar^3
+        float constant_term = (float)(GS*MUB)/(pow(HBAR,3));
 
         float3 new_term = 2 * constant_term * mxBrms * sum_final; // LLG equation with full new time-dependant term to plug in equation
 

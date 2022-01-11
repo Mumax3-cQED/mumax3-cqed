@@ -6,28 +6,28 @@ import (
 )
 
 var (
-	Time_cuda float64
-	Wc_cuda   float64
-	Brms_cuda []float64
-	M_rk      *data.Slice
-	TimeEvo   bool
-	LockMExec bool = false
-	Brms_i    *data.Slice
+	Fixed_dt_cuda float64
+	Wc_cuda       float64
+	Brms_cuda     []float64
+	M_rk          *data.Slice
+	TimeEvo       bool
+	LockMExec     bool = false
+	Brms_i        *data.Slice
 )
 
 // func SetStepTimes(torqueDst *data.Slice) {
 // 	Step_Times = torqueDst
 // }
 
-// func SetDtCuda(dt float64) {
-//
-// 	Fixed_dt_cuda = float32(dt)
-// }
+func SetDtCuda(dt float64) {
 
-func SetTimeCuda(time float64) {
-
-	Time_cuda = time
+	Fixed_dt_cuda = dt
 }
+
+// func SetTimeCuda(time float64) {
+//
+// 	Time_cuda = time
+// }
 
 func SetTimeEvoStatus(enableTimeEvo bool) {
 	TimeEvo = enableTimeEvo
@@ -63,7 +63,7 @@ func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
 		rk_step = nil
 	}
 
-	rk_step = NewSlice(6, size)
+	rk_step = NewSlice(7, size)
 
 	return rk_step
 }

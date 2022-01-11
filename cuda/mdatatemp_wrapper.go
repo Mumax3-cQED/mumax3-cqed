@@ -23,13 +23,14 @@ type mdatatemp_args_t struct{
 	 arg_dst_cosx unsafe.Pointer
 	 arg_dst_cosy unsafe.Pointer
 	 arg_dst_cosz unsafe.Pointer
+	 arg_current_ctime unsafe.Pointer
 	 arg_current_mx unsafe.Pointer
 	 arg_current_my unsafe.Pointer
 	 arg_current_mz unsafe.Pointer
 	 arg_ctime float32
 	 arg_wc float32
 	 arg_N int
-	 argptr [12]unsafe.Pointer
+	 argptr [13]unsafe.Pointer
 	sync.Mutex
 }
 
@@ -44,16 +45,17 @@ func init(){
 	 mdatatemp_args.argptr[3] = unsafe.Pointer(&mdatatemp_args.arg_dst_cosx)
 	 mdatatemp_args.argptr[4] = unsafe.Pointer(&mdatatemp_args.arg_dst_cosy)
 	 mdatatemp_args.argptr[5] = unsafe.Pointer(&mdatatemp_args.arg_dst_cosz)
-	 mdatatemp_args.argptr[6] = unsafe.Pointer(&mdatatemp_args.arg_current_mx)
-	 mdatatemp_args.argptr[7] = unsafe.Pointer(&mdatatemp_args.arg_current_my)
-	 mdatatemp_args.argptr[8] = unsafe.Pointer(&mdatatemp_args.arg_current_mz)
-	 mdatatemp_args.argptr[9] = unsafe.Pointer(&mdatatemp_args.arg_ctime)
-	 mdatatemp_args.argptr[10] = unsafe.Pointer(&mdatatemp_args.arg_wc)
-	 mdatatemp_args.argptr[11] = unsafe.Pointer(&mdatatemp_args.arg_N)
+	 mdatatemp_args.argptr[6] = unsafe.Pointer(&mdatatemp_args.arg_current_ctime)
+	 mdatatemp_args.argptr[7] = unsafe.Pointer(&mdatatemp_args.arg_current_mx)
+	 mdatatemp_args.argptr[8] = unsafe.Pointer(&mdatatemp_args.arg_current_my)
+	 mdatatemp_args.argptr[9] = unsafe.Pointer(&mdatatemp_args.arg_current_mz)
+	 mdatatemp_args.argptr[10] = unsafe.Pointer(&mdatatemp_args.arg_ctime)
+	 mdatatemp_args.argptr[11] = unsafe.Pointer(&mdatatemp_args.arg_wc)
+	 mdatatemp_args.argptr[12] = unsafe.Pointer(&mdatatemp_args.arg_N)
 	 }
 
 // Wrapper for mdatatemp CUDA kernel, asynchronous.
-func k_mdatatemp_async ( dst_sinx unsafe.Pointer, dst_siny unsafe.Pointer, dst_sinz unsafe.Pointer, dst_cosx unsafe.Pointer, dst_cosy unsafe.Pointer, dst_cosz unsafe.Pointer, current_mx unsafe.Pointer, current_my unsafe.Pointer, current_mz unsafe.Pointer, ctime float32, wc float32, N int,  cfg *config) {
+func k_mdatatemp_async ( dst_sinx unsafe.Pointer, dst_siny unsafe.Pointer, dst_sinz unsafe.Pointer, dst_cosx unsafe.Pointer, dst_cosy unsafe.Pointer, dst_cosz unsafe.Pointer, current_ctime unsafe.Pointer, current_mx unsafe.Pointer, current_my unsafe.Pointer, current_mz unsafe.Pointer, ctime float32, wc float32, N int,  cfg *config) {
 	if Synchronous{ // debug
 		Sync()
 		timer.Start("mdatatemp")
@@ -72,6 +74,7 @@ func k_mdatatemp_async ( dst_sinx unsafe.Pointer, dst_siny unsafe.Pointer, dst_s
 	 mdatatemp_args.arg_dst_cosx = dst_cosx
 	 mdatatemp_args.arg_dst_cosy = dst_cosy
 	 mdatatemp_args.arg_dst_cosz = dst_cosz
+	 mdatatemp_args.arg_current_ctime = current_ctime
 	 mdatatemp_args.arg_current_mx = current_mx
 	 mdatatemp_args.arg_current_my = current_my
 	 mdatatemp_args.arg_current_mz = current_mz
@@ -122,9 +125,10 @@ const(
 	.param .u64 mdatatemp_param_6,
 	.param .u64 mdatatemp_param_7,
 	.param .u64 mdatatemp_param_8,
-	.param .f32 mdatatemp_param_9,
+	.param .u64 mdatatemp_param_9,
 	.param .f32 mdatatemp_param_10,
-	.param .u32 mdatatemp_param_11
+	.param .f32 mdatatemp_param_11,
+	.param .u32 mdatatemp_param_12
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -133,7 +137,7 @@ const(
 	.reg .pred 	%p<28>;
 	.reg .f32 	%f<112>;
 	.reg .b32 	%r<205>;
-	.reg .b64 	%rd<56>;
+	.reg .b64 	%rd<59>;
 
 
 	mov.u64 	%SPL, __local_depot0;
@@ -147,9 +151,10 @@ const(
 	ld.param.u64 	%rd19, [mdatatemp_param_6];
 	ld.param.u64 	%rd20, [mdatatemp_param_7];
 	ld.param.u64 	%rd21, [mdatatemp_param_8];
-	ld.param.f32 	%f40, [mdatatemp_param_9];
-	ld.param.f32 	%f41, [mdatatemp_param_10];
-	ld.param.u32 	%r71, [mdatatemp_param_11];
+	ld.param.u64 	%rd22, [mdatatemp_param_9];
+	ld.param.f32 	%f40, [mdatatemp_param_10];
+	ld.param.f32 	%f41, [mdatatemp_param_11];
+	ld.param.u32 	%r71, [mdatatemp_param_12];
 	mov.u32 	%r72, %nctaid.x;
 	mov.u32 	%r73, %ctaid.y;
 	mov.u32 	%r74, %ctaid.x;
@@ -187,24 +192,24 @@ BB0_3:
 	mov.b32 	 %r2, %f100;
 	shl.b32 	%r81, %r2, 8;
 	or.b32  	%r3, %r81, -2147483648;
-	add.u64 	%rd23, %SP, 0;
-	add.u64 	%rd53, %SPL, 0;
+	add.u64 	%rd24, %SP, 0;
+	add.u64 	%rd56, %SPL, 0;
 	mov.u32 	%r186, 0;
-	mov.u64 	%rd52, __cudart_i2opi_f;
+	mov.u64 	%rd55, __cudart_i2opi_f;
 	mov.u32 	%r185, -6;
 
 BB0_5:
 	.pragma "nounroll";
-	ld.const.u32 	%r84, [%rd52];
+	ld.const.u32 	%r84, [%rd55];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r82, %r84, %r3, %r186;
 	madc.hi.u32     %r186, %r84, %r3,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd53], %r82;
-	add.s64 	%rd53, %rd53, 4;
-	add.s64 	%rd52, %rd52, 4;
+	st.local.u32 	[%rd56], %r82;
+	add.s64 	%rd56, %rd56, 4;
+	add.s64 	%rd55, %rd55, 4;
 	add.s32 	%r185, %r185, 1;
 	setp.ne.s32	%p4, %r185, 0;
 	@%p4 bra 	BB0_5;
@@ -213,13 +218,13 @@ BB0_5:
 	add.s32 	%r88, %r87, -128;
 	shr.u32 	%r89, %r88, 5;
 	and.b32  	%r8, %r2, -2147483648;
-	cvta.to.local.u64 	%rd25, %rd23;
-	st.local.u32 	[%rd25+24], %r186;
+	cvta.to.local.u64 	%rd26, %rd24;
+	st.local.u32 	[%rd26+24], %r186;
 	bfe.u32 	%r9, %r2, 23, 5;
 	mov.u32 	%r90, 6;
 	sub.s32 	%r91, %r90, %r89;
-	mul.wide.s32 	%rd26, %r91, 4;
-	add.s64 	%rd6, %rd25, %rd26;
+	mul.wide.s32 	%rd27, %r91, 4;
+	add.s64 	%rd6, %rd26, %rd27;
 	ld.local.u32 	%r187, [%rd6];
 	ld.local.u32 	%r188, [%rd6+-4];
 	setp.eq.s32	%p5, %r9, 0;
@@ -341,31 +346,31 @@ BB0_22:
 	fma.rn.f32 	%f104, %f104, %f64, %f63;
 
 BB0_24:
-	cvta.to.global.u64 	%rd27, %rd19;
-	mul.wide.s32 	%rd28, %r78, 4;
-	add.s64 	%rd29, %rd27, %rd28;
-	ld.global.f32 	%f20, [%rd29];
-	cvta.to.global.u64 	%rd30, %rd13;
-	add.s64 	%rd31, %rd30, %rd28;
-	ld.global.f32 	%f65, [%rd31];
+	cvta.to.global.u64 	%rd28, %rd20;
+	mul.wide.s32 	%rd29, %r78, 4;
+	add.s64 	%rd30, %rd28, %rd29;
+	ld.global.f32 	%f20, [%rd30];
+	cvta.to.global.u64 	%rd31, %rd13;
+	add.s64 	%rd32, %rd31, %rd29;
+	ld.global.f32 	%f65, [%rd32];
 	fma.rn.f32 	%f66, %f104, %f20, %f65;
-	st.global.f32 	[%rd31], %f66;
-	cvta.to.global.u64 	%rd32, %rd20;
-	add.s64 	%rd33, %rd32, %rd28;
-	ld.global.f32 	%f21, [%rd33];
-	cvta.to.global.u64 	%rd34, %rd14;
-	add.s64 	%rd35, %rd34, %rd28;
-	ld.global.f32 	%f67, [%rd35];
+	st.global.f32 	[%rd32], %f66;
+	cvta.to.global.u64 	%rd33, %rd21;
+	add.s64 	%rd34, %rd33, %rd29;
+	ld.global.f32 	%f21, [%rd34];
+	cvta.to.global.u64 	%rd35, %rd14;
+	add.s64 	%rd36, %rd35, %rd29;
+	ld.global.f32 	%f67, [%rd36];
 	fma.rn.f32 	%f68, %f104, %f21, %f67;
-	st.global.f32 	[%rd35], %f68;
-	cvta.to.global.u64 	%rd36, %rd21;
-	add.s64 	%rd37, %rd36, %rd28;
-	ld.global.f32 	%f22, [%rd37];
-	cvta.to.global.u64 	%rd38, %rd15;
-	add.s64 	%rd39, %rd38, %rd28;
-	ld.global.f32 	%f69, [%rd39];
+	st.global.f32 	[%rd36], %f68;
+	cvta.to.global.u64 	%rd37, %rd22;
+	add.s64 	%rd38, %rd37, %rd29;
+	ld.global.f32 	%f22, [%rd38];
+	cvta.to.global.u64 	%rd39, %rd15;
+	add.s64 	%rd40, %rd39, %rd29;
+	ld.global.f32 	%f69, [%rd40];
 	fma.rn.f32 	%f70, %f104, %f22, %f69;
-	st.global.f32 	[%rd39], %f70;
+	st.global.f32 	[%rd40], %f70;
 	@%p2 bra 	BB0_26;
 
 	mov.f32 	%f71, 0f00000000;
@@ -387,24 +392,24 @@ BB0_26:
 	shr.u32 	%r37, %r36, 23;
 	shl.b32 	%r134, %r36, 8;
 	or.b32  	%r38, %r134, -2147483648;
-	add.u64 	%rd41, %SP, 0;
-	add.u64 	%rd55, %SPL, 0;
+	add.u64 	%rd42, %SP, 0;
+	add.u64 	%rd58, %SPL, 0;
 	mov.u32 	%r196, 0;
-	mov.u64 	%rd54, __cudart_i2opi_f;
+	mov.u64 	%rd57, __cudart_i2opi_f;
 	mov.u32 	%r195, -6;
 
 BB0_28:
 	.pragma "nounroll";
-	ld.const.u32 	%r137, [%rd54];
+	ld.const.u32 	%r137, [%rd57];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r135, %r137, %r38, %r196;
 	madc.hi.u32     %r196, %r137, %r38,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd55], %r135;
-	add.s64 	%rd55, %rd55, 4;
-	add.s64 	%rd54, %rd54, 4;
+	st.local.u32 	[%rd58], %r135;
+	add.s64 	%rd58, %rd58, 4;
+	add.s64 	%rd57, %rd57, 4;
 	add.s32 	%r195, %r195, 1;
 	setp.ne.s32	%p17, %r195, 0;
 	@%p17 bra 	BB0_28;
@@ -413,12 +418,12 @@ BB0_28:
 	add.s32 	%r141, %r140, -128;
 	shr.u32 	%r142, %r141, 5;
 	and.b32  	%r43, %r36, -2147483648;
-	cvta.to.local.u64 	%rd43, %rd41;
-	st.local.u32 	[%rd43+24], %r196;
+	cvta.to.local.u64 	%rd44, %rd42;
+	st.local.u32 	[%rd44+24], %r196;
 	mov.u32 	%r143, 6;
 	sub.s32 	%r144, %r143, %r142;
-	mul.wide.s32 	%rd44, %r144, 4;
-	add.s64 	%rd12, %rd43, %rd44;
+	mul.wide.s32 	%rd45, %r144, 4;
+	add.s64 	%rd12, %rd44, %rd45;
 	ld.local.u32 	%r197, [%rd12];
 	ld.local.u32 	%r198, [%rd12+-4];
 	and.b32  	%r46, %r37, 31;
@@ -542,21 +547,24 @@ BB0_45:
 	fma.rn.f32 	%f110, %f110, %f93, %f92;
 
 BB0_47:
-	cvta.to.global.u64 	%rd45, %rd16;
-	add.s64 	%rd47, %rd45, %rd28;
-	ld.global.f32 	%f94, [%rd47];
+	cvta.to.global.u64 	%rd46, %rd16;
+	add.s64 	%rd48, %rd46, %rd29;
+	ld.global.f32 	%f94, [%rd48];
 	fma.rn.f32 	%f95, %f110, %f20, %f94;
-	st.global.f32 	[%rd47], %f95;
-	cvta.to.global.u64 	%rd48, %rd17;
-	add.s64 	%rd49, %rd48, %rd28;
-	ld.global.f32 	%f96, [%rd49];
+	st.global.f32 	[%rd48], %f95;
+	cvta.to.global.u64 	%rd49, %rd17;
+	add.s64 	%rd50, %rd49, %rd29;
+	ld.global.f32 	%f96, [%rd50];
 	fma.rn.f32 	%f97, %f110, %f21, %f96;
-	st.global.f32 	[%rd49], %f97;
-	cvta.to.global.u64 	%rd50, %rd18;
-	add.s64 	%rd51, %rd50, %rd28;
-	ld.global.f32 	%f98, [%rd51];
+	st.global.f32 	[%rd50], %f97;
+	cvta.to.global.u64 	%rd51, %rd18;
+	add.s64 	%rd52, %rd51, %rd29;
+	ld.global.f32 	%f98, [%rd52];
 	fma.rn.f32 	%f99, %f110, %f22, %f98;
-	st.global.f32 	[%rd51], %f99;
+	st.global.f32 	[%rd52], %f99;
+	cvta.to.global.u64 	%rd53, %rd19;
+	add.s64 	%rd54, %rd53, %rd29;
+	st.global.f32 	[%rd54], %f40;
 
 BB0_48:
 	ret;
@@ -582,9 +590,10 @@ BB0_48:
 	.param .u64 mdatatemp_param_6,
 	.param .u64 mdatatemp_param_7,
 	.param .u64 mdatatemp_param_8,
-	.param .f32 mdatatemp_param_9,
+	.param .u64 mdatatemp_param_9,
 	.param .f32 mdatatemp_param_10,
-	.param .u32 mdatatemp_param_11
+	.param .f32 mdatatemp_param_11,
+	.param .u32 mdatatemp_param_12
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -593,7 +602,7 @@ BB0_48:
 	.reg .pred 	%p<28>;
 	.reg .f32 	%f<112>;
 	.reg .b32 	%r<192>;
-	.reg .b64 	%rd<51>;
+	.reg .b64 	%rd<54>;
 
 
 	mov.u64 	%SPL, __local_depot0;
@@ -606,9 +615,10 @@ BB0_48:
 	ld.param.u64 	%rd19, [mdatatemp_param_6];
 	ld.param.u64 	%rd20, [mdatatemp_param_7];
 	ld.param.u64 	%rd21, [mdatatemp_param_8];
-	ld.param.f32 	%f40, [mdatatemp_param_9];
-	ld.param.f32 	%f41, [mdatatemp_param_10];
-	ld.param.u32 	%r73, [mdatatemp_param_11];
+	ld.param.u64 	%rd22, [mdatatemp_param_9];
+	ld.param.f32 	%f40, [mdatatemp_param_10];
+	ld.param.f32 	%f41, [mdatatemp_param_11];
+	ld.param.u32 	%r73, [mdatatemp_param_12];
 	mov.u32 	%r74, %nctaid.x;
 	mov.u32 	%r75, %ctaid.y;
 	mov.u32 	%r76, %ctaid.x;
@@ -650,22 +660,22 @@ BB0_3:
 	shl.b32 	%r82, %r3, 8;
 	or.b32  	%r5, %r82, -2147483648;
 	mov.u32 	%r173, 0;
-	mov.u64 	%rd47, __cudart_i2opi_f;
+	mov.u64 	%rd50, __cudart_i2opi_f;
 	mov.u32 	%r172, -6;
-	mov.u64 	%rd48, %rd1;
+	mov.u64 	%rd51, %rd1;
 
 BB0_5:
 	.pragma "nounroll";
-	ld.const.u32 	%r85, [%rd47];
+	ld.const.u32 	%r85, [%rd50];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r83, %r85, %r5, %r173;
 	madc.hi.u32     %r173, %r85, %r5,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd48], %r83;
-	add.s64 	%rd48, %rd48, 4;
-	add.s64 	%rd47, %rd47, 4;
+	st.local.u32 	[%rd51], %r83;
+	add.s64 	%rd51, %rd51, 4;
+	add.s64 	%rd50, %rd50, 4;
 	add.s32 	%r172, %r172, 1;
 	setp.ne.s32	%p4, %r172, 0;
 	@%p4 bra 	BB0_5;
@@ -677,8 +687,8 @@ BB0_5:
 	st.local.u32 	[%rd2], %r173;
 	mov.u32 	%r91, 6;
 	sub.s32 	%r92, %r91, %r90;
-	mul.wide.s32 	%rd24, %r92, 4;
-	add.s64 	%rd7, %rd1, %rd24;
+	mul.wide.s32 	%rd25, %r92, 4;
+	add.s64 	%rd7, %rd1, %rd25;
 	ld.local.u32 	%r174, [%rd7];
 	ld.local.u32 	%r175, [%rd7+-4];
 	and.b32  	%r13, %r4, 31;
@@ -801,31 +811,31 @@ BB0_22:
 	fma.rn.f32 	%f104, %f104, %f64, %f63;
 
 BB0_24:
-	cvta.to.global.u64 	%rd25, %rd19;
 	cvta.to.global.u64 	%rd26, %rd20;
 	cvta.to.global.u64 	%rd27, %rd21;
-	cvta.to.global.u64 	%rd28, %rd13;
-	cvta.to.global.u64 	%rd29, %rd14;
-	cvta.to.global.u64 	%rd30, %rd15;
-	mul.wide.s32 	%rd31, %r1, 4;
-	add.s64 	%rd32, %rd25, %rd31;
-	ld.global.nc.f32 	%f20, [%rd32];
-	add.s64 	%rd33, %rd28, %rd31;
-	ld.global.f32 	%f65, [%rd33];
+	cvta.to.global.u64 	%rd28, %rd22;
+	cvta.to.global.u64 	%rd29, %rd13;
+	cvta.to.global.u64 	%rd30, %rd14;
+	cvta.to.global.u64 	%rd31, %rd15;
+	mul.wide.s32 	%rd32, %r1, 4;
+	add.s64 	%rd33, %rd26, %rd32;
+	ld.global.nc.f32 	%f20, [%rd33];
+	add.s64 	%rd34, %rd29, %rd32;
+	ld.global.f32 	%f65, [%rd34];
 	fma.rn.f32 	%f66, %f104, %f20, %f65;
-	st.global.f32 	[%rd33], %f66;
-	add.s64 	%rd34, %rd26, %rd31;
-	ld.global.nc.f32 	%f21, [%rd34];
-	add.s64 	%rd35, %rd29, %rd31;
-	ld.global.f32 	%f67, [%rd35];
+	st.global.f32 	[%rd34], %f66;
+	add.s64 	%rd35, %rd27, %rd32;
+	ld.global.nc.f32 	%f21, [%rd35];
+	add.s64 	%rd36, %rd30, %rd32;
+	ld.global.f32 	%f67, [%rd36];
 	fma.rn.f32 	%f68, %f104, %f21, %f67;
-	st.global.f32 	[%rd35], %f68;
-	add.s64 	%rd36, %rd27, %rd31;
-	ld.global.nc.f32 	%f22, [%rd36];
-	add.s64 	%rd37, %rd30, %rd31;
-	ld.global.f32 	%f69, [%rd37];
+	st.global.f32 	[%rd36], %f68;
+	add.s64 	%rd37, %rd28, %rd32;
+	ld.global.nc.f32 	%f22, [%rd37];
+	add.s64 	%rd38, %rd31, %rd32;
+	ld.global.f32 	%f69, [%rd38];
 	fma.rn.f32 	%f70, %f104, %f22, %f69;
-	st.global.f32 	[%rd37], %f70;
+	st.global.f32 	[%rd38], %f70;
 	@%p2 bra 	BB0_26;
 
 	mov.f32 	%f71, 0f00000000;
@@ -848,22 +858,22 @@ BB0_26:
 	shl.b32 	%r128, %r38, 8;
 	or.b32  	%r40, %r128, -2147483648;
 	mov.u32 	%r183, 0;
-	mov.u64 	%rd49, __cudart_i2opi_f;
+	mov.u64 	%rd52, __cudart_i2opi_f;
 	mov.u32 	%r182, -6;
-	mov.u64 	%rd50, %rd1;
+	mov.u64 	%rd53, %rd1;
 
 BB0_28:
 	.pragma "nounroll";
-	ld.const.u32 	%r131, [%rd49];
+	ld.const.u32 	%r131, [%rd52];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r129, %r131, %r40, %r183;
 	madc.hi.u32     %r183, %r131, %r40,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd50], %r129;
-	add.s64 	%rd50, %rd50, 4;
-	add.s64 	%rd49, %rd49, 4;
+	st.local.u32 	[%rd53], %r129;
+	add.s64 	%rd53, %rd53, 4;
+	add.s64 	%rd52, %rd52, 4;
 	add.s32 	%r182, %r182, 1;
 	setp.ne.s32	%p17, %r182, 0;
 	@%p17 bra 	BB0_28;
@@ -875,8 +885,8 @@ BB0_28:
 	st.local.u32 	[%rd2], %r183;
 	mov.u32 	%r137, 6;
 	sub.s32 	%r138, %r137, %r136;
-	mul.wide.s32 	%rd39, %r138, 4;
-	add.s64 	%rd12, %rd1, %rd39;
+	mul.wide.s32 	%rd40, %r138, 4;
+	add.s64 	%rd12, %rd1, %rd40;
 	ld.local.u32 	%r184, [%rd12];
 	ld.local.u32 	%r185, [%rd12+-4];
 	and.b32  	%r48, %r39, 31;
@@ -1000,21 +1010,24 @@ BB0_45:
 	fma.rn.f32 	%f110, %f110, %f93, %f92;
 
 BB0_47:
-	cvta.to.global.u64 	%rd40, %rd16;
-	cvta.to.global.u64 	%rd41, %rd17;
-	cvta.to.global.u64 	%rd42, %rd18;
-	add.s64 	%rd44, %rd40, %rd31;
-	ld.global.f32 	%f94, [%rd44];
+	cvta.to.global.u64 	%rd41, %rd16;
+	cvta.to.global.u64 	%rd42, %rd17;
+	cvta.to.global.u64 	%rd43, %rd18;
+	cvta.to.global.u64 	%rd44, %rd19;
+	add.s64 	%rd46, %rd41, %rd32;
+	ld.global.f32 	%f94, [%rd46];
 	fma.rn.f32 	%f95, %f110, %f20, %f94;
-	st.global.f32 	[%rd44], %f95;
-	add.s64 	%rd45, %rd41, %rd31;
-	ld.global.f32 	%f96, [%rd45];
+	st.global.f32 	[%rd46], %f95;
+	add.s64 	%rd47, %rd42, %rd32;
+	ld.global.f32 	%f96, [%rd47];
 	fma.rn.f32 	%f97, %f110, %f21, %f96;
-	st.global.f32 	[%rd45], %f97;
-	add.s64 	%rd46, %rd42, %rd31;
-	ld.global.f32 	%f98, [%rd46];
+	st.global.f32 	[%rd47], %f97;
+	add.s64 	%rd48, %rd43, %rd32;
+	ld.global.f32 	%f98, [%rd48];
 	fma.rn.f32 	%f99, %f110, %f22, %f98;
-	st.global.f32 	[%rd46], %f99;
+	st.global.f32 	[%rd48], %f99;
+	add.s64 	%rd49, %rd44, %rd32;
+	st.global.f32 	[%rd49], %f40;
 
 BB0_48:
 	ret;
@@ -1040,9 +1053,10 @@ BB0_48:
 	.param .u64 mdatatemp_param_6,
 	.param .u64 mdatatemp_param_7,
 	.param .u64 mdatatemp_param_8,
-	.param .f32 mdatatemp_param_9,
+	.param .u64 mdatatemp_param_9,
 	.param .f32 mdatatemp_param_10,
-	.param .u32 mdatatemp_param_11
+	.param .f32 mdatatemp_param_11,
+	.param .u32 mdatatemp_param_12
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -1051,7 +1065,7 @@ BB0_48:
 	.reg .pred 	%p<28>;
 	.reg .f32 	%f<112>;
 	.reg .b32 	%r<192>;
-	.reg .b64 	%rd<51>;
+	.reg .b64 	%rd<54>;
 
 
 	mov.u64 	%SPL, __local_depot0;
@@ -1064,9 +1078,10 @@ BB0_48:
 	ld.param.u64 	%rd19, [mdatatemp_param_6];
 	ld.param.u64 	%rd20, [mdatatemp_param_7];
 	ld.param.u64 	%rd21, [mdatatemp_param_8];
-	ld.param.f32 	%f40, [mdatatemp_param_9];
-	ld.param.f32 	%f41, [mdatatemp_param_10];
-	ld.param.u32 	%r73, [mdatatemp_param_11];
+	ld.param.u64 	%rd22, [mdatatemp_param_9];
+	ld.param.f32 	%f40, [mdatatemp_param_10];
+	ld.param.f32 	%f41, [mdatatemp_param_11];
+	ld.param.u32 	%r73, [mdatatemp_param_12];
 	mov.u32 	%r74, %nctaid.x;
 	mov.u32 	%r75, %ctaid.y;
 	mov.u32 	%r76, %ctaid.x;
@@ -1108,22 +1123,22 @@ BB0_3:
 	shl.b32 	%r82, %r3, 8;
 	or.b32  	%r5, %r82, -2147483648;
 	mov.u32 	%r173, 0;
-	mov.u64 	%rd47, __cudart_i2opi_f;
+	mov.u64 	%rd50, __cudart_i2opi_f;
 	mov.u32 	%r172, -6;
-	mov.u64 	%rd48, %rd1;
+	mov.u64 	%rd51, %rd1;
 
 BB0_5:
 	.pragma "nounroll";
-	ld.const.u32 	%r85, [%rd47];
+	ld.const.u32 	%r85, [%rd50];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r83, %r85, %r5, %r173;
 	madc.hi.u32     %r173, %r85, %r5,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd48], %r83;
-	add.s64 	%rd48, %rd48, 4;
-	add.s64 	%rd47, %rd47, 4;
+	st.local.u32 	[%rd51], %r83;
+	add.s64 	%rd51, %rd51, 4;
+	add.s64 	%rd50, %rd50, 4;
 	add.s32 	%r172, %r172, 1;
 	setp.ne.s32	%p4, %r172, 0;
 	@%p4 bra 	BB0_5;
@@ -1135,8 +1150,8 @@ BB0_5:
 	st.local.u32 	[%rd2], %r173;
 	mov.u32 	%r91, 6;
 	sub.s32 	%r92, %r91, %r90;
-	mul.wide.s32 	%rd24, %r92, 4;
-	add.s64 	%rd7, %rd1, %rd24;
+	mul.wide.s32 	%rd25, %r92, 4;
+	add.s64 	%rd7, %rd1, %rd25;
 	ld.local.u32 	%r174, [%rd7];
 	ld.local.u32 	%r175, [%rd7+-4];
 	and.b32  	%r13, %r4, 31;
@@ -1259,31 +1274,31 @@ BB0_22:
 	fma.rn.f32 	%f104, %f104, %f64, %f63;
 
 BB0_24:
-	cvta.to.global.u64 	%rd25, %rd19;
 	cvta.to.global.u64 	%rd26, %rd20;
 	cvta.to.global.u64 	%rd27, %rd21;
-	cvta.to.global.u64 	%rd28, %rd13;
-	cvta.to.global.u64 	%rd29, %rd14;
-	cvta.to.global.u64 	%rd30, %rd15;
-	mul.wide.s32 	%rd31, %r1, 4;
-	add.s64 	%rd32, %rd25, %rd31;
-	ld.global.nc.f32 	%f20, [%rd32];
-	add.s64 	%rd33, %rd28, %rd31;
-	ld.global.f32 	%f65, [%rd33];
+	cvta.to.global.u64 	%rd28, %rd22;
+	cvta.to.global.u64 	%rd29, %rd13;
+	cvta.to.global.u64 	%rd30, %rd14;
+	cvta.to.global.u64 	%rd31, %rd15;
+	mul.wide.s32 	%rd32, %r1, 4;
+	add.s64 	%rd33, %rd26, %rd32;
+	ld.global.nc.f32 	%f20, [%rd33];
+	add.s64 	%rd34, %rd29, %rd32;
+	ld.global.f32 	%f65, [%rd34];
 	fma.rn.f32 	%f66, %f104, %f20, %f65;
-	st.global.f32 	[%rd33], %f66;
-	add.s64 	%rd34, %rd26, %rd31;
-	ld.global.nc.f32 	%f21, [%rd34];
-	add.s64 	%rd35, %rd29, %rd31;
-	ld.global.f32 	%f67, [%rd35];
+	st.global.f32 	[%rd34], %f66;
+	add.s64 	%rd35, %rd27, %rd32;
+	ld.global.nc.f32 	%f21, [%rd35];
+	add.s64 	%rd36, %rd30, %rd32;
+	ld.global.f32 	%f67, [%rd36];
 	fma.rn.f32 	%f68, %f104, %f21, %f67;
-	st.global.f32 	[%rd35], %f68;
-	add.s64 	%rd36, %rd27, %rd31;
-	ld.global.nc.f32 	%f22, [%rd36];
-	add.s64 	%rd37, %rd30, %rd31;
-	ld.global.f32 	%f69, [%rd37];
+	st.global.f32 	[%rd36], %f68;
+	add.s64 	%rd37, %rd28, %rd32;
+	ld.global.nc.f32 	%f22, [%rd37];
+	add.s64 	%rd38, %rd31, %rd32;
+	ld.global.f32 	%f69, [%rd38];
 	fma.rn.f32 	%f70, %f104, %f22, %f69;
-	st.global.f32 	[%rd37], %f70;
+	st.global.f32 	[%rd38], %f70;
 	@%p2 bra 	BB0_26;
 
 	mov.f32 	%f71, 0f00000000;
@@ -1306,22 +1321,22 @@ BB0_26:
 	shl.b32 	%r128, %r38, 8;
 	or.b32  	%r40, %r128, -2147483648;
 	mov.u32 	%r183, 0;
-	mov.u64 	%rd49, __cudart_i2opi_f;
+	mov.u64 	%rd52, __cudart_i2opi_f;
 	mov.u32 	%r182, -6;
-	mov.u64 	%rd50, %rd1;
+	mov.u64 	%rd53, %rd1;
 
 BB0_28:
 	.pragma "nounroll";
-	ld.const.u32 	%r131, [%rd49];
+	ld.const.u32 	%r131, [%rd52];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r129, %r131, %r40, %r183;
 	madc.hi.u32     %r183, %r131, %r40,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd50], %r129;
-	add.s64 	%rd50, %rd50, 4;
-	add.s64 	%rd49, %rd49, 4;
+	st.local.u32 	[%rd53], %r129;
+	add.s64 	%rd53, %rd53, 4;
+	add.s64 	%rd52, %rd52, 4;
 	add.s32 	%r182, %r182, 1;
 	setp.ne.s32	%p17, %r182, 0;
 	@%p17 bra 	BB0_28;
@@ -1333,8 +1348,8 @@ BB0_28:
 	st.local.u32 	[%rd2], %r183;
 	mov.u32 	%r137, 6;
 	sub.s32 	%r138, %r137, %r136;
-	mul.wide.s32 	%rd39, %r138, 4;
-	add.s64 	%rd12, %rd1, %rd39;
+	mul.wide.s32 	%rd40, %r138, 4;
+	add.s64 	%rd12, %rd1, %rd40;
 	ld.local.u32 	%r184, [%rd12];
 	ld.local.u32 	%r185, [%rd12+-4];
 	and.b32  	%r48, %r39, 31;
@@ -1458,21 +1473,24 @@ BB0_45:
 	fma.rn.f32 	%f110, %f110, %f93, %f92;
 
 BB0_47:
-	cvta.to.global.u64 	%rd40, %rd16;
-	cvta.to.global.u64 	%rd41, %rd17;
-	cvta.to.global.u64 	%rd42, %rd18;
-	add.s64 	%rd44, %rd40, %rd31;
-	ld.global.f32 	%f94, [%rd44];
+	cvta.to.global.u64 	%rd41, %rd16;
+	cvta.to.global.u64 	%rd42, %rd17;
+	cvta.to.global.u64 	%rd43, %rd18;
+	cvta.to.global.u64 	%rd44, %rd19;
+	add.s64 	%rd46, %rd41, %rd32;
+	ld.global.f32 	%f94, [%rd46];
 	fma.rn.f32 	%f95, %f110, %f20, %f94;
-	st.global.f32 	[%rd44], %f95;
-	add.s64 	%rd45, %rd41, %rd31;
-	ld.global.f32 	%f96, [%rd45];
+	st.global.f32 	[%rd46], %f95;
+	add.s64 	%rd47, %rd42, %rd32;
+	ld.global.f32 	%f96, [%rd47];
 	fma.rn.f32 	%f97, %f110, %f21, %f96;
-	st.global.f32 	[%rd45], %f97;
-	add.s64 	%rd46, %rd42, %rd31;
-	ld.global.f32 	%f98, [%rd46];
+	st.global.f32 	[%rd47], %f97;
+	add.s64 	%rd48, %rd43, %rd32;
+	ld.global.f32 	%f98, [%rd48];
 	fma.rn.f32 	%f99, %f110, %f22, %f98;
-	st.global.f32 	[%rd46], %f99;
+	st.global.f32 	[%rd48], %f99;
+	add.s64 	%rd49, %rd44, %rd32;
+	st.global.f32 	[%rd49], %f40;
 
 BB0_48:
 	ret;
@@ -1498,9 +1516,10 @@ BB0_48:
 	.param .u64 mdatatemp_param_6,
 	.param .u64 mdatatemp_param_7,
 	.param .u64 mdatatemp_param_8,
-	.param .f32 mdatatemp_param_9,
+	.param .u64 mdatatemp_param_9,
 	.param .f32 mdatatemp_param_10,
-	.param .u32 mdatatemp_param_11
+	.param .f32 mdatatemp_param_11,
+	.param .u32 mdatatemp_param_12
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -1509,7 +1528,7 @@ BB0_48:
 	.reg .pred 	%p<28>;
 	.reg .f32 	%f<112>;
 	.reg .b32 	%r<192>;
-	.reg .b64 	%rd<51>;
+	.reg .b64 	%rd<54>;
 
 
 	mov.u64 	%SPL, __local_depot0;
@@ -1522,9 +1541,10 @@ BB0_48:
 	ld.param.u64 	%rd19, [mdatatemp_param_6];
 	ld.param.u64 	%rd20, [mdatatemp_param_7];
 	ld.param.u64 	%rd21, [mdatatemp_param_8];
-	ld.param.f32 	%f40, [mdatatemp_param_9];
-	ld.param.f32 	%f41, [mdatatemp_param_10];
-	ld.param.u32 	%r73, [mdatatemp_param_11];
+	ld.param.u64 	%rd22, [mdatatemp_param_9];
+	ld.param.f32 	%f40, [mdatatemp_param_10];
+	ld.param.f32 	%f41, [mdatatemp_param_11];
+	ld.param.u32 	%r73, [mdatatemp_param_12];
 	mov.u32 	%r74, %nctaid.x;
 	mov.u32 	%r75, %ctaid.y;
 	mov.u32 	%r76, %ctaid.x;
@@ -1566,22 +1586,22 @@ BB0_3:
 	shl.b32 	%r82, %r3, 8;
 	or.b32  	%r5, %r82, -2147483648;
 	mov.u32 	%r173, 0;
-	mov.u64 	%rd47, __cudart_i2opi_f;
+	mov.u64 	%rd50, __cudart_i2opi_f;
 	mov.u32 	%r172, -6;
-	mov.u64 	%rd48, %rd1;
+	mov.u64 	%rd51, %rd1;
 
 BB0_5:
 	.pragma "nounroll";
-	ld.const.u32 	%r85, [%rd47];
+	ld.const.u32 	%r85, [%rd50];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r83, %r85, %r5, %r173;
 	madc.hi.u32     %r173, %r85, %r5,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd48], %r83;
-	add.s64 	%rd48, %rd48, 4;
-	add.s64 	%rd47, %rd47, 4;
+	st.local.u32 	[%rd51], %r83;
+	add.s64 	%rd51, %rd51, 4;
+	add.s64 	%rd50, %rd50, 4;
 	add.s32 	%r172, %r172, 1;
 	setp.ne.s32	%p4, %r172, 0;
 	@%p4 bra 	BB0_5;
@@ -1593,8 +1613,8 @@ BB0_5:
 	st.local.u32 	[%rd2], %r173;
 	mov.u32 	%r91, 6;
 	sub.s32 	%r92, %r91, %r90;
-	mul.wide.s32 	%rd24, %r92, 4;
-	add.s64 	%rd7, %rd1, %rd24;
+	mul.wide.s32 	%rd25, %r92, 4;
+	add.s64 	%rd7, %rd1, %rd25;
 	ld.local.u32 	%r174, [%rd7];
 	ld.local.u32 	%r175, [%rd7+-4];
 	and.b32  	%r13, %r4, 31;
@@ -1717,31 +1737,31 @@ BB0_22:
 	fma.rn.f32 	%f104, %f104, %f64, %f63;
 
 BB0_24:
-	cvta.to.global.u64 	%rd25, %rd19;
 	cvta.to.global.u64 	%rd26, %rd20;
 	cvta.to.global.u64 	%rd27, %rd21;
-	cvta.to.global.u64 	%rd28, %rd13;
-	cvta.to.global.u64 	%rd29, %rd14;
-	cvta.to.global.u64 	%rd30, %rd15;
-	mul.wide.s32 	%rd31, %r1, 4;
-	add.s64 	%rd32, %rd25, %rd31;
-	ld.global.nc.f32 	%f20, [%rd32];
-	add.s64 	%rd33, %rd28, %rd31;
-	ld.global.f32 	%f65, [%rd33];
+	cvta.to.global.u64 	%rd28, %rd22;
+	cvta.to.global.u64 	%rd29, %rd13;
+	cvta.to.global.u64 	%rd30, %rd14;
+	cvta.to.global.u64 	%rd31, %rd15;
+	mul.wide.s32 	%rd32, %r1, 4;
+	add.s64 	%rd33, %rd26, %rd32;
+	ld.global.nc.f32 	%f20, [%rd33];
+	add.s64 	%rd34, %rd29, %rd32;
+	ld.global.f32 	%f65, [%rd34];
 	fma.rn.f32 	%f66, %f104, %f20, %f65;
-	st.global.f32 	[%rd33], %f66;
-	add.s64 	%rd34, %rd26, %rd31;
-	ld.global.nc.f32 	%f21, [%rd34];
-	add.s64 	%rd35, %rd29, %rd31;
-	ld.global.f32 	%f67, [%rd35];
+	st.global.f32 	[%rd34], %f66;
+	add.s64 	%rd35, %rd27, %rd32;
+	ld.global.nc.f32 	%f21, [%rd35];
+	add.s64 	%rd36, %rd30, %rd32;
+	ld.global.f32 	%f67, [%rd36];
 	fma.rn.f32 	%f68, %f104, %f21, %f67;
-	st.global.f32 	[%rd35], %f68;
-	add.s64 	%rd36, %rd27, %rd31;
-	ld.global.nc.f32 	%f22, [%rd36];
-	add.s64 	%rd37, %rd30, %rd31;
-	ld.global.f32 	%f69, [%rd37];
+	st.global.f32 	[%rd36], %f68;
+	add.s64 	%rd37, %rd28, %rd32;
+	ld.global.nc.f32 	%f22, [%rd37];
+	add.s64 	%rd38, %rd31, %rd32;
+	ld.global.f32 	%f69, [%rd38];
 	fma.rn.f32 	%f70, %f104, %f22, %f69;
-	st.global.f32 	[%rd37], %f70;
+	st.global.f32 	[%rd38], %f70;
 	@%p2 bra 	BB0_26;
 
 	mov.f32 	%f71, 0f00000000;
@@ -1764,22 +1784,22 @@ BB0_26:
 	shl.b32 	%r128, %r38, 8;
 	or.b32  	%r40, %r128, -2147483648;
 	mov.u32 	%r183, 0;
-	mov.u64 	%rd49, __cudart_i2opi_f;
+	mov.u64 	%rd52, __cudart_i2opi_f;
 	mov.u32 	%r182, -6;
-	mov.u64 	%rd50, %rd1;
+	mov.u64 	%rd53, %rd1;
 
 BB0_28:
 	.pragma "nounroll";
-	ld.const.u32 	%r131, [%rd49];
+	ld.const.u32 	%r131, [%rd52];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r129, %r131, %r40, %r183;
 	madc.hi.u32     %r183, %r131, %r40,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd50], %r129;
-	add.s64 	%rd50, %rd50, 4;
-	add.s64 	%rd49, %rd49, 4;
+	st.local.u32 	[%rd53], %r129;
+	add.s64 	%rd53, %rd53, 4;
+	add.s64 	%rd52, %rd52, 4;
 	add.s32 	%r182, %r182, 1;
 	setp.ne.s32	%p17, %r182, 0;
 	@%p17 bra 	BB0_28;
@@ -1791,8 +1811,8 @@ BB0_28:
 	st.local.u32 	[%rd2], %r183;
 	mov.u32 	%r137, 6;
 	sub.s32 	%r138, %r137, %r136;
-	mul.wide.s32 	%rd39, %r138, 4;
-	add.s64 	%rd12, %rd1, %rd39;
+	mul.wide.s32 	%rd40, %r138, 4;
+	add.s64 	%rd12, %rd1, %rd40;
 	ld.local.u32 	%r184, [%rd12];
 	ld.local.u32 	%r185, [%rd12+-4];
 	and.b32  	%r48, %r39, 31;
@@ -1916,21 +1936,24 @@ BB0_45:
 	fma.rn.f32 	%f110, %f110, %f93, %f92;
 
 BB0_47:
-	cvta.to.global.u64 	%rd40, %rd16;
-	cvta.to.global.u64 	%rd41, %rd17;
-	cvta.to.global.u64 	%rd42, %rd18;
-	add.s64 	%rd44, %rd40, %rd31;
-	ld.global.f32 	%f94, [%rd44];
+	cvta.to.global.u64 	%rd41, %rd16;
+	cvta.to.global.u64 	%rd42, %rd17;
+	cvta.to.global.u64 	%rd43, %rd18;
+	cvta.to.global.u64 	%rd44, %rd19;
+	add.s64 	%rd46, %rd41, %rd32;
+	ld.global.f32 	%f94, [%rd46];
 	fma.rn.f32 	%f95, %f110, %f20, %f94;
-	st.global.f32 	[%rd44], %f95;
-	add.s64 	%rd45, %rd41, %rd31;
-	ld.global.f32 	%f96, [%rd45];
+	st.global.f32 	[%rd46], %f95;
+	add.s64 	%rd47, %rd42, %rd32;
+	ld.global.f32 	%f96, [%rd47];
 	fma.rn.f32 	%f97, %f110, %f21, %f96;
-	st.global.f32 	[%rd45], %f97;
-	add.s64 	%rd46, %rd42, %rd31;
-	ld.global.f32 	%f98, [%rd46];
+	st.global.f32 	[%rd47], %f97;
+	add.s64 	%rd48, %rd43, %rd32;
+	ld.global.f32 	%f98, [%rd48];
 	fma.rn.f32 	%f99, %f110, %f22, %f98;
-	st.global.f32 	[%rd46], %f99;
+	st.global.f32 	[%rd48], %f99;
+	add.s64 	%rd49, %rd44, %rd32;
+	st.global.f32 	[%rd49], %f40;
 
 BB0_48:
 	ret;
@@ -1956,9 +1979,10 @@ BB0_48:
 	.param .u64 mdatatemp_param_6,
 	.param .u64 mdatatemp_param_7,
 	.param .u64 mdatatemp_param_8,
-	.param .f32 mdatatemp_param_9,
+	.param .u64 mdatatemp_param_9,
 	.param .f32 mdatatemp_param_10,
-	.param .u32 mdatatemp_param_11
+	.param .f32 mdatatemp_param_11,
+	.param .u32 mdatatemp_param_12
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -1967,7 +1991,7 @@ BB0_48:
 	.reg .pred 	%p<28>;
 	.reg .f32 	%f<112>;
 	.reg .b32 	%r<192>;
-	.reg .b64 	%rd<51>;
+	.reg .b64 	%rd<54>;
 
 
 	mov.u64 	%SPL, __local_depot0;
@@ -1980,9 +2004,10 @@ BB0_48:
 	ld.param.u64 	%rd19, [mdatatemp_param_6];
 	ld.param.u64 	%rd20, [mdatatemp_param_7];
 	ld.param.u64 	%rd21, [mdatatemp_param_8];
-	ld.param.f32 	%f40, [mdatatemp_param_9];
-	ld.param.f32 	%f41, [mdatatemp_param_10];
-	ld.param.u32 	%r73, [mdatatemp_param_11];
+	ld.param.u64 	%rd22, [mdatatemp_param_9];
+	ld.param.f32 	%f40, [mdatatemp_param_10];
+	ld.param.f32 	%f41, [mdatatemp_param_11];
+	ld.param.u32 	%r73, [mdatatemp_param_12];
 	mov.u32 	%r74, %nctaid.x;
 	mov.u32 	%r75, %ctaid.y;
 	mov.u32 	%r76, %ctaid.x;
@@ -2024,22 +2049,22 @@ BB0_3:
 	shl.b32 	%r82, %r3, 8;
 	or.b32  	%r5, %r82, -2147483648;
 	mov.u32 	%r173, 0;
-	mov.u64 	%rd47, __cudart_i2opi_f;
+	mov.u64 	%rd50, __cudart_i2opi_f;
 	mov.u32 	%r172, -6;
-	mov.u64 	%rd48, %rd1;
+	mov.u64 	%rd51, %rd1;
 
 BB0_5:
 	.pragma "nounroll";
-	ld.const.u32 	%r85, [%rd47];
+	ld.const.u32 	%r85, [%rd50];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r83, %r85, %r5, %r173;
 	madc.hi.u32     %r173, %r85, %r5,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd48], %r83;
-	add.s64 	%rd48, %rd48, 4;
-	add.s64 	%rd47, %rd47, 4;
+	st.local.u32 	[%rd51], %r83;
+	add.s64 	%rd51, %rd51, 4;
+	add.s64 	%rd50, %rd50, 4;
 	add.s32 	%r172, %r172, 1;
 	setp.ne.s32	%p4, %r172, 0;
 	@%p4 bra 	BB0_5;
@@ -2051,8 +2076,8 @@ BB0_5:
 	st.local.u32 	[%rd2], %r173;
 	mov.u32 	%r91, 6;
 	sub.s32 	%r92, %r91, %r90;
-	mul.wide.s32 	%rd24, %r92, 4;
-	add.s64 	%rd7, %rd1, %rd24;
+	mul.wide.s32 	%rd25, %r92, 4;
+	add.s64 	%rd7, %rd1, %rd25;
 	ld.local.u32 	%r174, [%rd7];
 	ld.local.u32 	%r175, [%rd7+-4];
 	and.b32  	%r13, %r4, 31;
@@ -2175,31 +2200,31 @@ BB0_22:
 	fma.rn.f32 	%f104, %f104, %f64, %f63;
 
 BB0_24:
-	cvta.to.global.u64 	%rd25, %rd19;
 	cvta.to.global.u64 	%rd26, %rd20;
 	cvta.to.global.u64 	%rd27, %rd21;
-	cvta.to.global.u64 	%rd28, %rd13;
-	cvta.to.global.u64 	%rd29, %rd14;
-	cvta.to.global.u64 	%rd30, %rd15;
-	mul.wide.s32 	%rd31, %r1, 4;
-	add.s64 	%rd32, %rd25, %rd31;
-	ld.global.nc.f32 	%f20, [%rd32];
-	add.s64 	%rd33, %rd28, %rd31;
-	ld.global.f32 	%f65, [%rd33];
+	cvta.to.global.u64 	%rd28, %rd22;
+	cvta.to.global.u64 	%rd29, %rd13;
+	cvta.to.global.u64 	%rd30, %rd14;
+	cvta.to.global.u64 	%rd31, %rd15;
+	mul.wide.s32 	%rd32, %r1, 4;
+	add.s64 	%rd33, %rd26, %rd32;
+	ld.global.nc.f32 	%f20, [%rd33];
+	add.s64 	%rd34, %rd29, %rd32;
+	ld.global.f32 	%f65, [%rd34];
 	fma.rn.f32 	%f66, %f104, %f20, %f65;
-	st.global.f32 	[%rd33], %f66;
-	add.s64 	%rd34, %rd26, %rd31;
-	ld.global.nc.f32 	%f21, [%rd34];
-	add.s64 	%rd35, %rd29, %rd31;
-	ld.global.f32 	%f67, [%rd35];
+	st.global.f32 	[%rd34], %f66;
+	add.s64 	%rd35, %rd27, %rd32;
+	ld.global.nc.f32 	%f21, [%rd35];
+	add.s64 	%rd36, %rd30, %rd32;
+	ld.global.f32 	%f67, [%rd36];
 	fma.rn.f32 	%f68, %f104, %f21, %f67;
-	st.global.f32 	[%rd35], %f68;
-	add.s64 	%rd36, %rd27, %rd31;
-	ld.global.nc.f32 	%f22, [%rd36];
-	add.s64 	%rd37, %rd30, %rd31;
-	ld.global.f32 	%f69, [%rd37];
+	st.global.f32 	[%rd36], %f68;
+	add.s64 	%rd37, %rd28, %rd32;
+	ld.global.nc.f32 	%f22, [%rd37];
+	add.s64 	%rd38, %rd31, %rd32;
+	ld.global.f32 	%f69, [%rd38];
 	fma.rn.f32 	%f70, %f104, %f22, %f69;
-	st.global.f32 	[%rd37], %f70;
+	st.global.f32 	[%rd38], %f70;
 	@%p2 bra 	BB0_26;
 
 	mov.f32 	%f71, 0f00000000;
@@ -2222,22 +2247,22 @@ BB0_26:
 	shl.b32 	%r128, %r38, 8;
 	or.b32  	%r40, %r128, -2147483648;
 	mov.u32 	%r183, 0;
-	mov.u64 	%rd49, __cudart_i2opi_f;
+	mov.u64 	%rd52, __cudart_i2opi_f;
 	mov.u32 	%r182, -6;
-	mov.u64 	%rd50, %rd1;
+	mov.u64 	%rd53, %rd1;
 
 BB0_28:
 	.pragma "nounroll";
-	ld.const.u32 	%r131, [%rd49];
+	ld.const.u32 	%r131, [%rd52];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r129, %r131, %r40, %r183;
 	madc.hi.u32     %r183, %r131, %r40,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd50], %r129;
-	add.s64 	%rd50, %rd50, 4;
-	add.s64 	%rd49, %rd49, 4;
+	st.local.u32 	[%rd53], %r129;
+	add.s64 	%rd53, %rd53, 4;
+	add.s64 	%rd52, %rd52, 4;
 	add.s32 	%r182, %r182, 1;
 	setp.ne.s32	%p17, %r182, 0;
 	@%p17 bra 	BB0_28;
@@ -2249,8 +2274,8 @@ BB0_28:
 	st.local.u32 	[%rd2], %r183;
 	mov.u32 	%r137, 6;
 	sub.s32 	%r138, %r137, %r136;
-	mul.wide.s32 	%rd39, %r138, 4;
-	add.s64 	%rd12, %rd1, %rd39;
+	mul.wide.s32 	%rd40, %r138, 4;
+	add.s64 	%rd12, %rd1, %rd40;
 	ld.local.u32 	%r184, [%rd12];
 	ld.local.u32 	%r185, [%rd12+-4];
 	and.b32  	%r48, %r39, 31;
@@ -2374,21 +2399,24 @@ BB0_45:
 	fma.rn.f32 	%f110, %f110, %f93, %f92;
 
 BB0_47:
-	cvta.to.global.u64 	%rd40, %rd16;
-	cvta.to.global.u64 	%rd41, %rd17;
-	cvta.to.global.u64 	%rd42, %rd18;
-	add.s64 	%rd44, %rd40, %rd31;
-	ld.global.f32 	%f94, [%rd44];
+	cvta.to.global.u64 	%rd41, %rd16;
+	cvta.to.global.u64 	%rd42, %rd17;
+	cvta.to.global.u64 	%rd43, %rd18;
+	cvta.to.global.u64 	%rd44, %rd19;
+	add.s64 	%rd46, %rd41, %rd32;
+	ld.global.f32 	%f94, [%rd46];
 	fma.rn.f32 	%f95, %f110, %f20, %f94;
-	st.global.f32 	[%rd44], %f95;
-	add.s64 	%rd45, %rd41, %rd31;
-	ld.global.f32 	%f96, [%rd45];
+	st.global.f32 	[%rd46], %f95;
+	add.s64 	%rd47, %rd42, %rd32;
+	ld.global.f32 	%f96, [%rd47];
 	fma.rn.f32 	%f97, %f110, %f21, %f96;
-	st.global.f32 	[%rd45], %f97;
-	add.s64 	%rd46, %rd42, %rd31;
-	ld.global.f32 	%f98, [%rd46];
+	st.global.f32 	[%rd47], %f97;
+	add.s64 	%rd48, %rd43, %rd32;
+	ld.global.f32 	%f98, [%rd48];
 	fma.rn.f32 	%f99, %f110, %f22, %f98;
-	st.global.f32 	[%rd46], %f99;
+	st.global.f32 	[%rd48], %f99;
+	add.s64 	%rd49, %rd44, %rd32;
+	st.global.f32 	[%rd49], %f40;
 
 BB0_48:
 	ret;
@@ -2414,9 +2442,10 @@ BB0_48:
 	.param .u64 mdatatemp_param_6,
 	.param .u64 mdatatemp_param_7,
 	.param .u64 mdatatemp_param_8,
-	.param .f32 mdatatemp_param_9,
+	.param .u64 mdatatemp_param_9,
 	.param .f32 mdatatemp_param_10,
-	.param .u32 mdatatemp_param_11
+	.param .f32 mdatatemp_param_11,
+	.param .u32 mdatatemp_param_12
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -2425,7 +2454,7 @@ BB0_48:
 	.reg .pred 	%p<28>;
 	.reg .f32 	%f<112>;
 	.reg .b32 	%r<192>;
-	.reg .b64 	%rd<51>;
+	.reg .b64 	%rd<54>;
 
 
 	mov.u64 	%SPL, __local_depot0;
@@ -2438,9 +2467,10 @@ BB0_48:
 	ld.param.u64 	%rd19, [mdatatemp_param_6];
 	ld.param.u64 	%rd20, [mdatatemp_param_7];
 	ld.param.u64 	%rd21, [mdatatemp_param_8];
-	ld.param.f32 	%f40, [mdatatemp_param_9];
-	ld.param.f32 	%f41, [mdatatemp_param_10];
-	ld.param.u32 	%r73, [mdatatemp_param_11];
+	ld.param.u64 	%rd22, [mdatatemp_param_9];
+	ld.param.f32 	%f40, [mdatatemp_param_10];
+	ld.param.f32 	%f41, [mdatatemp_param_11];
+	ld.param.u32 	%r73, [mdatatemp_param_12];
 	mov.u32 	%r74, %nctaid.x;
 	mov.u32 	%r75, %ctaid.y;
 	mov.u32 	%r76, %ctaid.x;
@@ -2482,22 +2512,22 @@ BB0_3:
 	shl.b32 	%r82, %r3, 8;
 	or.b32  	%r5, %r82, -2147483648;
 	mov.u32 	%r173, 0;
-	mov.u64 	%rd47, __cudart_i2opi_f;
+	mov.u64 	%rd50, __cudart_i2opi_f;
 	mov.u32 	%r172, -6;
-	mov.u64 	%rd48, %rd1;
+	mov.u64 	%rd51, %rd1;
 
 BB0_5:
 	.pragma "nounroll";
-	ld.const.u32 	%r85, [%rd47];
+	ld.const.u32 	%r85, [%rd50];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r83, %r85, %r5, %r173;
 	madc.hi.u32     %r173, %r85, %r5,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd48], %r83;
-	add.s64 	%rd48, %rd48, 4;
-	add.s64 	%rd47, %rd47, 4;
+	st.local.u32 	[%rd51], %r83;
+	add.s64 	%rd51, %rd51, 4;
+	add.s64 	%rd50, %rd50, 4;
 	add.s32 	%r172, %r172, 1;
 	setp.ne.s32	%p4, %r172, 0;
 	@%p4 bra 	BB0_5;
@@ -2509,8 +2539,8 @@ BB0_5:
 	st.local.u32 	[%rd2], %r173;
 	mov.u32 	%r91, 6;
 	sub.s32 	%r92, %r91, %r90;
-	mul.wide.s32 	%rd24, %r92, 4;
-	add.s64 	%rd7, %rd1, %rd24;
+	mul.wide.s32 	%rd25, %r92, 4;
+	add.s64 	%rd7, %rd1, %rd25;
 	ld.local.u32 	%r174, [%rd7];
 	ld.local.u32 	%r175, [%rd7+-4];
 	and.b32  	%r13, %r4, 31;
@@ -2633,31 +2663,31 @@ BB0_22:
 	fma.rn.f32 	%f104, %f104, %f64, %f63;
 
 BB0_24:
-	cvta.to.global.u64 	%rd25, %rd19;
 	cvta.to.global.u64 	%rd26, %rd20;
 	cvta.to.global.u64 	%rd27, %rd21;
-	cvta.to.global.u64 	%rd28, %rd13;
-	cvta.to.global.u64 	%rd29, %rd14;
-	cvta.to.global.u64 	%rd30, %rd15;
-	mul.wide.s32 	%rd31, %r1, 4;
-	add.s64 	%rd32, %rd25, %rd31;
-	ld.global.nc.f32 	%f20, [%rd32];
-	add.s64 	%rd33, %rd28, %rd31;
-	ld.global.f32 	%f65, [%rd33];
+	cvta.to.global.u64 	%rd28, %rd22;
+	cvta.to.global.u64 	%rd29, %rd13;
+	cvta.to.global.u64 	%rd30, %rd14;
+	cvta.to.global.u64 	%rd31, %rd15;
+	mul.wide.s32 	%rd32, %r1, 4;
+	add.s64 	%rd33, %rd26, %rd32;
+	ld.global.nc.f32 	%f20, [%rd33];
+	add.s64 	%rd34, %rd29, %rd32;
+	ld.global.f32 	%f65, [%rd34];
 	fma.rn.f32 	%f66, %f104, %f20, %f65;
-	st.global.f32 	[%rd33], %f66;
-	add.s64 	%rd34, %rd26, %rd31;
-	ld.global.nc.f32 	%f21, [%rd34];
-	add.s64 	%rd35, %rd29, %rd31;
-	ld.global.f32 	%f67, [%rd35];
+	st.global.f32 	[%rd34], %f66;
+	add.s64 	%rd35, %rd27, %rd32;
+	ld.global.nc.f32 	%f21, [%rd35];
+	add.s64 	%rd36, %rd30, %rd32;
+	ld.global.f32 	%f67, [%rd36];
 	fma.rn.f32 	%f68, %f104, %f21, %f67;
-	st.global.f32 	[%rd35], %f68;
-	add.s64 	%rd36, %rd27, %rd31;
-	ld.global.nc.f32 	%f22, [%rd36];
-	add.s64 	%rd37, %rd30, %rd31;
-	ld.global.f32 	%f69, [%rd37];
+	st.global.f32 	[%rd36], %f68;
+	add.s64 	%rd37, %rd28, %rd32;
+	ld.global.nc.f32 	%f22, [%rd37];
+	add.s64 	%rd38, %rd31, %rd32;
+	ld.global.f32 	%f69, [%rd38];
 	fma.rn.f32 	%f70, %f104, %f22, %f69;
-	st.global.f32 	[%rd37], %f70;
+	st.global.f32 	[%rd38], %f70;
 	@%p2 bra 	BB0_26;
 
 	mov.f32 	%f71, 0f00000000;
@@ -2680,22 +2710,22 @@ BB0_26:
 	shl.b32 	%r128, %r38, 8;
 	or.b32  	%r40, %r128, -2147483648;
 	mov.u32 	%r183, 0;
-	mov.u64 	%rd49, __cudart_i2opi_f;
+	mov.u64 	%rd52, __cudart_i2opi_f;
 	mov.u32 	%r182, -6;
-	mov.u64 	%rd50, %rd1;
+	mov.u64 	%rd53, %rd1;
 
 BB0_28:
 	.pragma "nounroll";
-	ld.const.u32 	%r131, [%rd49];
+	ld.const.u32 	%r131, [%rd52];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r129, %r131, %r40, %r183;
 	madc.hi.u32     %r183, %r131, %r40,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd50], %r129;
-	add.s64 	%rd50, %rd50, 4;
-	add.s64 	%rd49, %rd49, 4;
+	st.local.u32 	[%rd53], %r129;
+	add.s64 	%rd53, %rd53, 4;
+	add.s64 	%rd52, %rd52, 4;
 	add.s32 	%r182, %r182, 1;
 	setp.ne.s32	%p17, %r182, 0;
 	@%p17 bra 	BB0_28;
@@ -2707,8 +2737,8 @@ BB0_28:
 	st.local.u32 	[%rd2], %r183;
 	mov.u32 	%r137, 6;
 	sub.s32 	%r138, %r137, %r136;
-	mul.wide.s32 	%rd39, %r138, 4;
-	add.s64 	%rd12, %rd1, %rd39;
+	mul.wide.s32 	%rd40, %r138, 4;
+	add.s64 	%rd12, %rd1, %rd40;
 	ld.local.u32 	%r184, [%rd12];
 	ld.local.u32 	%r185, [%rd12+-4];
 	and.b32  	%r48, %r39, 31;
@@ -2832,21 +2862,24 @@ BB0_45:
 	fma.rn.f32 	%f110, %f110, %f93, %f92;
 
 BB0_47:
-	cvta.to.global.u64 	%rd40, %rd16;
-	cvta.to.global.u64 	%rd41, %rd17;
-	cvta.to.global.u64 	%rd42, %rd18;
-	add.s64 	%rd44, %rd40, %rd31;
-	ld.global.f32 	%f94, [%rd44];
+	cvta.to.global.u64 	%rd41, %rd16;
+	cvta.to.global.u64 	%rd42, %rd17;
+	cvta.to.global.u64 	%rd43, %rd18;
+	cvta.to.global.u64 	%rd44, %rd19;
+	add.s64 	%rd46, %rd41, %rd32;
+	ld.global.f32 	%f94, [%rd46];
 	fma.rn.f32 	%f95, %f110, %f20, %f94;
-	st.global.f32 	[%rd44], %f95;
-	add.s64 	%rd45, %rd41, %rd31;
-	ld.global.f32 	%f96, [%rd45];
+	st.global.f32 	[%rd46], %f95;
+	add.s64 	%rd47, %rd42, %rd32;
+	ld.global.f32 	%f96, [%rd47];
 	fma.rn.f32 	%f97, %f110, %f21, %f96;
-	st.global.f32 	[%rd45], %f97;
-	add.s64 	%rd46, %rd42, %rd31;
-	ld.global.f32 	%f98, [%rd46];
+	st.global.f32 	[%rd47], %f97;
+	add.s64 	%rd48, %rd43, %rd32;
+	ld.global.f32 	%f98, [%rd48];
 	fma.rn.f32 	%f99, %f110, %f22, %f98;
-	st.global.f32 	[%rd46], %f99;
+	st.global.f32 	[%rd48], %f99;
+	add.s64 	%rd49, %rd44, %rd32;
+	st.global.f32 	[%rd49], %f40;
 
 BB0_48:
 	ret;
@@ -2872,9 +2905,10 @@ BB0_48:
 	.param .u64 mdatatemp_param_6,
 	.param .u64 mdatatemp_param_7,
 	.param .u64 mdatatemp_param_8,
-	.param .f32 mdatatemp_param_9,
+	.param .u64 mdatatemp_param_9,
 	.param .f32 mdatatemp_param_10,
-	.param .u32 mdatatemp_param_11
+	.param .f32 mdatatemp_param_11,
+	.param .u32 mdatatemp_param_12
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -2883,7 +2917,7 @@ BB0_48:
 	.reg .pred 	%p<28>;
 	.reg .f32 	%f<112>;
 	.reg .b32 	%r<192>;
-	.reg .b64 	%rd<51>;
+	.reg .b64 	%rd<54>;
 
 
 	mov.u64 	%SPL, __local_depot0;
@@ -2896,9 +2930,10 @@ BB0_48:
 	ld.param.u64 	%rd19, [mdatatemp_param_6];
 	ld.param.u64 	%rd20, [mdatatemp_param_7];
 	ld.param.u64 	%rd21, [mdatatemp_param_8];
-	ld.param.f32 	%f40, [mdatatemp_param_9];
-	ld.param.f32 	%f41, [mdatatemp_param_10];
-	ld.param.u32 	%r73, [mdatatemp_param_11];
+	ld.param.u64 	%rd22, [mdatatemp_param_9];
+	ld.param.f32 	%f40, [mdatatemp_param_10];
+	ld.param.f32 	%f41, [mdatatemp_param_11];
+	ld.param.u32 	%r73, [mdatatemp_param_12];
 	mov.u32 	%r74, %nctaid.x;
 	mov.u32 	%r75, %ctaid.y;
 	mov.u32 	%r76, %ctaid.x;
@@ -2940,22 +2975,22 @@ BB0_3:
 	shl.b32 	%r82, %r3, 8;
 	or.b32  	%r5, %r82, -2147483648;
 	mov.u32 	%r173, 0;
-	mov.u64 	%rd47, __cudart_i2opi_f;
+	mov.u64 	%rd50, __cudart_i2opi_f;
 	mov.u32 	%r172, -6;
-	mov.u64 	%rd48, %rd1;
+	mov.u64 	%rd51, %rd1;
 
 BB0_5:
 	.pragma "nounroll";
-	ld.const.u32 	%r85, [%rd47];
+	ld.const.u32 	%r85, [%rd50];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r83, %r85, %r5, %r173;
 	madc.hi.u32     %r173, %r85, %r5,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd48], %r83;
-	add.s64 	%rd48, %rd48, 4;
-	add.s64 	%rd47, %rd47, 4;
+	st.local.u32 	[%rd51], %r83;
+	add.s64 	%rd51, %rd51, 4;
+	add.s64 	%rd50, %rd50, 4;
 	add.s32 	%r172, %r172, 1;
 	setp.ne.s32	%p4, %r172, 0;
 	@%p4 bra 	BB0_5;
@@ -2967,8 +3002,8 @@ BB0_5:
 	st.local.u32 	[%rd2], %r173;
 	mov.u32 	%r91, 6;
 	sub.s32 	%r92, %r91, %r90;
-	mul.wide.s32 	%rd24, %r92, 4;
-	add.s64 	%rd7, %rd1, %rd24;
+	mul.wide.s32 	%rd25, %r92, 4;
+	add.s64 	%rd7, %rd1, %rd25;
 	ld.local.u32 	%r174, [%rd7];
 	ld.local.u32 	%r175, [%rd7+-4];
 	and.b32  	%r13, %r4, 31;
@@ -3091,31 +3126,31 @@ BB0_22:
 	fma.rn.f32 	%f104, %f104, %f64, %f63;
 
 BB0_24:
-	cvta.to.global.u64 	%rd25, %rd19;
 	cvta.to.global.u64 	%rd26, %rd20;
 	cvta.to.global.u64 	%rd27, %rd21;
-	cvta.to.global.u64 	%rd28, %rd13;
-	cvta.to.global.u64 	%rd29, %rd14;
-	cvta.to.global.u64 	%rd30, %rd15;
-	mul.wide.s32 	%rd31, %r1, 4;
-	add.s64 	%rd32, %rd25, %rd31;
-	ld.global.nc.f32 	%f20, [%rd32];
-	add.s64 	%rd33, %rd28, %rd31;
-	ld.global.f32 	%f65, [%rd33];
+	cvta.to.global.u64 	%rd28, %rd22;
+	cvta.to.global.u64 	%rd29, %rd13;
+	cvta.to.global.u64 	%rd30, %rd14;
+	cvta.to.global.u64 	%rd31, %rd15;
+	mul.wide.s32 	%rd32, %r1, 4;
+	add.s64 	%rd33, %rd26, %rd32;
+	ld.global.nc.f32 	%f20, [%rd33];
+	add.s64 	%rd34, %rd29, %rd32;
+	ld.global.f32 	%f65, [%rd34];
 	fma.rn.f32 	%f66, %f104, %f20, %f65;
-	st.global.f32 	[%rd33], %f66;
-	add.s64 	%rd34, %rd26, %rd31;
-	ld.global.nc.f32 	%f21, [%rd34];
-	add.s64 	%rd35, %rd29, %rd31;
-	ld.global.f32 	%f67, [%rd35];
+	st.global.f32 	[%rd34], %f66;
+	add.s64 	%rd35, %rd27, %rd32;
+	ld.global.nc.f32 	%f21, [%rd35];
+	add.s64 	%rd36, %rd30, %rd32;
+	ld.global.f32 	%f67, [%rd36];
 	fma.rn.f32 	%f68, %f104, %f21, %f67;
-	st.global.f32 	[%rd35], %f68;
-	add.s64 	%rd36, %rd27, %rd31;
-	ld.global.nc.f32 	%f22, [%rd36];
-	add.s64 	%rd37, %rd30, %rd31;
-	ld.global.f32 	%f69, [%rd37];
+	st.global.f32 	[%rd36], %f68;
+	add.s64 	%rd37, %rd28, %rd32;
+	ld.global.nc.f32 	%f22, [%rd37];
+	add.s64 	%rd38, %rd31, %rd32;
+	ld.global.f32 	%f69, [%rd38];
 	fma.rn.f32 	%f70, %f104, %f22, %f69;
-	st.global.f32 	[%rd37], %f70;
+	st.global.f32 	[%rd38], %f70;
 	@%p2 bra 	BB0_26;
 
 	mov.f32 	%f71, 0f00000000;
@@ -3138,22 +3173,22 @@ BB0_26:
 	shl.b32 	%r128, %r38, 8;
 	or.b32  	%r40, %r128, -2147483648;
 	mov.u32 	%r183, 0;
-	mov.u64 	%rd49, __cudart_i2opi_f;
+	mov.u64 	%rd52, __cudart_i2opi_f;
 	mov.u32 	%r182, -6;
-	mov.u64 	%rd50, %rd1;
+	mov.u64 	%rd53, %rd1;
 
 BB0_28:
 	.pragma "nounroll";
-	ld.const.u32 	%r131, [%rd49];
+	ld.const.u32 	%r131, [%rd52];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r129, %r131, %r40, %r183;
 	madc.hi.u32     %r183, %r131, %r40,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd50], %r129;
-	add.s64 	%rd50, %rd50, 4;
-	add.s64 	%rd49, %rd49, 4;
+	st.local.u32 	[%rd53], %r129;
+	add.s64 	%rd53, %rd53, 4;
+	add.s64 	%rd52, %rd52, 4;
 	add.s32 	%r182, %r182, 1;
 	setp.ne.s32	%p17, %r182, 0;
 	@%p17 bra 	BB0_28;
@@ -3165,8 +3200,8 @@ BB0_28:
 	st.local.u32 	[%rd2], %r183;
 	mov.u32 	%r137, 6;
 	sub.s32 	%r138, %r137, %r136;
-	mul.wide.s32 	%rd39, %r138, 4;
-	add.s64 	%rd12, %rd1, %rd39;
+	mul.wide.s32 	%rd40, %r138, 4;
+	add.s64 	%rd12, %rd1, %rd40;
 	ld.local.u32 	%r184, [%rd12];
 	ld.local.u32 	%r185, [%rd12+-4];
 	and.b32  	%r48, %r39, 31;
@@ -3290,21 +3325,24 @@ BB0_45:
 	fma.rn.f32 	%f110, %f110, %f93, %f92;
 
 BB0_47:
-	cvta.to.global.u64 	%rd40, %rd16;
-	cvta.to.global.u64 	%rd41, %rd17;
-	cvta.to.global.u64 	%rd42, %rd18;
-	add.s64 	%rd44, %rd40, %rd31;
-	ld.global.f32 	%f94, [%rd44];
+	cvta.to.global.u64 	%rd41, %rd16;
+	cvta.to.global.u64 	%rd42, %rd17;
+	cvta.to.global.u64 	%rd43, %rd18;
+	cvta.to.global.u64 	%rd44, %rd19;
+	add.s64 	%rd46, %rd41, %rd32;
+	ld.global.f32 	%f94, [%rd46];
 	fma.rn.f32 	%f95, %f110, %f20, %f94;
-	st.global.f32 	[%rd44], %f95;
-	add.s64 	%rd45, %rd41, %rd31;
-	ld.global.f32 	%f96, [%rd45];
+	st.global.f32 	[%rd46], %f95;
+	add.s64 	%rd47, %rd42, %rd32;
+	ld.global.f32 	%f96, [%rd47];
 	fma.rn.f32 	%f97, %f110, %f21, %f96;
-	st.global.f32 	[%rd45], %f97;
-	add.s64 	%rd46, %rd42, %rd31;
-	ld.global.f32 	%f98, [%rd46];
+	st.global.f32 	[%rd47], %f97;
+	add.s64 	%rd48, %rd43, %rd32;
+	ld.global.f32 	%f98, [%rd48];
 	fma.rn.f32 	%f99, %f110, %f22, %f98;
-	st.global.f32 	[%rd46], %f99;
+	st.global.f32 	[%rd48], %f99;
+	add.s64 	%rd49, %rd44, %rd32;
+	st.global.f32 	[%rd49], %f40;
 
 BB0_48:
 	ret;
@@ -3330,9 +3368,10 @@ BB0_48:
 	.param .u64 mdatatemp_param_6,
 	.param .u64 mdatatemp_param_7,
 	.param .u64 mdatatemp_param_8,
-	.param .f32 mdatatemp_param_9,
+	.param .u64 mdatatemp_param_9,
 	.param .f32 mdatatemp_param_10,
-	.param .u32 mdatatemp_param_11
+	.param .f32 mdatatemp_param_11,
+	.param .u32 mdatatemp_param_12
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -3341,7 +3380,7 @@ BB0_48:
 	.reg .pred 	%p<28>;
 	.reg .f32 	%f<112>;
 	.reg .b32 	%r<192>;
-	.reg .b64 	%rd<51>;
+	.reg .b64 	%rd<54>;
 
 
 	mov.u64 	%SPL, __local_depot0;
@@ -3354,9 +3393,10 @@ BB0_48:
 	ld.param.u64 	%rd19, [mdatatemp_param_6];
 	ld.param.u64 	%rd20, [mdatatemp_param_7];
 	ld.param.u64 	%rd21, [mdatatemp_param_8];
-	ld.param.f32 	%f40, [mdatatemp_param_9];
-	ld.param.f32 	%f41, [mdatatemp_param_10];
-	ld.param.u32 	%r73, [mdatatemp_param_11];
+	ld.param.u64 	%rd22, [mdatatemp_param_9];
+	ld.param.f32 	%f40, [mdatatemp_param_10];
+	ld.param.f32 	%f41, [mdatatemp_param_11];
+	ld.param.u32 	%r73, [mdatatemp_param_12];
 	mov.u32 	%r74, %nctaid.x;
 	mov.u32 	%r75, %ctaid.y;
 	mov.u32 	%r76, %ctaid.x;
@@ -3398,22 +3438,22 @@ BB0_3:
 	shl.b32 	%r82, %r3, 8;
 	or.b32  	%r5, %r82, -2147483648;
 	mov.u32 	%r173, 0;
-	mov.u64 	%rd47, __cudart_i2opi_f;
+	mov.u64 	%rd50, __cudart_i2opi_f;
 	mov.u32 	%r172, -6;
-	mov.u64 	%rd48, %rd1;
+	mov.u64 	%rd51, %rd1;
 
 BB0_5:
 	.pragma "nounroll";
-	ld.const.u32 	%r85, [%rd47];
+	ld.const.u32 	%r85, [%rd50];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r83, %r85, %r5, %r173;
 	madc.hi.u32     %r173, %r85, %r5,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd48], %r83;
-	add.s64 	%rd48, %rd48, 4;
-	add.s64 	%rd47, %rd47, 4;
+	st.local.u32 	[%rd51], %r83;
+	add.s64 	%rd51, %rd51, 4;
+	add.s64 	%rd50, %rd50, 4;
 	add.s32 	%r172, %r172, 1;
 	setp.ne.s32	%p4, %r172, 0;
 	@%p4 bra 	BB0_5;
@@ -3425,8 +3465,8 @@ BB0_5:
 	st.local.u32 	[%rd2], %r173;
 	mov.u32 	%r91, 6;
 	sub.s32 	%r92, %r91, %r90;
-	mul.wide.s32 	%rd24, %r92, 4;
-	add.s64 	%rd7, %rd1, %rd24;
+	mul.wide.s32 	%rd25, %r92, 4;
+	add.s64 	%rd7, %rd1, %rd25;
 	ld.local.u32 	%r174, [%rd7];
 	ld.local.u32 	%r175, [%rd7+-4];
 	and.b32  	%r13, %r4, 31;
@@ -3549,31 +3589,31 @@ BB0_22:
 	fma.rn.f32 	%f104, %f104, %f64, %f63;
 
 BB0_24:
-	cvta.to.global.u64 	%rd25, %rd19;
 	cvta.to.global.u64 	%rd26, %rd20;
 	cvta.to.global.u64 	%rd27, %rd21;
-	cvta.to.global.u64 	%rd28, %rd13;
-	cvta.to.global.u64 	%rd29, %rd14;
-	cvta.to.global.u64 	%rd30, %rd15;
-	mul.wide.s32 	%rd31, %r1, 4;
-	add.s64 	%rd32, %rd25, %rd31;
-	ld.global.nc.f32 	%f20, [%rd32];
-	add.s64 	%rd33, %rd28, %rd31;
-	ld.global.f32 	%f65, [%rd33];
+	cvta.to.global.u64 	%rd28, %rd22;
+	cvta.to.global.u64 	%rd29, %rd13;
+	cvta.to.global.u64 	%rd30, %rd14;
+	cvta.to.global.u64 	%rd31, %rd15;
+	mul.wide.s32 	%rd32, %r1, 4;
+	add.s64 	%rd33, %rd26, %rd32;
+	ld.global.nc.f32 	%f20, [%rd33];
+	add.s64 	%rd34, %rd29, %rd32;
+	ld.global.f32 	%f65, [%rd34];
 	fma.rn.f32 	%f66, %f104, %f20, %f65;
-	st.global.f32 	[%rd33], %f66;
-	add.s64 	%rd34, %rd26, %rd31;
-	ld.global.nc.f32 	%f21, [%rd34];
-	add.s64 	%rd35, %rd29, %rd31;
-	ld.global.f32 	%f67, [%rd35];
+	st.global.f32 	[%rd34], %f66;
+	add.s64 	%rd35, %rd27, %rd32;
+	ld.global.nc.f32 	%f21, [%rd35];
+	add.s64 	%rd36, %rd30, %rd32;
+	ld.global.f32 	%f67, [%rd36];
 	fma.rn.f32 	%f68, %f104, %f21, %f67;
-	st.global.f32 	[%rd35], %f68;
-	add.s64 	%rd36, %rd27, %rd31;
-	ld.global.nc.f32 	%f22, [%rd36];
-	add.s64 	%rd37, %rd30, %rd31;
-	ld.global.f32 	%f69, [%rd37];
+	st.global.f32 	[%rd36], %f68;
+	add.s64 	%rd37, %rd28, %rd32;
+	ld.global.nc.f32 	%f22, [%rd37];
+	add.s64 	%rd38, %rd31, %rd32;
+	ld.global.f32 	%f69, [%rd38];
 	fma.rn.f32 	%f70, %f104, %f22, %f69;
-	st.global.f32 	[%rd37], %f70;
+	st.global.f32 	[%rd38], %f70;
 	@%p2 bra 	BB0_26;
 
 	mov.f32 	%f71, 0f00000000;
@@ -3596,22 +3636,22 @@ BB0_26:
 	shl.b32 	%r128, %r38, 8;
 	or.b32  	%r40, %r128, -2147483648;
 	mov.u32 	%r183, 0;
-	mov.u64 	%rd49, __cudart_i2opi_f;
+	mov.u64 	%rd52, __cudart_i2opi_f;
 	mov.u32 	%r182, -6;
-	mov.u64 	%rd50, %rd1;
+	mov.u64 	%rd53, %rd1;
 
 BB0_28:
 	.pragma "nounroll";
-	ld.const.u32 	%r131, [%rd49];
+	ld.const.u32 	%r131, [%rd52];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r129, %r131, %r40, %r183;
 	madc.hi.u32     %r183, %r131, %r40,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd50], %r129;
-	add.s64 	%rd50, %rd50, 4;
-	add.s64 	%rd49, %rd49, 4;
+	st.local.u32 	[%rd53], %r129;
+	add.s64 	%rd53, %rd53, 4;
+	add.s64 	%rd52, %rd52, 4;
 	add.s32 	%r182, %r182, 1;
 	setp.ne.s32	%p17, %r182, 0;
 	@%p17 bra 	BB0_28;
@@ -3623,8 +3663,8 @@ BB0_28:
 	st.local.u32 	[%rd2], %r183;
 	mov.u32 	%r137, 6;
 	sub.s32 	%r138, %r137, %r136;
-	mul.wide.s32 	%rd39, %r138, 4;
-	add.s64 	%rd12, %rd1, %rd39;
+	mul.wide.s32 	%rd40, %r138, 4;
+	add.s64 	%rd12, %rd1, %rd40;
 	ld.local.u32 	%r184, [%rd12];
 	ld.local.u32 	%r185, [%rd12+-4];
 	and.b32  	%r48, %r39, 31;
@@ -3748,21 +3788,24 @@ BB0_45:
 	fma.rn.f32 	%f110, %f110, %f93, %f92;
 
 BB0_47:
-	cvta.to.global.u64 	%rd40, %rd16;
-	cvta.to.global.u64 	%rd41, %rd17;
-	cvta.to.global.u64 	%rd42, %rd18;
-	add.s64 	%rd44, %rd40, %rd31;
-	ld.global.f32 	%f94, [%rd44];
+	cvta.to.global.u64 	%rd41, %rd16;
+	cvta.to.global.u64 	%rd42, %rd17;
+	cvta.to.global.u64 	%rd43, %rd18;
+	cvta.to.global.u64 	%rd44, %rd19;
+	add.s64 	%rd46, %rd41, %rd32;
+	ld.global.f32 	%f94, [%rd46];
 	fma.rn.f32 	%f95, %f110, %f20, %f94;
-	st.global.f32 	[%rd44], %f95;
-	add.s64 	%rd45, %rd41, %rd31;
-	ld.global.f32 	%f96, [%rd45];
+	st.global.f32 	[%rd46], %f95;
+	add.s64 	%rd47, %rd42, %rd32;
+	ld.global.f32 	%f96, [%rd47];
 	fma.rn.f32 	%f97, %f110, %f21, %f96;
-	st.global.f32 	[%rd45], %f97;
-	add.s64 	%rd46, %rd42, %rd31;
-	ld.global.f32 	%f98, [%rd46];
+	st.global.f32 	[%rd47], %f97;
+	add.s64 	%rd48, %rd43, %rd32;
+	ld.global.f32 	%f98, [%rd48];
 	fma.rn.f32 	%f99, %f110, %f22, %f98;
-	st.global.f32 	[%rd46], %f99;
+	st.global.f32 	[%rd48], %f99;
+	add.s64 	%rd49, %rd44, %rd32;
+	st.global.f32 	[%rd49], %f40;
 
 BB0_48:
 	ret;
@@ -3788,9 +3831,10 @@ BB0_48:
 	.param .u64 mdatatemp_param_6,
 	.param .u64 mdatatemp_param_7,
 	.param .u64 mdatatemp_param_8,
-	.param .f32 mdatatemp_param_9,
+	.param .u64 mdatatemp_param_9,
 	.param .f32 mdatatemp_param_10,
-	.param .u32 mdatatemp_param_11
+	.param .f32 mdatatemp_param_11,
+	.param .u32 mdatatemp_param_12
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -3799,7 +3843,7 @@ BB0_48:
 	.reg .pred 	%p<28>;
 	.reg .f32 	%f<112>;
 	.reg .b32 	%r<192>;
-	.reg .b64 	%rd<51>;
+	.reg .b64 	%rd<54>;
 
 
 	mov.u64 	%SPL, __local_depot0;
@@ -3812,9 +3856,10 @@ BB0_48:
 	ld.param.u64 	%rd19, [mdatatemp_param_6];
 	ld.param.u64 	%rd20, [mdatatemp_param_7];
 	ld.param.u64 	%rd21, [mdatatemp_param_8];
-	ld.param.f32 	%f40, [mdatatemp_param_9];
-	ld.param.f32 	%f41, [mdatatemp_param_10];
-	ld.param.u32 	%r73, [mdatatemp_param_11];
+	ld.param.u64 	%rd22, [mdatatemp_param_9];
+	ld.param.f32 	%f40, [mdatatemp_param_10];
+	ld.param.f32 	%f41, [mdatatemp_param_11];
+	ld.param.u32 	%r73, [mdatatemp_param_12];
 	mov.u32 	%r74, %nctaid.x;
 	mov.u32 	%r75, %ctaid.y;
 	mov.u32 	%r76, %ctaid.x;
@@ -3856,22 +3901,22 @@ BB0_3:
 	shl.b32 	%r82, %r3, 8;
 	or.b32  	%r5, %r82, -2147483648;
 	mov.u32 	%r173, 0;
-	mov.u64 	%rd47, __cudart_i2opi_f;
+	mov.u64 	%rd50, __cudart_i2opi_f;
 	mov.u32 	%r172, -6;
-	mov.u64 	%rd48, %rd1;
+	mov.u64 	%rd51, %rd1;
 
 BB0_5:
 	.pragma "nounroll";
-	ld.const.u32 	%r85, [%rd47];
+	ld.const.u32 	%r85, [%rd50];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r83, %r85, %r5, %r173;
 	madc.hi.u32     %r173, %r85, %r5,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd48], %r83;
-	add.s64 	%rd48, %rd48, 4;
-	add.s64 	%rd47, %rd47, 4;
+	st.local.u32 	[%rd51], %r83;
+	add.s64 	%rd51, %rd51, 4;
+	add.s64 	%rd50, %rd50, 4;
 	add.s32 	%r172, %r172, 1;
 	setp.ne.s32	%p4, %r172, 0;
 	@%p4 bra 	BB0_5;
@@ -3883,8 +3928,8 @@ BB0_5:
 	st.local.u32 	[%rd2], %r173;
 	mov.u32 	%r91, 6;
 	sub.s32 	%r92, %r91, %r90;
-	mul.wide.s32 	%rd24, %r92, 4;
-	add.s64 	%rd7, %rd1, %rd24;
+	mul.wide.s32 	%rd25, %r92, 4;
+	add.s64 	%rd7, %rd1, %rd25;
 	ld.local.u32 	%r174, [%rd7];
 	ld.local.u32 	%r175, [%rd7+-4];
 	and.b32  	%r13, %r4, 31;
@@ -4007,31 +4052,31 @@ BB0_22:
 	fma.rn.f32 	%f104, %f104, %f64, %f63;
 
 BB0_24:
-	cvta.to.global.u64 	%rd25, %rd19;
 	cvta.to.global.u64 	%rd26, %rd20;
 	cvta.to.global.u64 	%rd27, %rd21;
-	cvta.to.global.u64 	%rd28, %rd13;
-	cvta.to.global.u64 	%rd29, %rd14;
-	cvta.to.global.u64 	%rd30, %rd15;
-	mul.wide.s32 	%rd31, %r1, 4;
-	add.s64 	%rd32, %rd25, %rd31;
-	ld.global.nc.f32 	%f20, [%rd32];
-	add.s64 	%rd33, %rd28, %rd31;
-	ld.global.f32 	%f65, [%rd33];
+	cvta.to.global.u64 	%rd28, %rd22;
+	cvta.to.global.u64 	%rd29, %rd13;
+	cvta.to.global.u64 	%rd30, %rd14;
+	cvta.to.global.u64 	%rd31, %rd15;
+	mul.wide.s32 	%rd32, %r1, 4;
+	add.s64 	%rd33, %rd26, %rd32;
+	ld.global.nc.f32 	%f20, [%rd33];
+	add.s64 	%rd34, %rd29, %rd32;
+	ld.global.f32 	%f65, [%rd34];
 	fma.rn.f32 	%f66, %f104, %f20, %f65;
-	st.global.f32 	[%rd33], %f66;
-	add.s64 	%rd34, %rd26, %rd31;
-	ld.global.nc.f32 	%f21, [%rd34];
-	add.s64 	%rd35, %rd29, %rd31;
-	ld.global.f32 	%f67, [%rd35];
+	st.global.f32 	[%rd34], %f66;
+	add.s64 	%rd35, %rd27, %rd32;
+	ld.global.nc.f32 	%f21, [%rd35];
+	add.s64 	%rd36, %rd30, %rd32;
+	ld.global.f32 	%f67, [%rd36];
 	fma.rn.f32 	%f68, %f104, %f21, %f67;
-	st.global.f32 	[%rd35], %f68;
-	add.s64 	%rd36, %rd27, %rd31;
-	ld.global.nc.f32 	%f22, [%rd36];
-	add.s64 	%rd37, %rd30, %rd31;
-	ld.global.f32 	%f69, [%rd37];
+	st.global.f32 	[%rd36], %f68;
+	add.s64 	%rd37, %rd28, %rd32;
+	ld.global.nc.f32 	%f22, [%rd37];
+	add.s64 	%rd38, %rd31, %rd32;
+	ld.global.f32 	%f69, [%rd38];
 	fma.rn.f32 	%f70, %f104, %f22, %f69;
-	st.global.f32 	[%rd37], %f70;
+	st.global.f32 	[%rd38], %f70;
 	@%p2 bra 	BB0_26;
 
 	mov.f32 	%f71, 0f00000000;
@@ -4054,22 +4099,22 @@ BB0_26:
 	shl.b32 	%r128, %r38, 8;
 	or.b32  	%r40, %r128, -2147483648;
 	mov.u32 	%r183, 0;
-	mov.u64 	%rd49, __cudart_i2opi_f;
+	mov.u64 	%rd52, __cudart_i2opi_f;
 	mov.u32 	%r182, -6;
-	mov.u64 	%rd50, %rd1;
+	mov.u64 	%rd53, %rd1;
 
 BB0_28:
 	.pragma "nounroll";
-	ld.const.u32 	%r131, [%rd49];
+	ld.const.u32 	%r131, [%rd52];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r129, %r131, %r40, %r183;
 	madc.hi.u32     %r183, %r131, %r40,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd50], %r129;
-	add.s64 	%rd50, %rd50, 4;
-	add.s64 	%rd49, %rd49, 4;
+	st.local.u32 	[%rd53], %r129;
+	add.s64 	%rd53, %rd53, 4;
+	add.s64 	%rd52, %rd52, 4;
 	add.s32 	%r182, %r182, 1;
 	setp.ne.s32	%p17, %r182, 0;
 	@%p17 bra 	BB0_28;
@@ -4081,8 +4126,8 @@ BB0_28:
 	st.local.u32 	[%rd2], %r183;
 	mov.u32 	%r137, 6;
 	sub.s32 	%r138, %r137, %r136;
-	mul.wide.s32 	%rd39, %r138, 4;
-	add.s64 	%rd12, %rd1, %rd39;
+	mul.wide.s32 	%rd40, %r138, 4;
+	add.s64 	%rd12, %rd1, %rd40;
 	ld.local.u32 	%r184, [%rd12];
 	ld.local.u32 	%r185, [%rd12+-4];
 	and.b32  	%r48, %r39, 31;
@@ -4206,21 +4251,24 @@ BB0_45:
 	fma.rn.f32 	%f110, %f110, %f93, %f92;
 
 BB0_47:
-	cvta.to.global.u64 	%rd40, %rd16;
-	cvta.to.global.u64 	%rd41, %rd17;
-	cvta.to.global.u64 	%rd42, %rd18;
-	add.s64 	%rd44, %rd40, %rd31;
-	ld.global.f32 	%f94, [%rd44];
+	cvta.to.global.u64 	%rd41, %rd16;
+	cvta.to.global.u64 	%rd42, %rd17;
+	cvta.to.global.u64 	%rd43, %rd18;
+	cvta.to.global.u64 	%rd44, %rd19;
+	add.s64 	%rd46, %rd41, %rd32;
+	ld.global.f32 	%f94, [%rd46];
 	fma.rn.f32 	%f95, %f110, %f20, %f94;
-	st.global.f32 	[%rd44], %f95;
-	add.s64 	%rd45, %rd41, %rd31;
-	ld.global.f32 	%f96, [%rd45];
+	st.global.f32 	[%rd46], %f95;
+	add.s64 	%rd47, %rd42, %rd32;
+	ld.global.f32 	%f96, [%rd47];
 	fma.rn.f32 	%f97, %f110, %f21, %f96;
-	st.global.f32 	[%rd45], %f97;
-	add.s64 	%rd46, %rd42, %rd31;
-	ld.global.f32 	%f98, [%rd46];
+	st.global.f32 	[%rd47], %f97;
+	add.s64 	%rd48, %rd43, %rd32;
+	ld.global.f32 	%f98, [%rd48];
 	fma.rn.f32 	%f99, %f110, %f22, %f98;
-	st.global.f32 	[%rd46], %f99;
+	st.global.f32 	[%rd48], %f99;
+	add.s64 	%rd49, %rd44, %rd32;
+	st.global.f32 	[%rd49], %f40;
 
 BB0_48:
 	ret;
@@ -4246,9 +4294,10 @@ BB0_48:
 	.param .u64 mdatatemp_param_6,
 	.param .u64 mdatatemp_param_7,
 	.param .u64 mdatatemp_param_8,
-	.param .f32 mdatatemp_param_9,
+	.param .u64 mdatatemp_param_9,
 	.param .f32 mdatatemp_param_10,
-	.param .u32 mdatatemp_param_11
+	.param .f32 mdatatemp_param_11,
+	.param .u32 mdatatemp_param_12
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -4257,7 +4306,7 @@ BB0_48:
 	.reg .pred 	%p<28>;
 	.reg .f32 	%f<112>;
 	.reg .b32 	%r<192>;
-	.reg .b64 	%rd<51>;
+	.reg .b64 	%rd<54>;
 
 
 	mov.u64 	%SPL, __local_depot0;
@@ -4270,9 +4319,10 @@ BB0_48:
 	ld.param.u64 	%rd19, [mdatatemp_param_6];
 	ld.param.u64 	%rd20, [mdatatemp_param_7];
 	ld.param.u64 	%rd21, [mdatatemp_param_8];
-	ld.param.f32 	%f40, [mdatatemp_param_9];
-	ld.param.f32 	%f41, [mdatatemp_param_10];
-	ld.param.u32 	%r73, [mdatatemp_param_11];
+	ld.param.u64 	%rd22, [mdatatemp_param_9];
+	ld.param.f32 	%f40, [mdatatemp_param_10];
+	ld.param.f32 	%f41, [mdatatemp_param_11];
+	ld.param.u32 	%r73, [mdatatemp_param_12];
 	mov.u32 	%r74, %nctaid.x;
 	mov.u32 	%r75, %ctaid.y;
 	mov.u32 	%r76, %ctaid.x;
@@ -4314,22 +4364,22 @@ BB0_3:
 	shl.b32 	%r82, %r3, 8;
 	or.b32  	%r5, %r82, -2147483648;
 	mov.u32 	%r173, 0;
-	mov.u64 	%rd47, __cudart_i2opi_f;
+	mov.u64 	%rd50, __cudart_i2opi_f;
 	mov.u32 	%r172, -6;
-	mov.u64 	%rd48, %rd1;
+	mov.u64 	%rd51, %rd1;
 
 BB0_5:
 	.pragma "nounroll";
-	ld.const.u32 	%r85, [%rd47];
+	ld.const.u32 	%r85, [%rd50];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r83, %r85, %r5, %r173;
 	madc.hi.u32     %r173, %r85, %r5,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd48], %r83;
-	add.s64 	%rd48, %rd48, 4;
-	add.s64 	%rd47, %rd47, 4;
+	st.local.u32 	[%rd51], %r83;
+	add.s64 	%rd51, %rd51, 4;
+	add.s64 	%rd50, %rd50, 4;
 	add.s32 	%r172, %r172, 1;
 	setp.ne.s32	%p4, %r172, 0;
 	@%p4 bra 	BB0_5;
@@ -4341,8 +4391,8 @@ BB0_5:
 	st.local.u32 	[%rd2], %r173;
 	mov.u32 	%r91, 6;
 	sub.s32 	%r92, %r91, %r90;
-	mul.wide.s32 	%rd24, %r92, 4;
-	add.s64 	%rd7, %rd1, %rd24;
+	mul.wide.s32 	%rd25, %r92, 4;
+	add.s64 	%rd7, %rd1, %rd25;
 	ld.local.u32 	%r174, [%rd7];
 	ld.local.u32 	%r175, [%rd7+-4];
 	and.b32  	%r13, %r4, 31;
@@ -4465,31 +4515,31 @@ BB0_22:
 	fma.rn.f32 	%f104, %f104, %f64, %f63;
 
 BB0_24:
-	cvta.to.global.u64 	%rd25, %rd19;
 	cvta.to.global.u64 	%rd26, %rd20;
 	cvta.to.global.u64 	%rd27, %rd21;
-	cvta.to.global.u64 	%rd28, %rd13;
-	cvta.to.global.u64 	%rd29, %rd14;
-	cvta.to.global.u64 	%rd30, %rd15;
-	mul.wide.s32 	%rd31, %r1, 4;
-	add.s64 	%rd32, %rd25, %rd31;
-	ld.global.nc.f32 	%f20, [%rd32];
-	add.s64 	%rd33, %rd28, %rd31;
-	ld.global.f32 	%f65, [%rd33];
+	cvta.to.global.u64 	%rd28, %rd22;
+	cvta.to.global.u64 	%rd29, %rd13;
+	cvta.to.global.u64 	%rd30, %rd14;
+	cvta.to.global.u64 	%rd31, %rd15;
+	mul.wide.s32 	%rd32, %r1, 4;
+	add.s64 	%rd33, %rd26, %rd32;
+	ld.global.nc.f32 	%f20, [%rd33];
+	add.s64 	%rd34, %rd29, %rd32;
+	ld.global.f32 	%f65, [%rd34];
 	fma.rn.f32 	%f66, %f104, %f20, %f65;
-	st.global.f32 	[%rd33], %f66;
-	add.s64 	%rd34, %rd26, %rd31;
-	ld.global.nc.f32 	%f21, [%rd34];
-	add.s64 	%rd35, %rd29, %rd31;
-	ld.global.f32 	%f67, [%rd35];
+	st.global.f32 	[%rd34], %f66;
+	add.s64 	%rd35, %rd27, %rd32;
+	ld.global.nc.f32 	%f21, [%rd35];
+	add.s64 	%rd36, %rd30, %rd32;
+	ld.global.f32 	%f67, [%rd36];
 	fma.rn.f32 	%f68, %f104, %f21, %f67;
-	st.global.f32 	[%rd35], %f68;
-	add.s64 	%rd36, %rd27, %rd31;
-	ld.global.nc.f32 	%f22, [%rd36];
-	add.s64 	%rd37, %rd30, %rd31;
-	ld.global.f32 	%f69, [%rd37];
+	st.global.f32 	[%rd36], %f68;
+	add.s64 	%rd37, %rd28, %rd32;
+	ld.global.nc.f32 	%f22, [%rd37];
+	add.s64 	%rd38, %rd31, %rd32;
+	ld.global.f32 	%f69, [%rd38];
 	fma.rn.f32 	%f70, %f104, %f22, %f69;
-	st.global.f32 	[%rd37], %f70;
+	st.global.f32 	[%rd38], %f70;
 	@%p2 bra 	BB0_26;
 
 	mov.f32 	%f71, 0f00000000;
@@ -4512,22 +4562,22 @@ BB0_26:
 	shl.b32 	%r128, %r38, 8;
 	or.b32  	%r40, %r128, -2147483648;
 	mov.u32 	%r183, 0;
-	mov.u64 	%rd49, __cudart_i2opi_f;
+	mov.u64 	%rd52, __cudart_i2opi_f;
 	mov.u32 	%r182, -6;
-	mov.u64 	%rd50, %rd1;
+	mov.u64 	%rd53, %rd1;
 
 BB0_28:
 	.pragma "nounroll";
-	ld.const.u32 	%r131, [%rd49];
+	ld.const.u32 	%r131, [%rd52];
 	// inline asm
 	{
 	mad.lo.cc.u32   %r129, %r131, %r40, %r183;
 	madc.hi.u32     %r183, %r131, %r40,  0;
 	}
 	// inline asm
-	st.local.u32 	[%rd50], %r129;
-	add.s64 	%rd50, %rd50, 4;
-	add.s64 	%rd49, %rd49, 4;
+	st.local.u32 	[%rd53], %r129;
+	add.s64 	%rd53, %rd53, 4;
+	add.s64 	%rd52, %rd52, 4;
 	add.s32 	%r182, %r182, 1;
 	setp.ne.s32	%p17, %r182, 0;
 	@%p17 bra 	BB0_28;
@@ -4539,8 +4589,8 @@ BB0_28:
 	st.local.u32 	[%rd2], %r183;
 	mov.u32 	%r137, 6;
 	sub.s32 	%r138, %r137, %r136;
-	mul.wide.s32 	%rd39, %r138, 4;
-	add.s64 	%rd12, %rd1, %rd39;
+	mul.wide.s32 	%rd40, %r138, 4;
+	add.s64 	%rd12, %rd1, %rd40;
 	ld.local.u32 	%r184, [%rd12];
 	ld.local.u32 	%r185, [%rd12+-4];
 	and.b32  	%r48, %r39, 31;
@@ -4664,21 +4714,24 @@ BB0_45:
 	fma.rn.f32 	%f110, %f110, %f93, %f92;
 
 BB0_47:
-	cvta.to.global.u64 	%rd40, %rd16;
-	cvta.to.global.u64 	%rd41, %rd17;
-	cvta.to.global.u64 	%rd42, %rd18;
-	add.s64 	%rd44, %rd40, %rd31;
-	ld.global.f32 	%f94, [%rd44];
+	cvta.to.global.u64 	%rd41, %rd16;
+	cvta.to.global.u64 	%rd42, %rd17;
+	cvta.to.global.u64 	%rd43, %rd18;
+	cvta.to.global.u64 	%rd44, %rd19;
+	add.s64 	%rd46, %rd41, %rd32;
+	ld.global.f32 	%f94, [%rd46];
 	fma.rn.f32 	%f95, %f110, %f20, %f94;
-	st.global.f32 	[%rd44], %f95;
-	add.s64 	%rd45, %rd41, %rd31;
-	ld.global.f32 	%f96, [%rd45];
+	st.global.f32 	[%rd46], %f95;
+	add.s64 	%rd47, %rd42, %rd32;
+	ld.global.f32 	%f96, [%rd47];
 	fma.rn.f32 	%f97, %f110, %f21, %f96;
-	st.global.f32 	[%rd45], %f97;
-	add.s64 	%rd46, %rd42, %rd31;
-	ld.global.f32 	%f98, [%rd46];
+	st.global.f32 	[%rd47], %f97;
+	add.s64 	%rd48, %rd43, %rd32;
+	ld.global.f32 	%f98, [%rd48];
 	fma.rn.f32 	%f99, %f110, %f22, %f98;
-	st.global.f32 	[%rd46], %f99;
+	st.global.f32 	[%rd48], %f99;
+	add.s64 	%rd49, %rd44, %rd32;
+	st.global.f32 	[%rd49], %f40;
 
 BB0_48:
 	ret;

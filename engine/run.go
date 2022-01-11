@@ -172,7 +172,7 @@ func adaptDt(corr float64) {
 
 	// log.Println("dt_si aqui: ", Dt_si)
 	// log.Println("time aqui: ", Time)
-	// cuda.SetDtCuda(Time)
+	cuda.SetDtCuda(Dt_si)
 	// log.Println("dt_si aqui: ", cuda.Fixed_dt_cuda)
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }
@@ -224,10 +224,10 @@ func SetParametersTimeEvolution() {
 func Run(seconds float64) {
 	stop := Time + seconds
 
-	if TimeEvolution == true {
-		cuda.SetTimeCuda(stop)
-		// log.Println("llena stop: ", cuda.Time_cuda)
-	}
+	// if TimeEvolution == true {
+	// 	cuda.SetTimeCuda(stop)
+	// 	// log.Println("llena stop: ", cuda.Time_cuda)
+	// }
 
 	alarm = stop // don't have dt adapt to go over alarm
 	RunWhile(func() bool { return Time < stop })
