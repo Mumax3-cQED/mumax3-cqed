@@ -35,7 +35,7 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 			// log.Println("entra time evo")
 			initBrmsSlice(m.Size())
 
-			var hbar_constant float32 = 2 / 1.054571817e-34
+			var hbar_constant float32 = (2 / 1.054571817e-34)
 
 			k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
 				m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
