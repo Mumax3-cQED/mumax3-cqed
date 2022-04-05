@@ -7,9 +7,9 @@
 #include <stdio.h>
 #include <math.h>
 
-__device__ __constant__ double MUB = 9.2740091523E-24;
+//__device__ __constant__ double MUB = 9.2740091523E-24;
 __device__ __constant__ double HBAR = 1.054571817E-34;
-__device__ __constant__ double GS = 2.0;
+//__device__ __constant__ double GS = 2.0;
 
 // Landau-Lifshitz torque.
 //- 1/(1+α²) [ m x B +  α m x (m x B) ]
@@ -59,11 +59,11 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         //float sum_final = si_sum_total.x * brms.x +  si_sum_total.y * brms.y + si_sum_total.z * brms.z;
 
         //float constant_term = 1; //(float)(pow(GS,2)*pow(MUB,2))/(pow(HBAR,3)); // Constant value (gs^2*mub^2)/hbar^3
-        float constant_term = (float)(GS*MUB)/(pow(HBAR,3));
+        float constant_term = 2/HBAR;//(float)(GS*MUB)/(pow(HBAR,3));
 
         float3 new_term = 2 * constant_term * mxBrms * sum_final; // LLG equation with full new time-dependant term to plug in equation
 
-        float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - (new_term);
+        float3 torque = (gilb * (mxH + alpha * cross(m, mxH)))- (new_term);
 
         // float3 torque = gilb * (mxH + alpha * cross(m, mxH)); // LLG equation
 

@@ -23,11 +23,15 @@ func (rk *RK45DP) Step() {
 	m := M.Buffer()
 	size := m.Size()
 
-	setStatusLock(false)
+	if TimeEvolution {
+		setStatusLock(false)
+	}
 
 	// log.Println("Z elem: ", cuda.GetZElem(m))
 
-	initMRKArray(size)
+	if TimeEvolution {
+		initMRKArray(size)
+	}
 
 	if FixDt != 0 {
 		Dt_si = FixDt
