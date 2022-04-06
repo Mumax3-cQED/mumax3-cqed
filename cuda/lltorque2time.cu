@@ -9,11 +9,11 @@
 
 __device__ __constant__ double HBAR = 1.054571817E-34;
 
-__host__ __device__ float3 mulf3(const float3 &a, const float3 &b) {
+static __inline__ __device__ float3 mulf3(const float3 &a, const float3 &b) {
   return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
 }
 
-__host__ __device__ float3 mulscalarf3(const float a, const float3 &b) {
+static __inline__ __device__ float3 mulscalarf3(const float a, const float3 &b) {
   return make_float3(a * b.x, a * b.y, a * b.z);
 }
 
