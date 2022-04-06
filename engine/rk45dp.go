@@ -136,7 +136,11 @@ func (rk *RK45DP) Step() {
 	k7 := k2     // re-use k2
 	torqueFn(k7) // next torque if OK
 	// log.Println("pasa runge-kutta7")
-	setStatusLock(false)
+
+	if TimeEvolution {
+		setStatusLock(false)
+	}
+
 	// error estimate
 	Err := cuda.Buffer(3, size) //k3 // re-use k3 as error estimate
 	defer cuda.Recycle(Err)
