@@ -43,12 +43,12 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         brmsi_y[i] = brms_y;
         brmsi_z[i] = brms_z;
 
-        float3 brms = make_float3(brmsi_x[i] , brmsi_y[i], brmsi_z[i]);
+        float3 brms = {brmsi_x[i] , brmsi_y[i], brmsi_z[i]};
 
         float3 mxBrms = cross(m, brms); // m x Brms
 
-        float3 rk_sin_m = make_float3(rk_sin_mx[i], rk_sin_my[i], rk_sin_mz[i]);
-        float3 rk_cos_m = make_float3(rk_cos_mx[i], rk_cos_my[i], rk_cos_mz[i]);
+        float3 rk_sin_m = {rk_sin_mx[i], rk_sin_my[i], rk_sin_mz[i]};
+        float3 rk_cos_m = {rk_cos_mx[i], rk_cos_my[i], rk_cos_mz[i]};
 
         // Intergal from 0 to t
         float3 si_sum_total = delta_time * ((cos(wc * ctime[i]) * rk_sin_m) - (sin(wc * ctime[i]) * rk_cos_m));
