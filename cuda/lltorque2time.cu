@@ -57,9 +57,9 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         float3 sum_final = brms * si_sum_total;
 
         float hbar_const = (2 / HBAR);
-        float3 new_term = (hbar_const * mxBrms * sum_final); // LLG equation with full new time-dependant term to plug in equation
+        float3 new_term = (hbar_const * mxBrms * sum_final);
 
-        float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - new_term;
+        float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - new_term; // LLG equation with full new time-dependant term to plug in equation
 
         // float3 torque = gilb * (mxH + alpha * cross(m, mxH)); // LLG equation
 
