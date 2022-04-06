@@ -6,12 +6,9 @@
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
+#include "lltorque2utils.h"
 
 __device__ __constant__ double HBAR = 1.054571817E-34;
-
-static __inline__ __device__ float3 operator*(const float3 &a, const float3 &b) {
-  return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
-}
 
 // Landau-Lifshitz torque.
 //- 1/(1+α²) [ m x B +  α m x (m x B) ]
