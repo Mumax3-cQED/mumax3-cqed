@@ -54,10 +54,10 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         float3 si_sum_total = delta_time * ((cos(wc * ctime[i]) * rk_sin_m) - (sin(wc * ctime[i]) * rk_cos_m));
 
         // Summatory for all cells
-        float3 sum_final = si_sum_total * brms;
+        float3 sum_final = brms * si_sum_total;
 
         float hbar_const = (2 / HBAR);
-        float3 new_term = ((hbar_const * mxBrms) * sum_final); // LLG equation with full new time-dependant term to plug in equation
+        float3 new_term = (hbar_const * mxBrms * sum_final); // LLG equation with full new time-dependant term to plug in equation
 
         float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - new_term;
 
