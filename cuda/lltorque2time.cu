@@ -51,9 +51,7 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         float3 rk_cos_m = make_float3(rk_cos_mx[i], rk_cos_my[i], rk_cos_mz[i]);
 
         // Intergal from 0 to t
-        //float3 si_sum_total = mulscalarf3(delta_time, (mulscalarf3(cos(wc*ctime[i]), rk_sin_m) - mulscalarf3(sin(wc*ctime[i]), rk_cos_m)));
-
-        float3 si_sum_total = delta_time * ((cos(wc*ctime[i]) * rk_sin_m) - (sin(wc*ctime[i]) * rk_cos_m));
+        float3 si_sum_total = delta_time * ((cos(wc * ctime[i]) * rk_sin_m) - (sin(wc * ctime[i]) * rk_cos_m));
 
         // Summatory for all cells
         float3 sum_final = si_sum_total * brms;
