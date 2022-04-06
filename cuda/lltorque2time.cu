@@ -9,12 +9,8 @@
 
 __device__ __constant__ double HBAR = 1.054571817E-34;
 
-static __inline__ __device__ float3 mulf3(const float3 &a, const float3 &b) {
+static __inline__ __device__ float3 operator*(const float3 &a, const float3 &b) {
   return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
-}
-
-static __inline__ __device__ float3 mulscalarf3(const float a, const float3 &b) {
-  return make_float3(a * b.x, a * b.y, a * b.z);
 }
 
 // Landau-Lifshitz torque.
@@ -55,13 +51,15 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         float3 rk_cos_m = make_float3(rk_cos_mx[i], rk_cos_my[i], rk_cos_mz[i]);
 
         // Intergal from 0 to t
-        float3 si_sum_total = mulscalarf3(delta_time, (mulscalarf3(cos(wc*ctime[i]), rk_sin_m) - mulscalarf3(sin(wc*ctime[i]), rk_cos_m)));
+        //float3 si_sum_total = mulscalarf3(delta_time, (mulscalarf3(cos(wc*ctime[i]), rk_sin_m) - mulscalarf3(sin(wc*ctime[i]), rk_cos_m)));
+
+        float3 si_sum_total = delta_time * ((cos(wc*ctime[i]) * rk_sin_m) - (sin(wc*ctime[i]) * rk_cos_m));
 
         // Summatory for all cells
-        float3 sum_final = mulf3(si_sum_total, brms);
+        float3 sum_final = si_sum_total * brms;
 
         float hbar_const = (2 / HBAR);
-        float3 new_term = mulf3(mulscalarf3(hbar_const, mxBrms), sum_final); // LLG equation with full new time-dependant term to plug in equation
+        float3 new_term = ((hbar_const * mxBrms) * sum_final); // LLG equation with full new time-dependant term to plug in equation
 
         float3 torque = (gilb * (mxH + alpha * cross(m, mxH))) - new_term;
 
