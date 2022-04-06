@@ -49,7 +49,6 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
 
         float3 brms = make_float3(brmsi_x[i] , brmsi_y[i], brmsi_z[i]);
 
-        // float3 mi_t = {rk_mx_current[i], rk_my_current[i], rk_my_current[i]};
         float3 mxBrms = cross(m, brms); // m x Brms
 
         float3 rk_sin_m = make_float3(rk_sin_mx[i], rk_sin_my[i], rk_sin_mz[i]);
@@ -59,8 +58,6 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         float3 si_sum_total = mulscalarf3(delta_time, (mulscalarf3(cos(wc*ctime[i]), rk_sin_m) - mulscalarf3(sin(wc*ctime[i]), rk_cos_m)));
 
         // Summatory for all cells
-        // https://developer.download.nvidia.com/cg/dot.html
-        // APPLY THE DOT OPERATOR FOR ALL CELLS
         float3 sum_final = mulf3(si_sum_total, brms);
 
         float hbar_const = (2 / HBAR);
