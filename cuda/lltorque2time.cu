@@ -50,10 +50,9 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         float3 rk_sin_m = {rk_sin_mx[i], rk_sin_my[i], rk_sin_mz[i]};
         float3 rk_cos_m = {rk_cos_mx[i], rk_cos_my[i], rk_cos_mz[i]};
 
-        // Intergal from 0 to t
+        // Summatory for all cells
         float3 si_sum_total = delta_time * ((cos(wc * ctime[i]) * rk_sin_m) - (sin(wc * ctime[i]) * rk_cos_m));
 
-        // Summatory for all cells
         float3 sum_final = brms * si_sum_total;
 
         float hbar_const = (2 / HBAR);
