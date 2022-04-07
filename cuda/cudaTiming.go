@@ -10,7 +10,7 @@ var (
 	Wc_cuda       float64
 	Brms_cuda     []float64
 	M_rk          *data.Slice
-	TimeEvo       bool
+	TimeEvolution bool
 	LockMExec     bool = false
 	Brms_i        *data.Slice
 )
@@ -30,7 +30,7 @@ func SetDtCuda(dt float64) {
 // }
 
 func SetTimeEvoStatus(enableTimeEvo bool) {
-	TimeEvo = enableTimeEvo
+	TimeEvolution = enableTimeEvo
 }
 
 func SetBrms(brms [3]float64) {

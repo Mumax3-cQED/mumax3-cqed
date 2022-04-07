@@ -21,7 +21,7 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 	// 	alpha.DevPtr(0), alpha.Mul(0), N, util.Bextra_vector, cfg)
 
 	// log.Println("entra CUDA")
-	if TimeEvo == true {
+	if TimeEvolution == true {
 
 		if LockMExec {
 
