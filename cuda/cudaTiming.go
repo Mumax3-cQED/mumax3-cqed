@@ -11,8 +11,8 @@ var (
 	Brms_cuda     []float64
 	M_rk          *data.Slice
 	TimeEvolution bool
-	LockMExec     bool = false
-	Brms_i        *data.Slice
+	// LockMExec     bool = false
+	Brms_i *data.Slice
 )
 
 // func SetStepTimes(torqueDst *data.Slice) {

@@ -23,28 +23,28 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 	// log.Println("entra CUDA")
 	if TimeEvolution == true {
 
-		if LockMExec {
+		// if LockMExec {
 
-			// mx_temp := GetCell(m, 0, 0, 0, 0)
-			// my_temp := GetCell(m, 1, 0, 0, 0)
-			// mz_temp := GetCell(m, 2, 0, 0, 0)
-			//
-			// log.Println("vvvv2:", mx_temp, ", ", my_temp, ", ", mz_temp)
+		// mx_temp := GetCell(m, 0, 0, 0, 0)
+		// my_temp := GetCell(m, 1, 0, 0, 0)
+		// mz_temp := GetCell(m, 2, 0, 0, 0)
+		//
+		// log.Println("vvvv2:", mx_temp, ", ", my_temp, ", ", mz_temp)
 
-			// log.Println("entra true aqui")
-			// log.Println("entra time evo")
-			initBrmsSlice(m.Size())
+		// log.Println("entra true aqui")
+		// log.Println("entra time evo")
+		initBrmsSlice(m.Size())
 
-			k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
-				m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
-				B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
-				alpha.DevPtr(0), alpha.Mul(0), float32(Fixed_dt_cuda), float32(Wc_cuda), float32(Brms_cuda[X]), float32(Brms_cuda[Y]), float32(Brms_cuda[Z]),
-				Brms_i.DevPtr(0), Brms_i.DevPtr(1), Brms_i.DevPtr(2),
-				M_rk.DevPtr(0), M_rk.DevPtr(1), M_rk.DevPtr(2), M_rk.DevPtr(3), M_rk.DevPtr(4), M_rk.DevPtr(5), M_rk.DevPtr(6), N, cfg)
+		k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
+			m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
+			B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
+			alpha.DevPtr(0), alpha.Mul(0), float32(Fixed_dt_cuda), float32(Wc_cuda), float32(Brms_cuda[X]), float32(Brms_cuda[Y]), float32(Brms_cuda[Z]),
+			Brms_i.DevPtr(0), Brms_i.DevPtr(1), Brms_i.DevPtr(2),
+			M_rk.DevPtr(0), M_rk.DevPtr(1), M_rk.DevPtr(2), M_rk.DevPtr(3), M_rk.DevPtr(4), M_rk.DevPtr(5), M_rk.DevPtr(6), N, cfg)
 
-		} else {
-			DefaultTorquePrecess(torque, m, B, alpha, N, cfg)
-		}
+		// } else {
+		// 	DefaultTorquePrecess(torque, m, B, alpha, N, cfg)
+		// }
 
 	} else {
 		DefaultTorquePrecess(torque, m, B, alpha, N, cfg)
