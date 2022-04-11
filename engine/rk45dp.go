@@ -9,11 +9,6 @@ import (
 	"github.com/mumax/3/util"
 )
 
-// var (
-// 	slice_temp *data.Slice
-// 	time_temp  float64
-// )
-
 type RK45DP struct {
 	k1 *data.Slice // torque at end of step is kept for beginning of next step
 
@@ -22,12 +17,6 @@ type RK45DP struct {
 func (rk *RK45DP) Step() {
 	m := M.Buffer()
 	size := m.Size()
-
-	// if TimeEvolution {
-	// 	setStatusLock(false)
-	// }
-
-	// log.Println("Z elem: ", cuda.GetZElem(m))
 
 	if TimeEvolution {
 		initMRKArray(size)
@@ -46,16 +35,13 @@ func (rk *RK45DP) Step() {
 	if rk.k1 == nil {
 		rk.k1 = cuda.NewSlice(3, size)
 
-		// log.Println("buffer1: ", M.Buffer().Size())
 		torqueFn(rk.k1)
-		// log.Println("pasa runge-kutta1")
 	}
 
 	// FSAL cannot be used with finite temperature
 	if !Temp.isZero() {
 
 		torqueFn(rk.k1)
-		// log.Println("pasa runge-kutta0")
 	}
 
 	t0 := Time
@@ -66,13 +52,7 @@ func (rk *RK45DP) Step() {
 
 	if TimeEvolution {
 
-		// mx_temp := GetCell(m, 0, 0, 0, 0)
-		// my_temp := GetCell(m, 1, 0, 0, 0)
-		// mz_temp := GetCell(m, 2, 0, 0, 0)
-		//
-		// log.Println("vvvv rk45:", mx_temp, ", ", my_temp, ", ", mz_temp)
-
-		attachTimeToFormula(m, Time)
+		attachTimeToFormula(m, t0)
 	}
 
 	k2, k3, k4, k5, k6 := cuda.Buffer(3, size), cuda.Buffer(3, size), cuda.Buffer(3, size), cuda.Buffer(3, size), cuda.Buffer(3, size)
@@ -93,18 +73,11 @@ func (rk *RK45DP) Step() {
 
 	if TimeEvolution {
 
-		// mx_temp := GetCell(m, 0, 0, 0, 0)
-		// my_temp := GetCell(m, 1, 0, 0, 0)
-		// mz_temp := GetCell(m, 2, 0, 0, 0)
-		//
-		// log.Println("vvvv rk45:", mx_temp, ", ", my_temp, ", ", mz_temp)
-
 		attachTimeToFormula(m, Time)
 	}
 
 	M.normalize()
 	torqueFn(k2)
-	// log.Println("pasa runge-kutta2")
 
 	// stage 3
 	Time = t0 + (3./10.)*Dt_si
@@ -112,18 +85,11 @@ func (rk *RK45DP) Step() {
 
 	if TimeEvolution {
 
-		// mx_temp := GetCell(m, 0, 0, 0, 0)
-		// my_temp := GetCell(m, 1, 0, 0, 0)
-		// mz_temp := GetCell(m, 2, 0, 0, 0)
-		//
-		// log.Println("vvvv rk45:", mx_temp, ", ", my_temp, ", ", mz_temp)
-
 		attachTimeToFormula(m, Time)
 	}
 
 	M.normalize()
 	torqueFn(k3)
-	// log.Println("pasa runge-kutta3")
 
 	// stage 4
 	Time = t0 + (4./5.)*Dt_si
@@ -131,18 +97,11 @@ func (rk *RK45DP) Step() {
 
 	if TimeEvolution {
 
-		// mx_temp := GetCell(m, 0, 0, 0, 0)
-		// my_temp := GetCell(m, 1, 0, 0, 0)
-		// mz_temp := GetCell(m, 2, 0, 0, 0)
-		//
-		// log.Println("vvvv rk45:", mx_temp, ", ", my_temp, ", ", mz_temp)
-
 		attachTimeToFormula(m, Time)
 	}
 
 	M.normalize()
 	torqueFn(k4)
-	// log.Println("pasa runge-kutta4")
 
 	// stage 5
 	Time = t0 + (8./9.)*Dt_si
@@ -150,18 +109,11 @@ func (rk *RK45DP) Step() {
 
 	if TimeEvolution {
 
-		// mx_temp := GetCell(m, 0, 0, 0, 0)
-		// my_temp := GetCell(m, 1, 0, 0, 0)
-		// mz_temp := GetCell(m, 2, 0, 0, 0)
-		//
-		// log.Println("vvvv rk45:", mx_temp, ", ", my_temp, ", ", mz_temp)
-
 		attachTimeToFormula(m, Time)
 	}
 
 	M.normalize()
 	torqueFn(k5)
-	// log.Println("pasa runge-kutta5")
 
 	// stage 6
 	Time = t0 + (1.)*Dt_si
@@ -169,18 +121,11 @@ func (rk *RK45DP) Step() {
 
 	if TimeEvolution {
 
-		// mx_temp := GetCell(m, 0, 0, 0, 0)
-		// my_temp := GetCell(m, 1, 0, 0, 0)
-		// mz_temp := GetCell(m, 2, 0, 0, 0)
-		//
-		// log.Println("vvvv rk45:", mx_temp, ", ", my_temp, ", ", mz_temp)
-
 		attachTimeToFormula(m, Time)
 	}
 
 	M.normalize()
 	torqueFn(k6)
-	// log.Println("pasa runge-kutta6")
 
 	// stage 7: 5th order solution
 	Time = t0 + (1.)*Dt_si
@@ -189,23 +134,12 @@ func (rk *RK45DP) Step() {
 
 	if TimeEvolution {
 
-		// mx_temp := GetCell(m, 0, 0, 0, 0)
-		// my_temp := GetCell(m, 1, 0, 0, 0)
-		// mz_temp := GetCell(m, 2, 0, 0, 0)
-		//
-		// log.Println("vvvv rk45:", mx_temp, ", ", my_temp, ", ", mz_temp)
-
 		attachTimeToFormula(m, Time)
 	}
 
 	M.normalize()
 	k7 := k2     // re-use k2
 	torqueFn(k7) // next torque if OK
-	// log.Println("pasa runge-kutta7")
-
-	// if TimeEvolution {
-	// 	setStatusLock(false)
-	// }
 
 	// error estimate
 	Err := cuda.Buffer(3, size) //k3 // re-use k3 as error estimate
@@ -218,34 +152,6 @@ func (rk *RK45DP) Step() {
 	// adjust next time step
 	if err < MaxErr || Dt_si <= MinDt || FixDt != 0 { // mindt check to avoid infinite loop
 		// step OK
-
-		// mx_temp := cuda.GetCell(m, 0, 0, 0, 0)
-		// my_temp := cuda.GetCell(m, 1, 0, 0, 0)
-		// mz_temp := cuda.GetCell(m, 2, 0, 0, 0)
-		//
-		// log.Println("vvvv1:", mx_temp, ", ", my_temp, ", ", mz_temp)
-
-		// if TimeEvolution {
-		// 	// log.Println("time_temp rk45: ", time_temp)
-		// 	cuda.LockMExec = true
-		//
-		// 	mtemps = append(mtemps, slice_temp)
-		// 	times_items = append(times_items, time_temp)
-		//
-		// 	// log.Println("items: ", len(mtemps))
-		// 	// log.Println("time_temp: ", Time)
-		// 	// cuda.MdataTemp(cuda.M_rk, slice_temp, float32(cuda.Wc_cuda), time_temp)
-		//
-		// 	// cuda.M_rk --> destino
-		// 	// slice_temp --> m_i actual
-		// 	// mtemps --> array con todas la m_i de todos los pasos
-		// 	// times_items --> array de tiempos asociados a cada mi
-		// 	// time_temp --> tiempo actual
-		// 	cuda.MdataTemp(cuda.M_rk, slice_temp, mtemps, times_items, cuda.Wc_cuda, time_temp)
-		//
-		// 	// log.Println("time_temp: ", time_temp)
-		// }
-
 		setLastErr(err)
 		setMaxTorque(k7)
 		NSteps++

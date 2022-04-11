@@ -11,23 +11,13 @@ var (
 	Brms_cuda     []float64
 	M_rk          *data.Slice
 	TimeEvolution bool
-	// LockMExec     bool = false
-	Brms_i *data.Slice
+	Brms_i        *data.Slice
 )
-
-// func SetStepTimes(torqueDst *data.Slice) {
-// 	Step_Times = torqueDst
-// }
 
 func SetDtCuda(dt float64) {
 
 	Fixed_dt_cuda = dt
 }
-
-// func SetTimeCuda(time float64) {
-//
-// 	Time_cuda = time
-// }
 
 func SetTimeEvoStatus(enableTimeEvo bool) {
 	TimeEvolution = enableTimeEvo
@@ -50,7 +40,6 @@ func initBrmsSlice(size [3]int) *data.Slice {
 
 	if Brms_i == nil {
 		Brms_i = NewSlice(3, size)
-		// log.Println("init array")
 	}
 
 	return Brms_i
@@ -58,12 +47,9 @@ func initBrmsSlice(size [3]int) *data.Slice {
 
 func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
 
-	if rk_step != nil {
-		rk_step.Free()
-		rk_step = nil
+	if rk_step == nil {
+		rk_step = NewSlice(7, size)
 	}
-
-	rk_step = NewSlice(7, size)
 
 	return rk_step
 }

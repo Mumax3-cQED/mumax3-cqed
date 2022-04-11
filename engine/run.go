@@ -106,12 +106,7 @@ func SetSolver(typ int) {
 
 // write torque to dst and increment NEvals
 func torqueFn(dst *data.Slice) {
-	// debug.PrintStack()
-	// if cuda.Step_Times == nil {
-	// 	cuda.SetStepTimes(cuda.NewSlice(1, M.Buffer().Size()))
-	// 	// log.Println("buffer2: ", M.Buffer().Size())
-	// }
-	// log.Println("tiempo: ", Time)
+
 	SetTorque(dst)
 	NEvals++
 }
@@ -170,10 +165,8 @@ func adaptDt(corr float64) {
 		Dt_si = alarm - Time
 	}
 
-	// log.Println("dt_si aqui: ", Dt_si)
-	// log.Println("time aqui: ", Time)
 	cuda.SetDtCuda(Dt_si)
-	// log.Println("dt_si aqui: ", cuda.Fixed_dt_cuda)
+
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }
 
@@ -183,13 +176,8 @@ func initMRKArray(size [3]int) *data.Slice {
 	return cuda.M_rk
 }
 
-// func setStatusLock(status bool) {
-// 	cuda.LockMExec = status
-// }
-
 func attachTimeToFormula(m_current *data.Slice, ctime float64) { //, statusLock bool) {
 
-	// setStatusLock(statusLock)
 	cuda.CalcMSpinTorque(cuda.M_rk, m_current, ctime, cuda.Wc_cuda)
 }
 
@@ -223,11 +211,6 @@ func SetParametersTimeEvolution() {
 // Run the simulation for a number of seconds.
 func Run(seconds float64) {
 	stop := Time + seconds
-
-	// if TimeEvolution == true {
-	// 	cuda.SetTimeCuda(stop)
-	// 	// log.Println("llena stop: ", cuda.Time_cuda)
-	// }
 
 	alarm = stop // don't have dt adapt to go over alarm
 	RunWhile(func() bool { return Time < stop })
