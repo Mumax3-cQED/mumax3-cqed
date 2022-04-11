@@ -15,7 +15,6 @@ var (
 )
 
 func SetDtCuda(dt float64) {
-
 	Fixed_dt_cuda = dt
 }
 
