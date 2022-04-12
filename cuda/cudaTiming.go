@@ -22,6 +22,11 @@ func SetTimeEvoStatus(enableTimeEvo bool) {
 	TimeEvolution = enableTimeEvo
 }
 
+func IsBrmsZero(brms []float64) bool {
+
+	return (brms[0] == 0.0 && brms[1] == 0.0 && brms[2] == 0.0)
+}
+
 func SetBrms(brms [3]float64) {
 
 	Brms_cuda = make([]float64, 3)
