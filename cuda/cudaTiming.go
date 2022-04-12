@@ -23,7 +23,6 @@ func SetTimeEvoStatus(enableTimeEvo bool) {
 }
 
 func IsBrmsZero(brms []float64) bool {
-
 	return (brms[0] == 0.0 && brms[1] == 0.0 && brms[2] == 0.0)
 }
 
