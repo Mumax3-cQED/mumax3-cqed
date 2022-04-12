@@ -3,6 +3,7 @@ package cuda
 // MODIFIED INMA
 import (
 	"github.com/mumax/3/data"
+	"github.com/mumax/3/util"
 )
 
 var (
@@ -23,6 +24,8 @@ func SetTimeEvoStatus(enableTimeEvo bool) {
 }
 
 func IsBrmsZero(brms []float64) bool {
+
+	util.Assert(len(brms) == 3)
 	return (brms[0] == 0.0 && brms[1] == 0.0 && brms[2] == 0.0)
 }
 
