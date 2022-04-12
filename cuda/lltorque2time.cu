@@ -13,10 +13,6 @@ static __inline__ __device__ float3 operator*(const float3 &a, const float3 &b) 
   return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
 }
 
-static __inline__ __device__ bool isBrmsZero(float brmsx, float brmsy, float brmsz) {
-  return (brmsx == 0.0f && brmsy == 0.0f && brmsz == 0.0f);
-}
-
 // Landau-Lifshitz torque.
 //- 1/(1+α²) [ m x B +  α m x (m x B) ]
 extern "C" __global__ void
@@ -39,32 +35,29 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
 
         float3 mxH = cross(m, H);
         float gilb = -1.0f / (1.0f + alpha * alpha);
-        float3 torque = gilb * (mxH + alpha * cross(m, mxH)); // LLG equation
+        // float3 torque = gilb * (mxH + alpha * cross(m, mxH)); // LLG equation
 
         // Adding new time-dependant term to equations
-        if (!isBrmsZero(brms_x, brms_y, brms_z)) {
+        brmsi_x[i] = brms_x;
+        brmsi_y[i] = brms_y;
+        brmsi_z[i] = brms_z;
 
-          brmsi_x[i] = brms_x;
-          brmsi_y[i] = brms_y;
-          brmsi_z[i] = brms_z;
+        float3 brms = {brmsi_x[i] , brmsi_y[i], brmsi_z[i]};
 
-          float3 brms = {brmsi_x[i] , brmsi_y[i], brmsi_z[i]};
+        float3 mxBrms = cross(m, brms); // m x Brms
 
-          float3 mxBrms = cross(m, brms); // m x Brms
+        float3 rk_sin_m = {rk_sin_mx[i], rk_sin_my[i], rk_sin_mz[i]};
+        float3 rk_cos_m = {rk_cos_mx[i], rk_cos_my[i], rk_cos_mz[i]};
 
-          float3 rk_sin_m = {rk_sin_mx[i], rk_sin_my[i], rk_sin_mz[i]};
-          float3 rk_cos_m = {rk_cos_mx[i], rk_cos_my[i], rk_cos_mz[i]};
+        // Summatory for all cells
+        float3 si_sum_total = delta_time * ((cos(wc * ctime[i]) * rk_sin_m) - (sin(wc * ctime[i]) * rk_cos_m));
 
-          // Summatory for all cells
-          float3 si_sum_total = delta_time * ((cos(wc * ctime[i]) * rk_sin_m) - (sin(wc * ctime[i]) * rk_cos_m));
+        float3 sum_final = brms * si_sum_total;
 
-          float3 sum_final = brms * si_sum_total;
+        float hbar_const = (2 / HBAR);
+        float3 new_term = (hbar_const * mxBrms * sum_final);
 
-          float hbar_const = (2 / HBAR);
-          float3 new_term = (hbar_const * mxBrms * sum_final);
-
-          torque -= new_term;  // LLG equation with full new time-dependant term to plug in equation
-        }
+        float3 torque = gilb * (mxH + alpha * cross(m, mxH)) - new_term;  // LLG equation with full new time-dependant term to plug in equation
 
         tx[i] = torque.x;
         ty[i] = torque.y;
