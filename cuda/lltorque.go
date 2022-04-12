@@ -16,7 +16,7 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 	N := torque.Len()
 	cfg := make1DConf(N)
 
-	if TimeEvolution == true {
+	if timeEvolution == true {
 
 		if !IsBrmsZero(Brms_cuda) {
 
@@ -25,8 +25,8 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 			k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
 				m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 				B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
-				alpha.DevPtr(0), alpha.Mul(0), float32(Fixed_dt_cuda), float32(Wc_cuda), float32(Brms_cuda[X]), float32(Brms_cuda[Y]), float32(Brms_cuda[Z]),
-				Brms_i.DevPtr(0), Brms_i.DevPtr(1), Brms_i.DevPtr(2),
+				alpha.DevPtr(0), alpha.Mul(0), float32(fixed_dt_cuda), float32(Wc_cuda), float32(Brms_cuda[X]), float32(Brms_cuda[Y]), float32(Brms_cuda[Z]),
+				brms_i.DevPtr(0), brms_i.DevPtr(1), brms_i.DevPtr(2),
 				M_rk.DevPtr(0), M_rk.DevPtr(1), M_rk.DevPtr(2), M_rk.DevPtr(3), M_rk.DevPtr(4), M_rk.DevPtr(5), M_rk.DevPtr(6), N, cfg)
 
 		} else {

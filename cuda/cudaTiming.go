@@ -7,20 +7,20 @@ import (
 )
 
 var (
-	Fixed_dt_cuda float64
+	fixed_dt_cuda float64
 	Wc_cuda       float64
 	Brms_cuda     []float64
 	M_rk          *data.Slice
-	TimeEvolution bool
-	Brms_i        *data.Slice
+	timeEvolution bool
+	brms_i        *data.Slice
 )
 
 func SetDtCuda(dt float64) {
-	Fixed_dt_cuda = dt
+	fixed_dt_cuda = dt
 }
 
 func SetTimeEvoStatus(enableTimeEvo bool) {
-	TimeEvolution = enableTimeEvo
+	timeEvolution = enableTimeEvo
 }
 
 func IsBrmsZero(brms []float64) bool {
@@ -39,16 +39,17 @@ func SetBrms(brms [3]float64) {
 }
 
 func SetWc(wc float64) {
+
 	Wc_cuda = wc
 }
 
 func initBrmsSlice(size [3]int) *data.Slice {
 
-	if Brms_i == nil {
-		Brms_i = NewSlice(3, size)
+	if brms_i == nil {
+		brms_i = NewSlice(3, size)
 	}
 
-	return Brms_i
+	return brms_i
 }
 
 func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
