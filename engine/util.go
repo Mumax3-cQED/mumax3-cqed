@@ -2,6 +2,12 @@ package engine
 
 import (
 	"fmt"
+	"math"
+	"os"
+	"path"
+	"sort"
+	"strings"
+
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
 	"github.com/mumax/3/dump"
@@ -9,11 +15,6 @@ import (
 	"github.com/mumax/3/mag"
 	"github.com/mumax/3/oommf"
 	"github.com/mumax/3/util"
-	"math"
-	"os"
-	"path"
-	"sort"
-	"strings"
 )
 
 func init() {
@@ -195,6 +196,7 @@ func sortNoCase(s []string) {
 }
 
 func checkNaN1(x float64) {
+
 	if math.IsNaN(x) {
 		panic("NaN")
 	}

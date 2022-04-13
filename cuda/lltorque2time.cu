@@ -6,8 +6,9 @@
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
+#include "constants.h"
 
-__device__ __constant__ double HBAR = 1.054571817E-34;
+#define GS 2.0
 
 static __inline__ __device__ float3 operator*(const float3 &a, const float3 &b) {
   return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
@@ -23,7 +24,8 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
           float delta_time, float wc, float brms_x, float brms_y, float brms_z,
           float* __restrict__ brmsi_x, float* __restrict__ brmsi_y, float* __restrict__ brmsi_z,
           float* __restrict__ rk_sin_mx, float* __restrict__ rk_sin_my, float* __restrict__ rk_sin_mz,
-          float* __restrict__ rk_cos_mx, float* __restrict__ rk_cos_my, float* __restrict__ rk_cos_mz, float* __restrict__ ctime, int N) {
+          float* __restrict__ rk_cos_mx, float* __restrict__ rk_cos_my, float* __restrict__ rk_cos_mz, float* __restrict__ ctime,
+          float* __restrict__ sum_cell_x, float* __restrict__ sum_cell_y, float* __restrict__ sum_cell_z, int N) {
 
     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
 
@@ -52,10 +54,14 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         // Summatory for all cells
         float3 si_sum_total = delta_time * ((cos(wc * ctime[i]) * rk_sin_m) - (sin(wc * ctime[i]) * rk_cos_m));
 
-        float3 sum_final = brms * si_sum_total;
+        sum_cell_x[i] += brms.x * si_sum_total.x;
+        sum_cell_y[i] += brms.y * si_sum_total.y;
+        sum_cell_z[i] += brms.z * si_sum_total.z;
 
-        float hbar_const = (2 / HBAR);
-        float3 new_term = (hbar_const * mxBrms * sum_final);
+        float3 sum_final = {sum_cell_x[i], sum_cell_y[i], sum_cell_z[i]};
+
+        float spin_constant = 2 / HBAR; // debemos dividir entre gamma0 nuestro nuevo termino? parece que si
+        float3 new_term = (spin_constant * mxBrms * sum_final);
 
         float3 torque = gilb * (mxH + alpha * cross(m, mxH)) - new_term;  // LLG equation with full new time-dependant term to plug in equation
 

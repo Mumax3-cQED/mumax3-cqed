@@ -3,7 +3,6 @@ package cuda
 // MODIFIED INMA
 import (
 	"github.com/mumax/3/data"
-	"github.com/mumax/3/util"
 )
 
 var (
@@ -13,6 +12,7 @@ var (
 	M_rk          *data.Slice
 	timeEvolution bool
 	brms_i        *data.Slice
+	sum_cells     *data.Slice
 )
 
 func SetDtCuda(dt float64) {
@@ -23,11 +23,11 @@ func SetTimeEvoStatus(enableTimeEvo bool) {
 	timeEvolution = enableTimeEvo
 }
 
-func IsBrmsZero(brms []float64) bool {
-
-	util.Assert(len(brms) == 3)
-	return (brms[0] == 0.0 && brms[1] == 0.0 && brms[2] == 0.0)
-}
+// func IsBrmsZero(brms []float64) bool {
+//
+// 	util.Assert(len(brms) == 3)
+// 	return (brms[0] == 0.0 && brms[1] == 0.0 && brms[2] == 0.0)
+// }
 
 func SetBrms(brms [3]float64) {
 
@@ -50,6 +50,15 @@ func initBrmsSlice(size [3]int) *data.Slice {
 	}
 
 	return brms_i
+}
+
+func initSumSlice(size [3]int) *data.Slice {
+
+	if sum_cells == nil {
+		sum_cells = NewSlice(3, size)
+	}
+
+	return sum_cells
 }
 
 func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
