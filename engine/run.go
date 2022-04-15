@@ -3,7 +3,6 @@ package engine
 // MODIFIED INMA
 import (
 	"fmt"
-	"log"
 	"math"
 	"os"
 
@@ -189,24 +188,24 @@ func SetParametersTimeEvolution() {
 
 	if TimeEvolution == true {
 
-		log.Println("")
-		log.Println("----------------------------------------------")
-		log.Println("Time evolution factor in LLG equation: ", TimeEvolution)
+		fmt.Println("")
+		fmt.Println("----------------------------------------------")
+		fmt.Println("Time evolution factor in LLG equation: ", TimeEvolution)
 
 		if len(cuda.Brms_cuda) == 0 {
 
 			cuda.SetBrms(Brms_vector)
-			log.Println("Brms vector: ", cuda.Brms_cuda)
+			fmt.Println("Brms vector: ", cuda.Brms_cuda)
 		}
 
 		if cuda.Wc_cuda == 0 {
 
 			cuda.SetWc(Wc)
-			log.Println("Wc: ", cuda.Wc_cuda)
+			fmt.Println("Wc: ", cuda.Wc_cuda)
 		}
 
-		log.Println("----------------------------------------------")
-		log.Println("")
+		fmt.Println("----------------------------------------------")
+		fmt.Println("")
 	}
 }
 
