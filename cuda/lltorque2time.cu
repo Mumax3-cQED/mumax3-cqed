@@ -39,20 +39,28 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
 
         // Adding new time-dependant term to equations
         float3 brms = {brms_x, brms_y, brms_z};
-
         float3 mxBrms = cross(m, brms); // m x Brms
 
-        float3 rk_sin_m = {rk_sin_mx[i], rk_sin_my[i], rk_sin_mz[i]};
-        float3 rk_cos_m = {rk_cos_mx[i], rk_cos_my[i], rk_cos_mz[i]};
+        float cell_x, cell_y, cell_z = 0.0;
 
         // Summatory for all cells
-        float3 si_sum_total = delta_time * ((cos(wc * ctime[i]) * rk_sin_m) - (sin(wc * ctime[i]) * rk_cos_m));
+        for (int ii = blockIdx.x * blockDim.x + threadIdx.x; ii < N; ii += blockDim.x * gridDim.x) {
 
-        float cell_x = brms.x * si_sum_total.x;
-        float cell_y = brms.y * si_sum_total.y;
-        float cell_z = brms.z * si_sum_total.z;
+          float3 rk_sin_m = {rk_sin_mx[ii], rk_sin_my[ii], rk_sin_mz[ii]};
+          float3 rk_cos_m = {rk_cos_mx[ii], rk_cos_my[ii], rk_cos_mz[ii]};
 
-        float3 sum_final = {cell_x, cell_y, cell_z};
+          float3 si_sum_total = ((cos(wc * ctime[ii]) * rk_sin_m) - (sin(wc * ctime[ii]) * rk_cos_m));
+
+          cell_x += si_sum_total.x;
+          cell_y += si_sum_total.y;
+          cell_z += si_sum_total.z;
+        }
+
+        float sum_temp_x = brms.x * delta_time * cell_x;
+        float sum_temp_y = brms.y * delta_time * cell_y;
+        float sum_temp_z = brms.z * delta_time * cell_z;
+
+        float3 sum_final = {sum_temp_x, sum_temp_y, sum_temp_z};
 
         float spin_constant = 2 / HBAR; // debemos dividir entre gamma0 nuestro nuevo termino? parece que si
         float3 new_term = (spin_constant * mxBrms * sum_final);
