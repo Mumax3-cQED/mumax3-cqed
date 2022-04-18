@@ -674,7 +674,6 @@ BB0_51:
 	add.f32 	%f196, %f196, %f132;
 	add.f32 	%f195, %f195, %f134;
 	add.f32 	%f194, %f194, %f136;
-	bar.sync 	0;
 	mul.lo.s32 	%r181, %r4, %r1;
 	mul.lo.s32 	%r183, %r181, %r83;
 	mov.u32 	%r184, %nctaid.y;
@@ -1274,7 +1273,6 @@ BB0_51:
 	add.f32 	%f196, %f196, %f132;
 	add.f32 	%f195, %f195, %f134;
 	add.f32 	%f194, %f194, %f136;
-	bar.sync 	0;
 	add.s32 	%r183, %r9, %r183;
 	setp.lt.s32	%p30, %r183, %r83;
 	@%p30 bra 	BB0_5;
@@ -1871,7 +1869,6 @@ BB0_51:
 	add.f32 	%f196, %f196, %f132;
 	add.f32 	%f195, %f195, %f134;
 	add.f32 	%f194, %f194, %f136;
-	bar.sync 	0;
 	add.s32 	%r183, %r9, %r183;
 	setp.lt.s32	%p30, %r183, %r83;
 	@%p30 bra 	BB0_5;
@@ -2468,7 +2465,6 @@ BB0_51:
 	add.f32 	%f196, %f196, %f132;
 	add.f32 	%f195, %f195, %f134;
 	add.f32 	%f194, %f194, %f136;
-	bar.sync 	0;
 	add.s32 	%r183, %r9, %r183;
 	setp.lt.s32	%p30, %r183, %r83;
 	@%p30 bra 	BB0_5;
@@ -3065,7 +3061,6 @@ BB0_51:
 	add.f32 	%f196, %f196, %f132;
 	add.f32 	%f195, %f195, %f134;
 	add.f32 	%f194, %f194, %f136;
-	bar.sync 	0;
 	add.s32 	%r183, %r9, %r183;
 	setp.lt.s32	%p30, %r183, %r83;
 	@%p30 bra 	BB0_5;
@@ -3662,7 +3657,6 @@ BB0_51:
 	add.f32 	%f196, %f196, %f132;
 	add.f32 	%f195, %f195, %f134;
 	add.f32 	%f194, %f194, %f136;
-	bar.sync 	0;
 	add.s32 	%r183, %r9, %r183;
 	setp.lt.s32	%p30, %r183, %r83;
 	@%p30 bra 	BB0_5;
@@ -4259,7 +4253,6 @@ BB0_51:
 	add.f32 	%f196, %f196, %f132;
 	add.f32 	%f195, %f195, %f134;
 	add.f32 	%f194, %f194, %f136;
-	bar.sync 	0;
 	add.s32 	%r183, %r9, %r183;
 	setp.lt.s32	%p30, %r183, %r83;
 	@%p30 bra 	BB0_5;
@@ -4856,7 +4849,6 @@ BB0_51:
 	add.f32 	%f196, %f196, %f132;
 	add.f32 	%f195, %f195, %f134;
 	add.f32 	%f194, %f194, %f136;
-	bar.sync 	0;
 	add.s32 	%r183, %r9, %r183;
 	setp.lt.s32	%p30, %r183, %r83;
 	@%p30 bra 	BB0_5;
@@ -5453,7 +5445,6 @@ BB0_51:
 	add.f32 	%f196, %f196, %f132;
 	add.f32 	%f195, %f195, %f134;
 	add.f32 	%f194, %f194, %f136;
-	bar.sync 	0;
 	add.s32 	%r183, %r9, %r183;
 	setp.lt.s32	%p30, %r183, %r83;
 	@%p30 bra 	BB0_5;
@@ -6050,7 +6041,6 @@ BB0_51:
 	add.f32 	%f196, %f196, %f132;
 	add.f32 	%f195, %f195, %f134;
 	add.f32 	%f194, %f194, %f136;
-	bar.sync 	0;
 	add.s32 	%r183, %r9, %r183;
 	setp.lt.s32	%p30, %r183, %r83;
 	@%p30 bra 	BB0_5;
