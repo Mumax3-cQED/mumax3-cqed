@@ -39,11 +39,13 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         float3 brms = {brms_x, brms_y, brms_z};
         float3 mxBrms = cross(m, brms); // m x Brms
 
+        // Summatory for all cells
         float cell_x, cell_y, cell_z = 0.0;
 
-        // Summatory for all cells
-        for(int ii = (blockIdx.y * blockDim.y + threadIdx.y) * blockDim.x * gridDim.x + (blockIdx.x * blockDim.x + threadIdx.x);
-                        ii < N; ii += blockDim.y * gridDim.y * blockDim.x * gridDim.x) {
+        int idx = blockIdx.x * blockDim.x + threadIdx.x;
+        int idy = blockIdx.y * blockDim.y + threadIdx.y;
+
+        for (int ii = idy * blockDim.x * gridDim.x + idx; ii < N; ii += blockDim.y * gridDim.y * blockDim.x * gridDim.x) {
 
           float3 rk_sin_m = {rk_sin_mx[ii], rk_sin_my[ii], rk_sin_mz[ii]};
           float3 rk_cos_m = {rk_cos_mx[ii], rk_cos_my[ii], rk_cos_mz[ii]};
