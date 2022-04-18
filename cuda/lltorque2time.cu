@@ -53,6 +53,8 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
           cell_x += si_sum_total.x;
           cell_y += si_sum_total.y;
           cell_z += si_sum_total.z;
+
+          __syncthreads();
         }
 
         float sum_temp_x = brms.x * delta_time * cell_x;
