@@ -42,8 +42,8 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         // Summatory for all cells
         float cell_x, cell_y, cell_z = 0.0;
 
-        int idx = blockIdx.x * blockDim.x + threadIdx.x;
-        int idy = blockIdx.y * blockDim.y + threadIdx.y;
+        int idx = blockIdx.x * blockDim.x + threadIdx.x; // column
+        int idy = blockIdx.y * blockDim.y + threadIdx.y; // row
 
         for (int ii = idy * blockDim.x * gridDim.x + idx; ii < N; ii += blockDim.y * gridDim.y * blockDim.x * gridDim.x) {
 
