@@ -196,11 +196,15 @@ func SetParametersTimeEvolution() {
 
 			cuda.SetBrms(Brms_vector)
 			fmt.Println("Brms vector: ", cuda.Brms_cuda)
+		} else {
+			fmt.Println("Brms vector: ", cuda.Brms_cuda)
 		}
 
 		if cuda.Wc_cuda == 0 {
 
 			cuda.SetWc(Wc)
+			fmt.Println("Wc: ", cuda.Wc_cuda)
+		} else {
 			fmt.Println("Wc: ", cuda.Wc_cuda)
 		}
 
