@@ -20,8 +20,10 @@ type RK45DP struct {
 
 func (rk *RK45DP) Step() {
 
-	if TimeEvolution && m == nil {
-		m = M.Buffer()
+	if TimeEvolution {
+		if m == nil {
+			m = M.Buffer()
+		}
 	} else {
 		m = M.Buffer()
 	}
