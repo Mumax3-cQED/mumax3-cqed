@@ -9,13 +9,23 @@ import (
 	"github.com/mumax/3/util"
 )
 
+var (
+	m *data.Slice
+)
+
 type RK45DP struct {
 	k1 *data.Slice // torque at end of step is kept for beginning of next step
 
 }
 
 func (rk *RK45DP) Step() {
-	m := M.Buffer()
+
+	if TimeEvolution && m == nil {
+		m = M.Buffer()
+	} else {
+		m = M.Buffer()
+	}
+
 	size := m.Size()
 
 	if TimeEvolution {
