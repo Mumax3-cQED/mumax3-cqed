@@ -64,7 +64,7 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         float3 sum_final = {sum_temp_x, sum_temp_y, sum_temp_z};
 
         float spin_constant = 2 / HBAR; // debemos dividir entre gamma0 nuestro nuevo termino? parece que si
-        float3 new_term = (spin_constant * mxBrms * sum_final);
+        float3 new_term = spin_constant * mxBrms * sum_final;
 
         float3 torque = gilb * (mxH + alpha * cross(m, mxH)) - new_term;  // LLG equation with full new time-dependant term to plug in equation
 
