@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	fixed_dt_cuda float64
+	fixed_dt_cuda float32 = 0.0
 	Wc_cuda       float64
 	Brms_cuda     []float64
 	M_rk          *data.Slice
@@ -15,7 +15,7 @@ var (
 	// sum_cells     *data.Slice
 )
 
-func SetDtCuda(dt float64) {
+func SetDtCuda(dt float32) {
 	fixed_dt_cuda = dt
 }
 

@@ -164,8 +164,6 @@ func adaptDt(corr float64) {
 		Dt_si = alarm - Time
 	}
 
-	cuda.SetDtCuda(Dt_si)
-
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }
 

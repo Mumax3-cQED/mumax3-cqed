@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	m *data.Slice
+	m      *data.Slice
+	dt_evo float32 = 0.0
 )
 
 type RK45DP struct {
@@ -31,6 +32,7 @@ func (rk *RK45DP) Step() {
 	size := m.Size()
 
 	if TimeEvolution {
+
 		initMRKArray(size)
 	}
 
@@ -62,11 +64,6 @@ func (rk *RK45DP) Step() {
 	defer cuda.Recycle(m0)
 	data.Copy(m0, m)
 
-	if TimeEvolution {
-
-		attachTimeToFormula(m, t0)
-	}
-
 	k2, k3, k4, k5, k6 := cuda.Buffer(3, size), cuda.Buffer(3, size), cuda.Buffer(3, size), cuda.Buffer(3, size), cuda.Buffer(3, size)
 	defer cuda.Recycle(k2)
 	defer cuda.Recycle(k3)
@@ -77,16 +74,24 @@ func (rk *RK45DP) Step() {
 
 	h := float32(Dt_si * GammaLL) // internal time step = Dt * gammaLL
 
+	if TimeEvolution {
+		cuda.SetDtCuda(h)
+	}
+
+	// if TimeEvolution {
+	// 	//println("h_previous:", h)
+	// 	if dt_evo == 0.0 {
+	// 		dt_evo = float32(h)
+	// 	} else {
+	// 		dt_evo = float32(h - dt_evo)
+	// 	}
+	// }
+
 	// there is no explicit stage 1: k1 from previous step
 
 	// stage 2
 	Time = t0 + (1./5.)*Dt_si
 	cuda.Madd2(m, m, rk.k1, 1, (1./5.)*h) // m = m*1 + k1*h/5
-
-	if TimeEvolution {
-
-		attachTimeToFormula(m, Time)
-	}
 
 	M.normalize()
 	torqueFn(k2)
@@ -95,22 +100,12 @@ func (rk *RK45DP) Step() {
 	Time = t0 + (3./10.)*Dt_si
 	cuda.Madd3(m, m0, rk.k1, k2, 1, (3./40.)*h, (9./40.)*h)
 
-	if TimeEvolution {
-
-		attachTimeToFormula(m, Time)
-	}
-
 	M.normalize()
 	torqueFn(k3)
 
 	// stage 4
 	Time = t0 + (4./5.)*Dt_si
 	madd4(m, m0, rk.k1, k2, k3, 1, (44./45.)*h, (-56./15.)*h, (32./9.)*h)
-
-	if TimeEvolution {
-
-		attachTimeToFormula(m, Time)
-	}
 
 	M.normalize()
 	torqueFn(k4)
@@ -119,22 +114,12 @@ func (rk *RK45DP) Step() {
 	Time = t0 + (8./9.)*Dt_si
 	madd5(m, m0, rk.k1, k2, k3, k4, 1, (19372./6561.)*h, (-25360./2187.)*h, (64448./6561.)*h, (-212./729.)*h)
 
-	if TimeEvolution {
-
-		attachTimeToFormula(m, Time)
-	}
-
 	M.normalize()
 	torqueFn(k5)
 
 	// stage 6
 	Time = t0 + (1.)*Dt_si
 	madd6(m, m0, rk.k1, k2, k3, k4, k5, 1, (9017./3168.)*h, (-355./33.)*h, (46732./5247.)*h, (49./176.)*h, (-5103./18656.)*h)
-
-	if TimeEvolution {
-
-		attachTimeToFormula(m, Time)
-	}
 
 	M.normalize()
 	torqueFn(k6)
@@ -145,7 +130,11 @@ func (rk *RK45DP) Step() {
 	madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
 
 	if TimeEvolution {
-
+		//println("DT_si:", Dt_si)
+		//println("h:", h)
+		//println("dt_evo:", dt_evo)
+		//println("Time: ", Time)
+		//println("Time: ", Time-Dt_si)
 		attachTimeToFormula(m, Time)
 	}
 

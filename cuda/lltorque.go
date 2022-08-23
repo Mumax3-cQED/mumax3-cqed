@@ -34,6 +34,7 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 		// }
 
 	} else {
+
 		DefaultTorquePrecess(torque, m, B, alpha, N, cfg)
 	}
 }
