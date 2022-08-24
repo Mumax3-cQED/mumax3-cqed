@@ -16,7 +16,6 @@ var (
 
 type RK45DP struct {
 	k1 *data.Slice // torque at end of step is kept for beginning of next step
-
 }
 
 func (rk *RK45DP) Step() {
@@ -32,7 +31,6 @@ func (rk *RK45DP) Step() {
 	size := m.Size()
 
 	if TimeEvolution {
-
 		initMRKArray(size)
 	}
 
@@ -78,15 +76,6 @@ func (rk *RK45DP) Step() {
 		cuda.SetDtCuda(h)
 	}
 
-	// if TimeEvolution {
-	// 	//println("h_previous:", h)
-	// 	if dt_evo == 0.0 {
-	// 		dt_evo = float32(h)
-	// 	} else {
-	// 		dt_evo = float32(h - dt_evo)
-	// 	}
-	// }
-
 	// there is no explicit stage 1: k1 from previous step
 
 	// stage 2
@@ -130,11 +119,6 @@ func (rk *RK45DP) Step() {
 	madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
 
 	if TimeEvolution {
-		//println("DT_si:", Dt_si)
-		//println("h:", h)
-		//println("dt_evo:", dt_evo)
-		//println("Time: ", Time)
-		//println("Time: ", Time-Dt_si)
 		attachTimeToFormula(m, Time)
 	}
 
