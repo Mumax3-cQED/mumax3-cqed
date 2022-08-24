@@ -10,7 +10,7 @@ var (
 	Wc_cuda       float64
 	Brms_cuda     []float64
 	M_rk          *data.Slice
-	timeEvolution bool
+	timeEvolution bool = false
 	// brms_i        *data.Slice
 	// sum_cells     *data.Slice
 )
