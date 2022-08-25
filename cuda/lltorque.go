@@ -5,6 +5,12 @@ import (
 	"github.com/mumax/3/data"
 )
 
+var (
+	sumx *data.Slice
+	sumy *data.Slice
+	sumz *data.Slice
+)
+
 // Landau-Lifshitz torque divided by gamma0:
 // 	- 1/(1+α²) [ m x B +  α m x (m x B) ]
 // 	torque in Tesla
@@ -28,12 +34,25 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 		ny_size := size[Y]
 		nz_size := size[Z]
 
+		if sumx == nil {
+			sumx = NewSlice(1, size)
+		}
+
+		if sumy == nil {
+			sumy = NewSlice(1, size)
+		}
+
+		if sumz == nil {
+			sumz = NewSlice(1, size)
+		}
+
 		k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
 			m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 			B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
 			alpha.DevPtr(0), alpha.Mul(0),
 			M_rk.DevPtr(0), M_rk.DevPtr(1), M_rk.DevPtr(2), M_rk.DevPtr(3), M_rk.DevPtr(4), M_rk.DevPtr(5), M_rk.DevPtr(6),
 			M_rk.DevPtr(7), M_rk.DevPtr(8), M_rk.DevPtr(9), M_rk.DevPtr(10), M_rk.DevPtr(11),
+			sumx.DevPtr(0), sumy.DevPtr(0), sumz.DevPtr(0),
 			nx_size, ny_size, nz_size, N, cfg)
 
 		// } else {

@@ -23,6 +23,7 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
           float* __restrict__ rk_sin_mx, float* __restrict__ rk_sin_my, float* __restrict__ rk_sin_mz,
           float* __restrict__ rk_cos_mx, float* __restrict__ rk_cos_my, float* __restrict__ rk_cos_mz,  float* __restrict__ ctime,
           float* __restrict__ delta_time, float* __restrict__ brms_x, float* __restrict__ brms_y, float* brms_z, float* __restrict__ wc,
+          float* __restrict__ sumx, float* __restrict__ sumy, float* __restrict__ sumz,
           int Nx, int Ny, int Nz, int N) {
 
     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
@@ -59,9 +60,14 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
 
             float3 brms = {brms_x[ii], brms_y[ii], brms_z[ii]};
 
-            float3 sum_final = make_float3(0.0, 0.0, 0.0);
-            sum_final += (brms * delta_time[ii] * ((cos(wc[ii] * ctime[ii]) * rk_sin_m) - (sin(wc[ii] * ctime[ii]) * rk_cos_m)));
+            float3 operation_final = (brms * delta_time[ii] * ((cos(wc[ii] * ctime[ii]) * rk_sin_m) - (sin(wc[ii] * ctime[ii]) * rk_cos_m)));
+            sumx[ii] += operation_final.x;
+            sumy[ii] += operation_final.y;
+            sumz[ii] += operation_final.z;
 
+            __syncthreads();
+
+            float3 sum_final = {sumx[ii], sumy[ii], sumz[ii]};
              // }
 
             // Adding new time-dependant term to equation
