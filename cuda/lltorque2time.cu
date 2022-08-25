@@ -1,11 +1,6 @@
 // MODIFIED INMA
 
 #include "amul.h"
-#include "float3.h"
-#include <stdint.h>
-#include <iostream>
-#include <stdio.h>
-#include <math.h>
 #include "constants.h"
 #include "stencil.h"
 
