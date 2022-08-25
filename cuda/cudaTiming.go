@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	fixed_dt_cuda float32 = 0.0
+	Fixed_dt_cuda float32 = 0.0
 	Wc_cuda       float64
 	Brms_cuda     []float64
 	M_rk          *data.Slice
@@ -16,7 +16,7 @@ var (
 )
 
 func SetDtCuda(dt float32) {
-	fixed_dt_cuda = dt
+	Fixed_dt_cuda = dt
 }
 
 func SetTimeEvoStatus(enableTimeEvo bool) {
@@ -64,7 +64,7 @@ func SetWc(wc float64) {
 func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
 
 	if rk_step == nil {
-		rk_step = NewSlice(7, size)
+		rk_step = NewSlice(12, size)
 	}
 
 	return rk_step

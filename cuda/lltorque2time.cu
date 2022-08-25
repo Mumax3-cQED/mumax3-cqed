@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "constants.h"
+#include "stencil.h"
 
 static __inline__ __device__ float3 operator*(const float3 &a, const float3 &b) {
   return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
@@ -19,9 +20,10 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
           float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
           float* __restrict__  hx, float* __restrict__  hy, float* __restrict__  hz,
           float* __restrict__  alpha_, float alpha_mul,
-          float delta_time, float wc, float brms_x, float brms_y, float brms_z,
           float* __restrict__ rk_sin_mx, float* __restrict__ rk_sin_my, float* __restrict__ rk_sin_mz,
-          float* __restrict__ rk_cos_mx, float* __restrict__ rk_cos_my, float* __restrict__ rk_cos_mz, float* __restrict__ ctime, int N) {
+          float* __restrict__ rk_cos_mx, float* __restrict__ rk_cos_my, float* __restrict__ rk_cos_mz,  float* __restrict__ ctime,
+          float* __restrict__ delta_time, float* __restrict__ brms_x, float* __restrict__ brms_y, float* brms_z, float* __restrict__ wc,
+          int Nx, int Ny, int Nz, int N) {
 
     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
 
@@ -34,37 +36,36 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         float3 mxH = cross(m, H);
         float gilb = -1.0f / (1.0f + alpha * alpha);
 
-        float3 new_term = {0.0f, 0.0f, 0.0f};
+        float3 new_term = make_float3(0.0, 0.0, 0.0);
 
-        if (delta_time > 0.0f) {
-
-            // Adding new time-dependant term to equations
-            float3 brms = {brms_x, brms_y, brms_z};
-            float3 mxBrms = cross(m, brms); // m x Brms
+        if (delta_time[i] > 0.0f) {
 
             // Summatory for all cells
-            float cell_x, cell_y, cell_z = 0.0;
+            int ix = ((blockIdx.x * blockDim.x) + threadIdx.x);
+            int iy = ((blockIdx.y * blockDim.y) + threadIdx.y);
+            int iz = ((blockIdx.z * blockDim.z) + threadIdx.z);
 
-            for (int ii = (blockIdx.y * blockDim.y + threadIdx.y) * blockDim.x * gridDim.x + (blockIdx.x * blockDim.x + threadIdx.x);
-                  ii < N; ii += blockDim.y * gridDim.y * blockDim.x * gridDim.x) {
-
-              float3 rk_sin_m = {rk_sin_mx[ii], rk_sin_my[ii], rk_sin_mz[ii]};
-              float3 rk_cos_m = {rk_cos_mx[ii], rk_cos_my[ii], rk_cos_mz[ii]};
-
-              float3 si_sum_total = ((cos(wc * ctime[ii]) * rk_sin_m) - (sin(wc * ctime[ii]) * rk_cos_m));
-
-              __syncthreads();
-
-              cell_x += si_sum_total.x;
-              cell_y += si_sum_total.y;
-              cell_z += si_sum_total.z;
+            if (ix >= Nx || iy >= Ny || iz >= Nz) {
+                return;
             }
 
-            float sum_temp_x = brms.x * delta_time * cell_x;
-            float sum_temp_y = brms.y * delta_time * cell_y;
-            float sum_temp_z = brms.z * delta_time * cell_z;
+             // for (int ii = (blockIdx.y * blockDim.y + threadIdx.y) * blockDim.x * gridDim.x + (blockIdx.x * blockDim.x + threadIdx.x);
+             //       ii < N; ii += blockDim.y * gridDim.y * blockDim.x * gridDim.x) {
 
-            float3 sum_final = {sum_temp_x, sum_temp_y, sum_temp_z};
+            int ii = idx(ix, iy, iz);
+
+            float3 rk_sin_m = {rk_sin_mx[ii], rk_sin_my[ii], rk_sin_mz[ii]};
+            float3 rk_cos_m = {rk_cos_mx[ii], rk_cos_my[ii], rk_cos_mz[ii]};
+
+            float3 brms = {brms_x[ii], brms_y[ii], brms_z[ii]};
+
+            float3 sum_final = make_float3(0.0, 0.0, 0.0);
+            sum_final += (brms * delta_time[ii] * ((cos(wc[ii] * ctime[ii]) * rk_sin_m) - (sin(wc[ii] * ctime[ii]) * rk_cos_m)));
+
+             // }
+
+            // Adding new time-dependant term to equation
+            float3 mxBrms = cross(m, brms); // m x Brms
 
             float spin_constant = 2 / HBAR; // debemos dividir entre gamma0 nuestro nuevo termino? parece que si
             new_term = spin_constant * mxBrms * sum_final;

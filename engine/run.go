@@ -176,7 +176,7 @@ func initMRKArray(size [3]int) *data.Slice {
 func attachTimeToFormula(m_current *data.Slice, ctime float64) {
 
 	// if !cuda.IsBrmsZero(cuda.Brms_cuda) {
-	cuda.CalcMSpinTorque(cuda.M_rk, m_current, ctime, cuda.Wc_cuda)
+	cuda.CalcMSpinTorque(cuda.M_rk, m_current, ctime, cuda.Fixed_dt_cuda, cuda.Brms_cuda, cuda.Wc_cuda)
 	// }
 }
 
