@@ -5,9 +5,9 @@
 #include "stencil.h"
 #include <stdio.h>
 
-static __inline__ __device__ float3 operator*(const float3 &a, const float3 &b) {
-  return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
-}
+// static __inline__ __device__ float3 operator*(const float3 &a, const float3 &b) {
+//   return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
+// }
 
 // Landau-Lifshitz torque.
 //- 1/(1+α²) [ m x B +  α m x (m x B) ]
@@ -52,7 +52,10 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
 
               // for (int ii = (blockIdx.y * blockDim.y + threadIdx.y) * blockDim.x * gridDim.x + (blockIdx.x * blockDim.x + threadIdx.x);
               //       ii < N; ii += blockDim.y * gridDim.y * blockDim.x * gridDim.x) {
-              float3 sum_final = {0.0, 0.0, 0.0};
+              // float3 sum_final = {0.0, 0.0, 0.0};
+              // float sum_final_x = 0.0;
+              // float sum_final_y = 0.0;
+              // float sum_final_z = 0.0;
 
               int jx = ((blockIdx.x * blockDim.x) + threadIdx.x);
               int jy = ((blockIdx.y * blockDim.y) + threadIdx.y);
@@ -64,8 +67,8 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
 
               int jj = idx(jx, jy, jz);
 
-             float3 rk_sin_m = {rk_sin_mx[jj], rk_sin_my[jj], rk_sin_mz[jj]};
-             float3 rk_cos_m = {rk_cos_mx[jj], rk_cos_my[jj], rk_cos_mz[jj]};
+             // float3 rk_sin_m = {rk_sin_mx[jj], rk_sin_my[jj], rk_sin_mz[jj]};
+             // float3 rk_cos_m = {rk_cos_mx[jj], rk_cos_my[jj], rk_cos_mz[jj]};
 
              float3 mm = {mx[jj], my[jj], mz[jj]};
 
@@ -108,7 +111,9 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
             // printf("sumy[ii] %f\n", sumy[ii]);
             // printf("sumz[ii] %f\n", sumz[ii]);
             // float3 sum_final = {sumx[ii], sumy[ii], sumz[ii]}; //  left_side - right_side;
-             sum_final +=  (brms * delta_time[jj]) * (cos(ctimeWc) * rk_sin_m - sin(ctimeWc) * rk_cos_m);// funciona
+             sumx[jj] +=  (brms_x[jj] * delta_time[jj]) * (cos(ctimeWc) * rk_sin_mx[jj] - sin(ctimeWc) * rk_cos_mx[jj]);// funciona
+             sumy[jj] +=  (brms_y[jj] * delta_time[jj]) * (cos(ctimeWc) * rk_sin_my[jj] - sin(ctimeWc) * rk_cos_my[jj]);
+             sumz[jj] +=  (brms_z[jj] * delta_time[jj]) * (cos(ctimeWc) * rk_sin_mz[jj] - sin(ctimeWc) * rk_cos_mz[jj]);
             // *
              // }
  //             sumx[ii] += sum_final_temp.x;
@@ -119,12 +124,20 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
             float3 mxBrms = cross(mm, brms); // m x Brms
 
             float spin_constant = 2 / HBAR; // debemos dividir entre gamma0 nuestro nuevo termino? parece que si
-            float3 new_term = spin_constant * mxBrms * sum_final;
+            sumx[jj] = spin_constant * mxBrms.x * sumx[jj];
+            sumy[jj] = spin_constant * mxBrms.y * sumy[jj];
+            sumz[jj] = spin_constant * mxBrms.z * sumz[jj];
+
+            float3 new_term = {sumx[jj], sumy[jj], sumz[jj]};
           //  printf("rk_sin_m[i]: %f\n", rk_sin_m.x);
             // printf("rk_sin_m[i]: %f\n", rk_cos_m.x);
             // printf("Hello thread %d, f=%f\n", threadIdx.x, new_term);
 
            torque = gilb * (mxH + alpha * cross(m, mxH)) - new_term;
+
+           sumx[jj] = 0.0;
+           sumy[jj] = 0.0;
+           sumz[jj] = 0.0;
         } else {
            torque = gilb * (mxH + alpha * cross(m, mxH));
         }
