@@ -169,7 +169,7 @@ func adaptDt(corr float64) {
 
 func initMRKArray(size [3]int) *data.Slice {
 
-	cuda.M_rk = cuda.InitRKStepArray(cuda.M_rk, size)
+	cuda.M_rk = cuda.InitRKStepArray(size)
 	return cuda.M_rk
 }
 

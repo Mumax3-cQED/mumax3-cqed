@@ -9,11 +9,16 @@ var (
 	Fixed_dt_cuda float32 = 0.0
 	Wc_cuda       float64
 	Brms_cuda     []float64
-	M_rk          *data.Slice
-	timeEvolution bool = false
+	M_rk          *data.Slice = nil
+	timeEvolution bool        = false
+	CurrentTime   float64     = 0.0
 	// brms_i        *data.Slice
 	// sum_cells     *data.Slice
 )
+
+func SetCurrentTime(ctime float64) {
+	CurrentTime = ctime
+}
 
 func SetDtCuda(dt float32) {
 	Fixed_dt_cuda = dt
@@ -61,13 +66,13 @@ func SetWc(wc float64) {
 // 	return sum_cells
 // }
 
-func InitRKStepArray(rk_step *data.Slice, size [3]int) *data.Slice {
+func InitRKStepArray(size [3]int) *data.Slice {
 
-	if rk_step == nil {
-		rk_step = NewSlice(12, size)
+	if M_rk == nil {
+		M_rk = NewSlice(10, size)
 	}
 
-	return rk_step
+	return M_rk
 }
 
 // func GetZElem(slice *data.Slice) float32 {

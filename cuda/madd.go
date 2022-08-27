@@ -61,10 +61,10 @@ func CalcMSpinTorque(dst, m_current *data.Slice, ctime float64, deltah float32, 
 	Nx := size[0]
 	Ny := size[1]
 	Nz := size[2]
-
-	k_mdatatemp_async(dst.DevPtr(0), dst.DevPtr(1), dst.DevPtr(2), dst.DevPtr(3), dst.DevPtr(4), dst.DevPtr(5), dst.DevPtr(6), dst.DevPtr(7), dst.DevPtr(8), dst.DevPtr(9), dst.DevPtr(10), dst.DevPtr(11),
+	// println(ctime)
+	k_mdatatemp_async(dst.DevPtr(0), dst.DevPtr(1), dst.DevPtr(2), dst.DevPtr(3), dst.DevPtr(4), dst.DevPtr(5), dst.DevPtr(6), dst.DevPtr(7), dst.DevPtr(8), dst.DevPtr(9),
 		m_current.DevPtr(0), m_current.DevPtr(1), m_current.DevPtr(2),
-		float32(ctime), deltah, float32(brms[0]), float32(brms[1]), float32(brms[2]), float32(wc), Nx, Ny, Nz, cfg)
+		float32(wc*ctime), float32(deltah), float32(brms[0]), float32(brms[1]), float32(brms[2]), Nx, Ny, Nz, N, cfg)
 }
 
 // multiply-add: dst[i] = src1[i] * factor1 + src2[i] * factor2 + src3 * factor3
