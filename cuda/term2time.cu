@@ -21,17 +21,25 @@ term2time(float* __restrict__  new_term_x, float* __restrict__  new_term_y, floa
 
             float3 brms = {brms_x[i], brms_y[i], brms_z[i]};
 
-            sumx[i] += amul(brms_x, amul(delta_time, amul(rk_sin_mx, cos(ctimeWc), i) - amul(rk_cos_mx, sin(ctimeWc), i), i), i);
-            sumy[i] += amul(brms_y, amul(delta_time, amul(rk_sin_my, cos(ctimeWc), i) - amul(rk_cos_my, sin(ctimeWc), i), i), i);
-            sumz[i] += amul(brms_z, amul(delta_time, amul(rk_sin_mz, cos(ctimeWc), i) - amul(rk_cos_mz, sin(ctimeWc), i), i), i);
+            // sumx[i] += amul(brms_x, amul(delta_time, amul(rk_sin_mx, cos(ctimeWc), i) - amul(rk_cos_mx, sin(ctimeWc), i), i), i);
+            // sumy[i] += amul(brms_y, amul(delta_time, amul(rk_sin_my, cos(ctimeWc), i) - amul(rk_cos_my, sin(ctimeWc), i), i), i);
+            // sumz[i] += amul(brms_z, amul(delta_time, amul(rk_sin_mz, cos(ctimeWc), i) - amul(rk_cos_mz, sin(ctimeWc), i), i), i);
+
+            sumx[i] += (brms_x[i] * delta_time[i]) * (cos(ctimeWc) * rk_sin_mx[i] - sin(ctimeWc) * rk_cos_mx[i]);// funciona
+            sumy[i] += (brms_y[i] * delta_time[i]) * (cos(ctimeWc) * rk_sin_my[i] - sin(ctimeWc) * rk_cos_my[i]);
+            sumz[i] += (brms_z[i] * delta_time[i]) * (cos(ctimeWc) * rk_sin_mz[i] - sin(ctimeWc) * rk_cos_mz[i]);
 
             // Creating new time-dependant term
             float3 mxBrms = cross(m, brms); // m x Brms
             float spin_constant = 2 / HBAR; // debemos dividir entre gamma0 nuestro nuevo termino? parece que si
 
-            float final_x = spin_constant * amul(sumx, mxBrms.x, i);
-            float final_y = spin_constant * amul(sumy, mxBrms.y, i);
-            float final_z = spin_constant * amul(sumz, mxBrms.z, i);
+            // float final_x = spin_constant * amul(sumx, mxBrms.x, i);
+            // float final_y = spin_constant * amul(sumy, mxBrms.y, i);
+            // float final_z = spin_constant * amul(sumz, mxBrms.z, i);
+
+            float final_x = spin_constant * mxBrms.x * sumx[i];
+            float final_y = spin_constant * mxBrms.y * sumy[i];
+            float final_z = spin_constant * mxBrms.z * sumz[i];
 
             // Second Summatory
             new_term_x[i] += final_x;
