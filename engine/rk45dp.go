@@ -117,10 +117,8 @@ func (rk *RK45DP) Step() {
 	madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
 
 	if !DisableTimeEvolutionTorque {
-		cuda.SetCurrentTime(Time)
-		cuda.SetDtCuda(h)
-
-		attachTimeToFormula(m, Time)
+		cuda.InternalTimeLatch = true
+		attachTimeToFormula(m, Time, h)
 		calcNewTermLLG(m, Time)
 	}
 
@@ -129,7 +127,7 @@ func (rk *RK45DP) Step() {
 	torqueFn(k7) // next torque if OK
 
 	if !DisableTimeEvolutionTorque {
-		cuda.SetDtCuda(0.0)
+		cuda.InternalTimeLatch = false
 	}
 
 	// error estimate

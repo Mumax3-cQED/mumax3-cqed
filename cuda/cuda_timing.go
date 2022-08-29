@@ -6,25 +6,25 @@ import (
 )
 
 var (
-	Fixed_dt_cuda float32 = 0.0
+	InternalTimeLatch bool = false
 	// Wc_cuda       float64
 	// Brms_cuda     []float64
 	M_rk         *data.Slice = nil
 	Sum_temp     *data.Slice = nil
 	New_term_llg *data.Slice = nil
 
-	CurrentTime float64 = 0.0
+	// CurrentTime float64 = 0.0
 	// brms_i        *data.Slice
 	// sum_cells     *data.Slice
 )
 
-func SetCurrentTime(ctime float64) {
-	CurrentTime = ctime
-}
+// func SetCurrentTime(ctime float64) {
+// 	CurrentTime = ctime
+// }
 
-func SetDtCuda(dt float32) {
-	Fixed_dt_cuda = dt
-}
+// func SetDtCuda(dt float32) {
+// 	Fixed_dt_cuda = dt
+// }
 
 // func IsBrmsZero(brms []float64) bool {
 //

@@ -1,5 +1,4 @@
 // MODIFIED INMA
-#include "stencil.h"
 #include "amul.h"
 
 extern "C" __global__ void

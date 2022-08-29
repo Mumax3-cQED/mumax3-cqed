@@ -1,10 +1,5 @@
 // MODIFIED INMA
 
-#include "amul.h"
-#include "constants.h"
-#include "stencil.h"
-#include <stdio.h>
-
 // static __inline__ __device__ float3 operator*(const float3 &a, const float3 &b) {
 //   return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
 // }
@@ -32,9 +27,9 @@ extern "C" __global__ void
 lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
               float* __restrict__ new_term_x, float* __restrict__ new_term_y, float* __restrict__ new_term_z, int N) {
 
-     int ii =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
+     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
 
-     if (ii < N) {
+     if (i < N) {
         // int ix = ((blockIdx.x * blockDim.x) + threadIdx.x);
         // int iy = ((blockIdx.y * blockDim.y) + threadIdx.y);
         // int iz = ((blockIdx.z * blockDim.z) + threadIdx.z);
@@ -105,9 +100,9 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         //           torque = gilb * (mxH + alpha * cross(m, mxH)) - new_term;  // LLG equation with full new time-dependant term to plug in equation
 
           // Apply new term to torque
-          tx[ii] -= new_term_x[ii];
-          ty[ii] -= new_term_y[ii];
-          tz[ii] -= new_term_z[ii];
+          tx[i] -= new_term_x[i];
+          ty[i] -= new_term_y[i];
+          tz[i] -= new_term_z[i];
 
          // }
         //  else {

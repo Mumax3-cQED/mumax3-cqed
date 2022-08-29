@@ -152,8 +152,8 @@ func calcNewTermLLG(m_current *data.Slice, ctime float64) {
 	cuda.CalcStepNewTerm(cuda.New_term_llg, cuda.M_rk, cuda.Sum_temp, m_current, ctime, Wc)
 }
 
-func attachTimeToFormula(m_current *data.Slice, ctime float64) {
-	cuda.CalcMSpinTorque(cuda.M_rk, m_current, ctime, cuda.Fixed_dt_cuda, Brms_vector, Wc)
+func attachTimeToFormula(m_current *data.Slice, ctime float64, deltah float32) {
+	cuda.CalcMSpinTorque(cuda.M_rk, m_current, ctime, deltah, Brms_vector, Wc)
 }
 
 func GetMaxTorque() float64 {

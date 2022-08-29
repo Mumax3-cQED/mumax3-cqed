@@ -41,8 +41,6 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 
 // func LLTimeTorque(torque, m, B *data.Slice, alpha MSlice, mesh *data.Mesh) {
 func LLTimeTorque(torque *data.Slice) {
-	N := torque.Len()
-	cfg := make1DConf(N)
 
 	// if timeEvolution == true {
 
@@ -82,7 +80,11 @@ func LLTimeTorque(torque *data.Slice) {
 	// 	M_rk.DevPtr(7), M_rk.DevPtr(8), M_rk.DevPtr(9),
 	// 	sumx.DevPtr(0), sumy.DevPtr(0), sumz.DevPtr(0),
 	// 	float32(ctimeWc), gt_dtsi, N[X], N[Y], N[Z], cfg)
-	if Fixed_dt_cuda != 0.0 {
+	if InternalTimeLatch {
+
+		N := torque.Len()
+		cfg := make1DConf(N)
+
 		k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
 			New_term_llg.DevPtr(0), New_term_llg.DevPtr(1), New_term_llg.DevPtr(2), N, cfg)
 	}

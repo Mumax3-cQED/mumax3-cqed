@@ -164,22 +164,11 @@ func SetParametersTimeEvolution() {
 	if !DisableTimeEvolutionTorque {
 
 		fmt.Println("")
-		fmt.Println("----------------------------------------------")
-		fmt.Println("Time evolution factor in LLG equation: ", DisableTimeEvolutionTorque)
-
-		if len(Brms_vector) == 0 {
-			fmt.Println("Brms vector: ", Brms_vector)
-		} else {
-			fmt.Println("Brms vector: ", Brms_vector)
-		}
-
-		if Wc == 0 {
-			fmt.Println("Wc: ", Wc)
-		} else {
-			fmt.Println("Wc: ", Wc)
-		}
-
-		fmt.Println("----------------------------------------------")
+		fmt.Println("------------------------------------------------")
+		fmt.Println(" Time evolution factor in LLG equation: Enabled")
+		fmt.Println(" Brms vector (T): ", Brms_vector)
+		fmt.Println(" Wc (Hz): ", Wc)
+		fmt.Println("------------------------------------------------")
 		fmt.Println("")
 	}
 }
