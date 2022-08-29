@@ -5,13 +5,6 @@ import (
 	"github.com/mumax/3/data"
 )
 
-var (
-	sumx    *data.Slice = nil
-	sumy    *data.Slice = nil
-	sumz    *data.Slice = nil
-	gt_dtsi int         = 0
-)
-
 // Landau-Lifshitz torque divided by gamma0:
 // 	- 1/(1+α²) [ m x B +  α m x (m x B) ]
 // 	torque in Tesla

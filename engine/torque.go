@@ -55,16 +55,6 @@ func SetTorque(dst *data.Slice) {
 	FreezeSpins(dst)
 }
 
-func AddLLTimeTorque(dst *data.Slice) {
-	if !DisableTimeEvolutionTorque {
-		// SetEffectiveField(dst) // calc and store B_eff
-		// alpha := Alpha.MSlice()
-		// defer alpha.Recycle()
-		// cuda.LLTimeTorque(dst, M.Buffer(), dst, alpha, Mesh())
-		cuda.LLTimeTorque(dst)
-	}
-}
-
 // Sets dst to the current Landau-Lifshitz torque
 func SetLLTorque(dst *data.Slice) {
 	SetEffectiveField(dst) // calc and store B_eff
@@ -133,6 +123,12 @@ func FreezeSpins(dst *data.Slice) {
 }
 
 // New functions for LLG time evolution
+func AddLLTimeTorque(dst *data.Slice) {
+	if !DisableTimeEvolutionTorque {
+		cuda.LLTimeTorque(dst)
+	}
+}
+
 func initMRKArray(size [3]int) *data.Slice {
 	cuda.M_rk = cuda.InitRKStepArray(size)
 	return cuda.M_rk

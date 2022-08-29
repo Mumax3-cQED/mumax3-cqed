@@ -2,6 +2,7 @@
 
 #include "amul.h"
 #include "constants.h"
+#include <stdint.h>
 
 extern "C" __global__ void
 term2time(float* __restrict__  new_term_x, float* __restrict__  new_term_y, float* __restrict__  new_term_z,
