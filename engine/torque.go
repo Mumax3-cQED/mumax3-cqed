@@ -1,5 +1,6 @@
 package engine
 
+// MODIFIED INMA
 import (
 	"reflect"
 
@@ -9,23 +10,26 @@ import (
 )
 
 var (
-	Alpha                            = NewScalarParam("alpha", "", "Landau-Lifshitz damping constant")
-	Xi                               = NewScalarParam("xi", "", "Non-adiabaticity of spin-transfer-torque")
-	Pol                              = NewScalarParam("Pol", "", "Electrical current polarization")
-	Lambda                           = NewScalarParam("Lambda", "", "Slonczewski Λ parameter")
-	EpsilonPrime                     = NewScalarParam("EpsilonPrime", "", "Slonczewski secondairy STT term ε'")
-	FrozenSpins                      = NewScalarParam("frozenspins", "", "Defines spins that should be fixed") // 1 - frozen, 0 - free. TODO: check if it only contains 0/1 values
-	FixedLayer                       = NewExcitation("FixedLayer", "", "Slonczewski fixed layer polarization")
-	Torque                           = NewVectorField("torque", "T", "Total torque/γ0", SetTorque)
-	LLTorque                         = NewVectorField("LLtorque", "T", "Landau-Lifshitz torque/γ0", SetLLTorque)
-	STTorque                         = NewVectorField("STTorque", "T", "Spin-transfer torque/γ0", AddSTTorque)
-	J                                = NewExcitation("J", "A/m2", "Electrical current density")
-	MaxTorque                        = NewScalarValue("maxTorque", "T", "Maximum torque/γ0, over all cells", GetMaxTorque)
-	GammaLL                  float64 = 1.7595e11 // Gyromagnetic ratio of spins, in rad/Ts
-	Precess                          = true
-	DisableZhangLiTorque             = false
-	DisableSlonczewskiTorque         = false
-	fixedLayerPosition               = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
+	Alpha                              = NewScalarParam("alpha", "", "Landau-Lifshitz damping constant")
+	Xi                                 = NewScalarParam("xi", "", "Non-adiabaticity of spin-transfer-torque")
+	Pol                                = NewScalarParam("Pol", "", "Electrical current polarization")
+	Lambda                             = NewScalarParam("Lambda", "", "Slonczewski Λ parameter")
+	EpsilonPrime                       = NewScalarParam("EpsilonPrime", "", "Slonczewski secondairy STT term ε'")
+	FrozenSpins                        = NewScalarParam("frozenspins", "", "Defines spins that should be fixed") // 1 - frozen, 0 - free. TODO: check if it only contains 0/1 values
+	FixedLayer                         = NewExcitation("FixedLayer", "", "Slonczewski fixed layer polarization")
+	Torque                             = NewVectorField("torque", "T", "Total torque/γ0", SetTorque)
+	LLTorque                           = NewVectorField("LLtorque", "T", "Landau-Lifshitz torque/γ0", SetLLTorque)
+	STTorque                           = NewVectorField("STTorque", "T", "Spin-transfer torque/γ0", AddSTTorque)
+	J                                  = NewExcitation("J", "A/m2", "Electrical current density")
+	MaxTorque                          = NewScalarValue("maxTorque", "T", "Maximum torque/γ0, over all cells", GetMaxTorque)
+	GammaLL                    float64 = 1.7595e11 // Gyromagnetic ratio of spins, in rad/Ts
+	Precess                            = true
+	DisableZhangLiTorque               = false
+	DisableSlonczewskiTorque           = false
+	DisableTimeEvolutionTorque         = true
+	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
+	Brms_vector                [3]float64
+	Wc                         float64 = 0.0
 )
 
 func init() {
@@ -34,6 +38,9 @@ func init() {
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
+	DeclVar("DisableTimeEvolutionTorque", &DisableTimeEvolutionTorque, "Disables Time evolution torque (default=true)")
+	DeclVar("B_rms", &Brms_vector, "Brms extra parameter for LLG time evolution")
+	DeclVar("Wc", &Wc, "Wc extra parameter for LLG time evolution")
 	DeclVar("DoPrecess", &Precess, "Enables LL precession (default=true)")
 	DeclLValue("FixedLayerPosition", &flposition{}, "Position of the fixed layer: FIXEDLAYER_TOP, FIXEDLAYER_BOTTOM (default=FIXEDLAYER_TOP)")
 	DeclROnly("FIXEDLAYER_TOP", FIXEDLAYER_TOP, "FixedLayerPosition = FIXEDLAYER_TOP instructs mumax3 that fixed layer is on top of the free layer")
@@ -44,7 +51,18 @@ func init() {
 func SetTorque(dst *data.Slice) {
 	SetLLTorque(dst)
 	AddSTTorque(dst)
+	AddLLTimeTorque(dst)
 	FreezeSpins(dst)
+}
+
+func AddLLTimeTorque(dst *data.Slice) {
+	if !DisableTimeEvolutionTorque {
+		// SetEffectiveField(dst) // calc and store B_eff
+		// alpha := Alpha.MSlice()
+		// defer alpha.Recycle()
+		// cuda.LLTimeTorque(dst, M.Buffer(), dst, alpha, Mesh())
+		cuda.LLTimeTorque(dst)
+	}
 }
 
 // Sets dst to the current Landau-Lifshitz torque
@@ -112,6 +130,30 @@ func FreezeSpins(dst *data.Slice) {
 	if !FrozenSpins.isZero() {
 		cuda.ZeroMask(dst, FrozenSpins.gpuLUT1(), regions.Gpu())
 	}
+}
+
+// New functions for LLG time evolution
+func initMRKArray(size [3]int) *data.Slice {
+	cuda.M_rk = cuda.InitRKStepArray(size)
+	return cuda.M_rk
+}
+
+func initNewTermLLG(size [3]int) *data.Slice {
+	cuda.New_term_llg = cuda.InitNewTermLLG(size)
+	return cuda.New_term_llg
+}
+
+func initSumTemp(size [3]int) *data.Slice {
+	cuda.Sum_temp = cuda.InitSumTemp(size)
+	return cuda.Sum_temp
+}
+
+func calcNewTermLLG(m_current *data.Slice, ctime float64) {
+	cuda.CalcStepNewTerm(cuda.New_term_llg, cuda.M_rk, cuda.Sum_temp, m_current, ctime, Wc)
+}
+
+func attachTimeToFormula(m_current *data.Slice, ctime float64) {
+	cuda.CalcMSpinTorque(cuda.M_rk, m_current, ctime, cuda.Fixed_dt_cuda, Brms_vector, Wc)
 }
 
 func GetMaxTorque() float64 {

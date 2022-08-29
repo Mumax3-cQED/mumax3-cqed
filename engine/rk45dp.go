@@ -20,7 +20,7 @@ type RK45DP struct {
 
 func (rk *RK45DP) Step() {
 
-	if TimeEvolution {
+	if !DisableTimeEvolutionTorque {
 		if m == nil {
 			m = M.Buffer()
 		}
@@ -30,8 +30,10 @@ func (rk *RK45DP) Step() {
 
 	size := m.Size()
 
-	if TimeEvolution {
+	if !DisableTimeEvolutionTorque {
 		initMRKArray(m.Size())
+		initSumTemp(m.Size())
+		initNewTermLLG(m.Size())
 	}
 
 	if FixDt != 0 {
@@ -114,19 +116,22 @@ func (rk *RK45DP) Step() {
 	// no k2
 	madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
 
-	if TimeEvolution {
+	if !DisableTimeEvolutionTorque {
 		cuda.SetCurrentTime(Time)
 		cuda.SetDtCuda(h)
+
 		attachTimeToFormula(m, Time)
+		calcNewTermLLG(m, Time)
 	}
 
 	M.normalize()
 	k7 := k2     // re-use k2
 	torqueFn(k7) // next torque if OK
 
-	if TimeEvolution {
+	if !DisableTimeEvolutionTorque {
 		cuda.SetDtCuda(0.0)
 	}
+
 	// error estimate
 	Err := cuda.Buffer(3, size) //k3 // re-use k3 as error estimate
 	defer cuda.Recycle(Err)

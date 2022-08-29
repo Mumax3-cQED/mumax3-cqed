@@ -28,17 +28,9 @@ var (
 	FixDt                   float64                      // fixed time step?
 	stepper                 Stepper                      // generic step, can be EulerStep, HeunStep, etc
 	solvertype              int
-
-	Brms_vector   [3]float64
-	Wc            float64 = 0.0
-	TimeEvolution         = false
 )
 
 func init() {
-
-	DeclVar("B_rms", &Brms_vector, "Brms Extra parameter")
-	DeclVar("Wc", &Wc, "Wc Extra parameter")
-	DeclVar("TimeEvolution", &TimeEvolution, "Enable or disable time evolution in LLG formula. Default value is false")
 
 	DeclFunc("Run", Run, "Run the simulation for a time in seconds")
 	DeclFunc("Steps", Steps, "Run the simulation for a number of time steps")
@@ -167,43 +159,24 @@ func adaptDt(corr float64) {
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }
 
-func initMRKArray(size [3]int) *data.Slice {
-
-	cuda.M_rk = cuda.InitRKStepArray(size)
-	return cuda.M_rk
-}
-
-func attachTimeToFormula(m_current *data.Slice, ctime float64) {
-
-	// if !cuda.IsBrmsZero(cuda.Brms_cuda) {
-	cuda.CalcMSpinTorque(cuda.M_rk, m_current, ctime, cuda.Fixed_dt_cuda, cuda.Brms_cuda, cuda.Wc_cuda)
-	// }
-}
-
 func SetParametersTimeEvolution() {
 
-	cuda.SetTimeEvoStatus(TimeEvolution)
-
-	if TimeEvolution == true {
+	if !DisableTimeEvolutionTorque {
 
 		fmt.Println("")
 		fmt.Println("----------------------------------------------")
-		fmt.Println("Time evolution factor in LLG equation: ", TimeEvolution)
+		fmt.Println("Time evolution factor in LLG equation: ", DisableTimeEvolutionTorque)
 
-		if len(cuda.Brms_cuda) == 0 {
-
-			cuda.SetBrms(Brms_vector)
-			fmt.Println("Brms vector: ", cuda.Brms_cuda)
+		if len(Brms_vector) == 0 {
+			fmt.Println("Brms vector: ", Brms_vector)
 		} else {
-			fmt.Println("Brms vector: ", cuda.Brms_cuda)
+			fmt.Println("Brms vector: ", Brms_vector)
 		}
 
-		if cuda.Wc_cuda == 0 {
-
-			cuda.SetWc(Wc)
-			fmt.Println("Wc: ", cuda.Wc_cuda)
+		if Wc == 0 {
+			fmt.Println("Wc: ", Wc)
 		} else {
-			fmt.Println("Wc: ", cuda.Wc_cuda)
+			fmt.Println("Wc: ", Wc)
 		}
 
 		fmt.Println("----------------------------------------------")

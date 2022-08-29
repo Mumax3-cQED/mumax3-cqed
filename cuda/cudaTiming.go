@@ -7,11 +7,13 @@ import (
 
 var (
 	Fixed_dt_cuda float32 = 0.0
-	Wc_cuda       float64
-	Brms_cuda     []float64
-	M_rk          *data.Slice = nil
-	timeEvolution bool        = false
-	CurrentTime   float64     = 0.0
+	// Wc_cuda       float64
+	// Brms_cuda     []float64
+	M_rk         *data.Slice = nil
+	Sum_temp     *data.Slice = nil
+	New_term_llg *data.Slice = nil
+
+	CurrentTime float64 = 0.0
 	// brms_i        *data.Slice
 	// sum_cells     *data.Slice
 )
@@ -24,29 +26,25 @@ func SetDtCuda(dt float32) {
 	Fixed_dt_cuda = dt
 }
 
-func SetTimeEvoStatus(enableTimeEvo bool) {
-	timeEvolution = enableTimeEvo
-}
-
 // func IsBrmsZero(brms []float64) bool {
 //
 // 	util.Assert(len(brms) == 3)
 // 	return (brms[0] == 0.0 && brms[1] == 0.0 && brms[2] == 0.0)
 // }
 
-func SetBrms(brms [3]float64) {
+// func SetBrms(brms [3]float64) {
+//
+// 	Brms_cuda = make([]float64, 3)
+//
+// 	Brms_cuda[0] = brms[0]
+// 	Brms_cuda[1] = brms[1]
+// 	Brms_cuda[2] = brms[2]
+// }
 
-	Brms_cuda = make([]float64, 3)
-
-	Brms_cuda[0] = brms[0]
-	Brms_cuda[1] = brms[1]
-	Brms_cuda[2] = brms[2]
-}
-
-func SetWc(wc float64) {
-
-	Wc_cuda = wc
-}
+// func SetWc(wc float64) {
+//
+// 	Wc_cuda = wc
+// }
 
 // func initBrmsSlice(size [3]int) *data.Slice {
 //
@@ -65,6 +63,24 @@ func SetWc(wc float64) {
 //
 // 	return sum_cells
 // }
+
+func InitNewTermLLG(size [3]int) *data.Slice {
+
+	if New_term_llg == nil {
+		New_term_llg = NewSlice(3, size)
+	}
+
+	return New_term_llg
+}
+
+func InitSumTemp(size [3]int) *data.Slice {
+
+	if Sum_temp == nil {
+		Sum_temp = NewSlice(3, size)
+	}
+
+	return Sum_temp
+}
 
 func InitRKStepArray(size [3]int) *data.Slice {
 
