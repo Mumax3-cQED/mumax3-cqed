@@ -31,9 +31,9 @@ func (rk *RK45DP) Step() {
 	size := m.Size()
 
 	if !DisableTimeEvolutionTorque {
-		initMRKArray(m.Size())
-		initSumTemp(m.Size())
-		initNewTermLLG(m.Size())
+		cuda.M_rk = cuda.InitRKStepArray(m.Size())
+		cuda.Sum_temp = cuda.InitSumTemp(m.Size())
+		cuda.New_term_llg = cuda.InitNewTermLLG(m.Size())
 	}
 
 	if FixDt != 0 {
@@ -118,8 +118,8 @@ func (rk *RK45DP) Step() {
 
 	if !DisableTimeEvolutionTorque {
 		cuda.InternalTimeLatch = true
-		attachTimeToFormula(m, Time, h)
-		calcNewTermLLG(m, Time)
+		cuda.CalcMSpinTorque(cuda.M_rk, m, Time, h, Brms_vector, Wc)
+		cuda.CalcStepNewTerm(cuda.New_term_llg, cuda.M_rk, cuda.Sum_temp, m, Time, Wc)
 	}
 
 	M.normalize()
