@@ -51,7 +51,13 @@ func init() {
 func SetTorque(dst *data.Slice) {
 	SetLLTorque(dst)
 	AddSTTorque(dst)
+	FreezeSpins(dst)
+}
+
+func SetTorqueTime(dst *data.Slice) {
+	SetLLTorque(dst)
 	AddLLTimeTorque(dst)
+	AddSTTorque(dst)
 	FreezeSpins(dst)
 }
 
@@ -123,10 +129,14 @@ func FreezeSpins(dst *data.Slice) {
 }
 
 // New function for LLG formula time evolution
+func ComputeTimeEvolution(time float64, h float32) {
+	cuda.CalcMSpinTorque(cuda.M_rk, M.Buffer(), time, h, Brms_vector, Wc)
+	cuda.CalcStepNewTerm(cuda.New_term_llg, cuda.M_rk, cuda.Sum_temp, M.Buffer(), time, Wc)
+}
+
 func AddLLTimeTorque(dst *data.Slice) {
-	if !DisableTimeEvolutionTorque {
-		cuda.LLTimeTorque(dst)
-	}
+	// ComputeTimeEvolution(time, h)
+	cuda.LLTimeTorque(dst)
 }
 
 func GetMaxTorque() float64 {

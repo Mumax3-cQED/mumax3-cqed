@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	m            *data.Slice
-	current_time float32 = 0.0
+	m *data.Slice
+	// current_time float32 = 0.0
 )
 
 type RK45DP struct {
@@ -108,7 +108,16 @@ func (rk *RK45DP) Step() {
 	Time = t0 + (1.)*Dt_si
 	madd6(m, m0, rk.k1, k2, k3, k4, k5, 1, (9017./3168.)*h, (-355./33.)*h, (46732./5247.)*h, (49./176.)*h, (-5103./18656.)*h)
 
+	// if !DisableTimeEvolutionTorque {
+	// 	// cuda.InternalTimeLatch = true
+	// 	// cuda.CalcMSpinTorque(cuda.M_rk, m, Time, h, Brms_vector, Wc)
+	// 	// cuda.CalcStepNewTerm(cuda.New_term_llg, cuda.M_rk, cuda.Sum_temp, m, Time, Wc)
+	// 	computeTimeEvolution(m, Time, h)
+	// 	// AddLLTimeTorque(m)
+	// 	// cuda.InternalTimeLatch = false
+	// }
 	M.normalize()
+
 	torqueFn(k6)
 
 	// stage 7: 5th order solution
@@ -117,18 +126,27 @@ func (rk *RK45DP) Step() {
 	madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
 
 	if !DisableTimeEvolutionTorque {
-		cuda.InternalTimeLatch = true
+		// cuda.InternalTimeLatch = true
 		cuda.CalcMSpinTorque(cuda.M_rk, m, Time, h, Brms_vector, Wc)
+		//cuda.Normalize(cuda.M_rk, geometry.Gpu())
 		cuda.CalcStepNewTerm(cuda.New_term_llg, cuda.M_rk, cuda.Sum_temp, m, Time, Wc)
+		norm(cuda.New_term_llg)
+		// computeTimeEvolution(Time, h)
+		// AddLLTimeTorque(m)
+		// cuda.InternalTimeLatch = false
 	}
 
 	M.normalize()
-	k7 := k2     // re-use k2
-	torqueFn(k7) // next torque if OK
+
+	k7 := k2 // re-use k2
 
 	if !DisableTimeEvolutionTorque {
-		cuda.InternalTimeLatch = false
+		torqueFnTime(k7)
+	} else {
+		torqueFn(k7)
 	}
+
+	// torqueFn(k7) // next torque if OK
 
 	// error estimate
 	Err := cuda.Buffer(3, size) //k3 // re-use k3 as error estimate
@@ -156,6 +174,10 @@ func (rk *RK45DP) Step() {
 		NUndone++
 		adaptDt(math.Pow(MaxErr/err, 1./6.))
 	}
+}
+
+func norm(data *data.Slice) {
+	cuda.Normalize(data, geometry.Gpu())
 }
 
 func (rk *RK45DP) Free() {

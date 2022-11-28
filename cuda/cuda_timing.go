@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	InternalTimeLatch bool = false
+	// InternalTimeLatch bool = false
 	// Wc_cuda       float64
 	// Brms_cuda     []float64
 	M_rk         *data.Slice = nil
@@ -91,11 +91,17 @@ func InitRKStepArray(size [3]int) *data.Slice {
 	return M_rk
 }
 
-// func GetZElem(slice *data.Slice) float32 {
-// 	mz_temp := GetCell(slice, 2, 0, 0, 0)
-//
-// 	return mz_temp
-// }
+func GetZElem(slice *data.Slice) float32 {
+	mz_temp := GetCell(slice, 2, 0, 0, 0)
+
+	return mz_temp
+}
+
+func GetElemPos(slice *data.Slice, position int) float32 {
+	mz_temp := GetCell(slice, position, 0, 0, 0)
+
+	return mz_temp
+}
 
 // func AppendData(m *data.Slice, time float64, destArray [][]float32) {
 //

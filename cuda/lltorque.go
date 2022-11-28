@@ -73,14 +73,14 @@ func LLTimeTorque(torque *data.Slice) {
 	// 	M_rk.DevPtr(7), M_rk.DevPtr(8), M_rk.DevPtr(9),
 	// 	sumx.DevPtr(0), sumy.DevPtr(0), sumz.DevPtr(0),
 	// 	float32(ctimeWc), gt_dtsi, N[X], N[Y], N[Z], cfg)
-	if InternalTimeLatch {
+	// if InternalTimeLatch {
 
-		N := torque.Len()
-		cfg := make1DConf(N)
-
-		k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
-			New_term_llg.DevPtr(0), New_term_llg.DevPtr(1), New_term_llg.DevPtr(2), N, cfg)
-	}
+	N := torque.Len()
+	cfg := make1DConf(N)
+	//	fmt.Println(GetZElem(New_term_llg))
+	k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
+		New_term_llg.DevPtr(0), New_term_llg.DevPtr(1), New_term_llg.DevPtr(2), N, cfg)
+	// }
 	// 	} else {
 	// 		DefaultTorquePrecess(torque, m, B, alpha, N, cfg)
 	// 	}
@@ -106,9 +106,13 @@ func CalcStepNewTerm(dst, data, sum_temp, m_current *data.Slice, ctime float64, 
 	N := m_current.Len()
 	cfg := make1DConf(N)
 
+	//fmt.Println(GetElemPos(dst, 1))
+	// fmt.Println("in")
 	k_term2time_async(dst.DevPtr(0), dst.DevPtr(1), dst.DevPtr(2),
 		data.DevPtr(0), data.DevPtr(1), data.DevPtr(2), data.DevPtr(3), data.DevPtr(4), data.DevPtr(5), data.DevPtr(6), data.DevPtr(7), data.DevPtr(8), data.DevPtr(9),
 		m_current.DevPtr(0), m_current.DevPtr(1), m_current.DevPtr(2),
 		sum_temp.DevPtr(0), sum_temp.DevPtr(1), sum_temp.DevPtr(2),
 		float32(wc*ctime), N, cfg)
+	// fmt.Println("out")
+	// fmt.Println(GetElemPos(dst, 0))
 }

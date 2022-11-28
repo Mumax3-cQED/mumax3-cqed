@@ -102,6 +102,16 @@ func torqueFn(dst *data.Slice) {
 	NEvals++
 }
 
+func torqueFnTime(dst *data.Slice) {
+
+	SetTorqueTime(dst)
+	NEvals++
+}
+
+// func computeTimeEvolution(time float64, h float32) {
+// 	ComputeTimeEvolution(time, h)
+// }
+
 // returns number of torque evaluations
 func getNEval() int {
 	return NEvals
@@ -131,7 +141,7 @@ func adaptDt(corr float64) {
 	if math.IsNaN(corr) {
 		corr = 1
 	}
-
+	// fmt.Println(corr)
 	util.AssertMsg(corr != 0, "Time step too small, check if parameters are sensible")
 	corr *= Headroom
 	if corr > 2 {
