@@ -21,7 +21,8 @@ var (
 	LLTorque                           = NewVectorField("LLtorque", "T", "Landau-Lifshitz torque/γ0", SetLLTorque)
 	STTorque                           = NewVectorField("STTorque", "T", "Spin-transfer torque/γ0", AddSTTorque)
 	J                                  = NewExcitation("J", "A/m2", "Electrical current density")
-	MaxTorque                          = NewScalarValue("maxTorque", "T", "Maximum torque/γ0, over all cells", GetMaxTorque)
+	MaxTorque                          = NewScalarValue("maxTorque", "T", "Motion term for LLG equation", GetMaxTorque)
+	MTTorque                           = NewVectorField("MTTorque", "T", "Spin-transfer torque/γ0", AddLLTimeTorque)
 	GammaLL                    float64 = 1.7595e11 // Gyromagnetic ratio of spins, in rad/Ts
 	Precess                            = true
 	DisableZhangLiTorque               = false
