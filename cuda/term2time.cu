@@ -32,19 +32,18 @@ term2time(float* __restrict__  new_term_x, float* __restrict__  new_term_y, floa
             // Creating new time-dependant term
             float3 mxBrms = cross(m, brms); // m x Brms
             float spin_constant = 2 / HBAR; // debemos dividir entre gamma0 nuestro nuevo termino? parece que si
+            float result = sumx[i] + sumy[i] + sumz[i];
 
-            float final_x = amul(sumx, spin_constant * mxBrms.x, i);
-            float final_y = amul(sumy, spin_constant * mxBrms.y, i);
-            float final_z = amul(sumz, spin_constant * mxBrms.z, i);
+            float3 final = result * spin_constant * mxBrms;
 
             // float final_x = spin_constant * mxBrms.x * sumx[i];
             // float final_y = spin_constant * mxBrms.y * sumy[i];
             // float final_z = spin_constant * mxBrms.z * sumz[i];
 
             // Second Summatory
-            new_term_x[i] += final_x;
-            new_term_y[i] += final_y;
-            new_term_z[i] += final_z;
+            new_term_x[i] += final.x;
+            new_term_y[i] += final.y;
+            new_term_z[i] += final.z;
 
 //printf("new_term_x: %f\n",  new_term_x[i]);
 // printf("new_term_y: %f\n",  new_term_y[i]);
