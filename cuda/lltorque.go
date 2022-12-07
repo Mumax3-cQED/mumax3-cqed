@@ -33,7 +33,7 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 }
 
 // func LLTimeTorque(torque, m, B *data.Slice, alpha MSlice, mesh *data.Mesh) {
-func LLTimeTorque(torque *data.Slice) {
+func LLTimeTorque(torque, new_term *data.Slice) {
 
 	// if timeEvolution == true {
 
@@ -77,9 +77,10 @@ func LLTimeTorque(torque *data.Slice) {
 
 	N := torque.Len()
 	cfg := make1DConf(N)
+
 	//	fmt.Println(GetZElem(New_term_llg))
 	k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
-		New_term_llg.DevPtr(0), New_term_llg.DevPtr(1), New_term_llg.DevPtr(2), N, cfg)
+		new_term.DevPtr(X), new_term.DevPtr(Y), new_term.DevPtr(Z), N, cfg)
 	// }
 	// 	} else {
 	// 		DefaultTorquePrecess(torque, m, B, alpha, N, cfg)
@@ -91,28 +92,22 @@ func LLTimeTorque(torque *data.Slice) {
 	// }
 }
 
-func CalcMSpinTorque(dst, m_current *data.Slice, ctime float64, deltah float32, brms [3]float64, wc float64) {
+func CalcTempTorque(sin_sum, cos_sum, sum_slice, dst_result, m_current *data.Slice, layer MSlice, wc, ctime float64, deltah float32, brms [3]float64) {
 
-	N := m_current.Len()
+	N := dst_result.Len()
 	cfg := make1DConf(N)
 
-	k_mdatatemp_async(dst.DevPtr(0), dst.DevPtr(1), dst.DevPtr(2), dst.DevPtr(3), dst.DevPtr(4), dst.DevPtr(5), dst.DevPtr(6), dst.DevPtr(7), dst.DevPtr(8), dst.DevPtr(9),
-		m_current.DevPtr(0), m_current.DevPtr(1), m_current.DevPtr(2),
-		float32(wc*ctime), float32(deltah), float32(brms[0]), float32(brms[1]), float32(brms[2]), N, cfg)
-}
+	k_mdatatemp_async(dst_result.DevPtr(X), dst_result.DevPtr(Y), dst_result.DevPtr(Z),
+		sin_sum.DevPtr(X), sin_sum.DevPtr(Y), sin_sum.DevPtr(Z),
+		cos_sum.DevPtr(X), cos_sum.DevPtr(Y), cos_sum.DevPtr(Z),
+		sum_slice.DevPtr(X), sum_slice.DevPtr(Y), sum_slice.DevPtr(Z),
+		layer.DevPtr(X), layer.Mul(X),
+		layer.DevPtr(Y), layer.Mul(Y),
+		layer.DevPtr(Z), layer.Mul(Z),
+		// alpha.DevPtr(0), alpha.Mul(0),
+		m_current.DevPtr(X), m_current.DevPtr(Y), m_current.DevPtr(Z),
+		deltah, float32(ctime*wc), float32(brms[X]), float32(brms[Y]), float32(brms[Z]), N, cfg)
 
-func CalcStepNewTerm(dst, data, sum_temp, m_current *data.Slice, ctime float64, wc float64) {
-
-	N := m_current.Len()
-	cfg := make1DConf(N)
-
-	//fmt.Println(GetElemPos(dst, 1))
-	// fmt.Println("in")
-	k_term2time_async(dst.DevPtr(0), dst.DevPtr(1), dst.DevPtr(2),
-		data.DevPtr(0), data.DevPtr(1), data.DevPtr(2), data.DevPtr(3), data.DevPtr(4), data.DevPtr(5), data.DevPtr(6), data.DevPtr(7), data.DevPtr(8), data.DevPtr(9),
-		m_current.DevPtr(0), m_current.DevPtr(1), m_current.DevPtr(2),
-		sum_temp.DevPtr(0), sum_temp.DevPtr(1), sum_temp.DevPtr(2),
-		float32(wc*ctime), N, cfg)
-	// fmt.Println("out")
-	// fmt.Println(GetElemPos(dst, 0))
+	// fmt.Println(GetElemPos(wc.arr, 0))
+	// fmt.Println(GetElemPos(dst_result, 2))
 }

@@ -16,6 +16,14 @@ func RegionAddV(dst *data.Slice, lut LUTPtrs, regions *Bytes) {
 		lut[X], lut[Y], lut[Z], regions.Ptr, N, cfg)
 }
 
+func RegionSubV(dst *data.Slice, lut LUTPtrs, regions *Bytes) {
+	util.Argument(dst.NComp() == 3)
+	N := dst.Len()
+	cfg := make1DConf(N)
+	k_regionsubv_async(dst.DevPtr(X), dst.DevPtr(Y), dst.DevPtr(Z),
+		lut[X], lut[Y], lut[Z], regions.Ptr, N, cfg)
+}
+
 // dst += LUT[region], for scalar. Used to add terms to scalar excitation.
 func RegionAddS(dst *data.Slice, lut LUTPtr, regions *Bytes) {
 	util.Argument(dst.NComp() == 1)

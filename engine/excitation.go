@@ -1,12 +1,13 @@
 package engine
 
 import (
+	"math"
+	"reflect"
+
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
 	"github.com/mumax/3/script"
 	"github.com/mumax/3/util"
-	"math"
-	"reflect"
 )
 
 // An excitation, typically field or current,
@@ -37,6 +38,20 @@ func (p *Excitation) MSlice() cuda.MSlice {
 	return cuda.ToMSlice(buf)
 }
 
+func (e *Excitation) MulTo(dst *data.Slice, factor2 float32) {
+	if !e.perRegion.isZero() {
+		cuda.RegionAddV(dst, e.perRegion.gpuLUT(), regions.Gpu())
+	}
+
+	for _, t := range e.extraTerms {
+		var mul float32 = 1
+		if t.mul != nil {
+			mul = float32(t.mul())
+		}
+		cuda.Madd2(dst, dst, t.mask, 0, mul*factor2)
+	}
+}
+
 func (e *Excitation) AddTo(dst *data.Slice) {
 	if !e.perRegion.isZero() {
 		cuda.RegionAddV(dst, e.perRegion.gpuLUT(), regions.Gpu())
@@ -47,7 +62,23 @@ func (e *Excitation) AddTo(dst *data.Slice) {
 		if t.mul != nil {
 			mul = float32(t.mul())
 		}
+
 		cuda.Madd2(dst, dst, t.mask, 1, mul)
+	}
+}
+
+func (e *Excitation) SubTo(dst *data.Slice) {
+	if !e.perRegion.isZero() {
+		cuda.RegionSubV(dst, e.perRegion.gpuLUT(), regions.Gpu())
+	}
+
+	for _, t := range e.extraTerms {
+		var mul float32 = 1
+		if t.mul != nil {
+			mul = float32(t.mul())
+		}
+
+		cuda.Msub2(dst, dst, t.mask, 1, mul)
 	}
 }
 

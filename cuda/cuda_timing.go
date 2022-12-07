@@ -6,16 +6,16 @@ import (
 )
 
 var (
-	// InternalTimeLatch bool = false
-	// Wc_cuda       float64
-	// Brms_cuda     []float64
-	M_rk         *data.Slice = nil
-	Sum_temp     *data.Slice = nil
-	New_term_llg *data.Slice = nil
+// InternalTimeLatch bool = false
+// Wc_cuda       float64
+// Brms_cuda     []float64
+// M_rk         *data.Slice = nil
+// Sum_temp     *data.Slice = nil
+// New_term_llg *data.Slice = nil
 
-	// CurrentTime float64 = 0.0
-	// brms_i        *data.Slice
-	// sum_cells     *data.Slice
+// CurrentTime float64 = 0.0
+// brms_i        *data.Slice
+// sum_cells     *data.Slice
 )
 
 // func SetCurrentTime(ctime float64) {
@@ -64,32 +64,32 @@ var (
 // 	return sum_cells
 // }
 
-func InitNewTermLLG(size [3]int) *data.Slice {
-
-	if New_term_llg == nil {
-		New_term_llg = NewSlice(3, size)
-	}
-
-	return New_term_llg
-}
-
-func InitSumTemp(size [3]int) *data.Slice {
-
-	if Sum_temp == nil {
-		Sum_temp = NewSlice(3, size)
-	}
-
-	return Sum_temp
-}
-
-func InitRKStepArray(size [3]int) *data.Slice {
-
-	if M_rk == nil {
-		M_rk = NewSlice(10, size)
-	}
-
-	return M_rk
-}
+// func InitNewTermLLG(size [3]int) *data.Slice {
+//
+// 	if New_term_llg == nil {
+// 		New_term_llg = NewSlice(3, size)
+// 	}
+//
+// 	return New_term_llg
+// }
+//
+// func InitSumTemp(size [3]int) *data.Slice {
+//
+// 	if Sum_temp == nil {
+// 		Sum_temp = NewSlice(3, size)
+// 	}
+//
+// 	return Sum_temp
+// }
+//
+// func InitRKStepArray(size [3]int) *data.Slice {
+//
+// 	if M_rk == nil {
+// 		M_rk = NewSlice(10, size)
+// 	}
+//
+// 	return M_rk
+// }
 
 func GetZElem(slice *data.Slice) float32 {
 	mz_temp := GetCell(slice, 2, 0, 0, 0)
