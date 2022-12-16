@@ -3,11 +3,12 @@ package engine
 // MODIFIED INMA
 import (
 	"reflect"
-	 // "math"
+	// "math"
+	"fmt"
+
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
 	"github.com/mumax/3/util"
-	  // "fmt"
 )
 
 var (
@@ -29,23 +30,24 @@ var (
 	DisableSlonczewskiTorque           = false
 	DisableTimeEvolutionTorque         = true
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
-	Brms_vector                [3]float64
-	Wc                         float64 = 0.0
-	MTTorqueFixedLayer                 = NewExcitation("MTTorqueFixedLayer", "", "MTTorqueFixedLayer fixed layer")
-	// cosine_sum                         = NewExcitation("cosine_sum", "Hz", "Cosine sum")
-	// sine_sum                           = NewExcitation("sine_sum", "Hz", "Sine sum")
-	// result_sum                         = NewExcitation("result_sum", "Hz", "Full sum result")
-	// dst_res 													 = NewExcitation("dst_res", "Hz", "Full new result")
-	MTTorque                           = NewVectorField("MTTorque", "T", "Spin-transfer torque/γ0", AddLLTimeTorque)
+	// Brms_vector                [3]float64
+	// Wc                         float64 = 0.0
 
-	resultsum_slice, sum_slice, sin_slice, cos_slice, dst_slice *data.Slice
-	layer_slice cuda.MSlice
-	//cosine_sum, sine_sum, full_sum,
-	// dst_res *data.Slice
-	// sin_slice_test, sin_wctime_slice *data.Slice
-	// result_slice, sum_slice, sin_slice, cos_slice *data.Slice
-	// result_sin_slice, result_op, result_cos_slice, result_sub, cos_wctime_slice, sin_wctime_slice *data.Slice
-	 HBAR float64 = 1.05457173E-34
+	B_rms = NewExcitation("B_rms", "T", "Brms extra parameter for LLG time evolution")
+	Wc    = NewScalarParam("Wc", "Hz", "Wc extra parameter for LLG time evolution")
+
+	MTTorqueFixedLayer = NewExcitation("MTTorqueFixedLayer", "", "MTTorqueFixedLayer fixed layer")
+	// cosine_sum         = NewExcitation("cosine_sum", "Hz", "Cosine sum")
+	// sine_sum           = NewExcitation("sine_sum", "Hz", "Sine sum")
+	// result_sum         = NewExcitation("result_sum", "Hz", "Full sum result")
+	// dst_res            = NewExcitation("dst_res", "Hz", "Full new result")
+	MTTorque = NewVectorField("MTTorque", "T", "Spin-transfer torque/γ0", AddLLTimeTorque)
+
+	resultsum_slice, sum_slice, sin_slice, cos_slice *data.Slice // cuda.MSlice //, dst_slice cuda.MSlice
+	layer_slice                                      cuda.MSlice
+	HBAR                                             float64 = 1.05457173E-34
+	ctime                                            float64 = 0.0
+	deltah                                           float32 = 0.0
 )
 
 func init() {
@@ -55,25 +57,40 @@ func init() {
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
 	DeclVar("DisableTimeEvolutionTorque", &DisableTimeEvolutionTorque, "Disables Time evolution torque (default=true)")
-	DeclVar("B_rms", &Brms_vector, "Brms extra parameter for LLG time evolution")
-	DeclVar("Wc", &Wc, "Wc extra parameter for LLG time evolution")
+	// DeclVar("B_rms", &Brms_vector, "Brms extra parameter for LLG time evolution")
+	// DeclVar("Wc", &Wc, "Wc extra parameter for LLG time evolution")
 	DeclVar("DoPrecess", &Precess, "Enables LL precession (default=true)")
 	DeclLValue("FixedLayerPosition", &flposition{}, "Position of the fixed layer: FIXEDLAYER_TOP, FIXEDLAYER_BOTTOM (default=FIXEDLAYER_TOP)")
 	DeclROnly("FIXEDLAYER_TOP", FIXEDLAYER_TOP, "FixedLayerPosition = FIXEDLAYER_TOP instructs mumax3 that fixed layer is on top of the free layer")
 	DeclROnly("FIXEDLAYER_BOTTOM", FIXEDLAYER_BOTTOM, "FixedLayerPosition = FIXEDLAYER_BOTTOM instructs mumax3 that fixed layer is underneath of the free layer")
 }
 
+func PrintParametersTimeEvolution() {
+
+	if !DisableTimeEvolutionTorque {
+
+		c, _ := B_rms.Slice()
+		v, _ := Wc.Slice()
+
+		if c.DevPtr(0) != nil && v.DevPtr(0) != nil {
+
+			fmt.Println("")
+			fmt.Println("------------------------------------------------")
+			fmt.Println(" Time evolution factor in LLG equation: Enabled")
+			fmt.Println(" Brms vector (T): [", cuda.GetElemPos(c, 0), cuda.GetElemPos(c, 1), cuda.GetElemPos(c, 2), "]")
+			fmt.Println(" Wc (Hz): ", cuda.GetElemPos(v, 0))
+			fmt.Println(" GammaLL: ", GammaLL)
+			fmt.Println("------------------------------------------------")
+			fmt.Println("")
+		}
+	}
+}
+
 // Sets dst to the current total torque
 func SetTorque(dst *data.Slice) {
 	SetLLTorque(dst)
 	AddSTTorque(dst)
-	FreezeSpins(dst)
-}
-
-func SetTorqueTime(dst *data.Slice) {
-	SetLLTorque(dst)
 	AddLLTimeTorque(dst)
-	AddSTTorque(dst)
 	FreezeSpins(dst)
 }
 
@@ -145,137 +162,75 @@ func FreezeSpins(dst *data.Slice) {
 }
 
 // New function for LLG formula time evolution
-func ComputeNewTerm(ctime float64, deltah float32) {
-
-	 // m_current := M.Buffer()
-   // size := m_current.Size()
-
-	// if sin_slice_test.IsNil() {
-	// 	sin_slice_test = cuda.NewSlice(3, size)
-	// }
-	//
-	// if cos_slice.IsNil() {
-	// 	cos_slice = cuda.NewSlice(3, size)
-	// }
-	//
-	// if sum_slice.IsNil() {
-	// 	sum_slice =cuda.NewSlice(3, size)
-	// }
-	//
-	// if result_slice.IsNil() {
-	// 	result_slice = cuda.NewSlice(3, size)
-	// }
-	//
-	// if result_sin_slice.IsNil() {
-	// 	result_sin_slice = cuda.NewSlice(3, size)
-	// }
-	//
-	// if result_cos_slice.IsNil() {
-	// 	result_cos_slice = cuda.NewSlice(3, size)
-	// }
-	//
-	// if sin_wctime_slice.IsNil() {
-	// 	sin_wctime_slice = cuda.NewSlice(3, size)
-	// }
-	//
-	// if cos_wctime_slice.IsNil() {
-	// 	cos_wctime_slice = cuda.NewSlice(3, size)
-	// }
-	//
-	// if result_sub.IsNil() {
-	// 	result_sub = cuda.NewSlice(3, size)
-	// }
-	// if result_op.IsNil() {
-	// 	result_op = cuda.NewSlice(3, size)
-	// }
-	//
-	// sin_wctime_slice.SetScalar(size[X], size[Y], size[Z], math.Sin(Wc * ctime))
-	//
-	// cuda.Mul(sin_wctime_slice, m, sin_wctime_slice)
-	// cuda.Add(sin_slice_test, sin_slice_test, sin_wctime_slice)
-	//
-	// cos_wctime_slice.SetScalar(size[X], size[Y], size[Z], math.Cos(Wc * ctime))
-	//
-	// cuda.Mul(cos_wctime_slice, m, cos_wctime_slice)
-	// cuda.Add(cos_slice, cos_slice, cos_wctime_slice)
-	//
-	// cuda.Mul(result_sin_slice, sin_slice, cos_wctime_slice)
-	// cuda.Mul(result_cos_slice, cos_slice, sin_wctime_slice)
-	//
-	// cuda.Msub2(result_sub, result_sin_slice, result_cos_slice, 1, 1)
-	//
-	// deltah_slice := cuda.NewSlice(3, size)
-	// deltah_slice.SetScalar(size[X], size[Y], size[Z],float64(deltah))
-	//
-	// brms_slice := cuda.NewSlice(3, size)
-	// brms_slice.SetVector(size[X], size[Y], size[Z], Brms_vector)
-	//
-	// constant_slice := cuda.NewSlice(3, size)
-	//
-	// cuda.Mul(constant_slice, brms_slice, deltah_slice)
-	//
-	// result_sum_slice := cuda.NewSlice(3, size)
-	// cuda.Mul(result_sum_slice, constant_slice, result_sub)
-	//
-	// cuda.Mul(sum_slice, sum_slice, result_sum_slice)
-	//
-	// result_mxbrms_slice := cuda.NewSlice(3, size)
-	// cuda.CrossProduct(result_mxbrms_slice, m, brms_slice)
-	//
-	// spin_constant  := 2 / HBAR
-	//
-	// result_op.SetScalar(size[X], size[Y], size[Z], spin_constant)
-	//
-	// cuda.Mul(result_op, result_op, result_mxbrms_slice)
-	// cuda.Mul(result_op, result_op, sum_slice)
-size := M.Buffer().Size()
-	if dst_slice.DevPtr(0) == nil {
-		 // dst_slice, _ = dst_res.Slice()
-		  dst_slice = cuda.NewSlice(3, size)
-	}
-
-	if sin_slice.DevPtr(0) == nil {
-		// sin_slice, _ = sine_sum.Slice()
-		sin_slice = cuda.NewSlice(3, size)
-	}
-
-	if cos_slice.DevPtr(0) == nil {
-		// cos_slice, _ = cosine_sum.Slice()
-		cos_slice = cuda.NewSlice(3, size)
-	}
-
-	if resultsum_slice.DevPtr(0) == nil {
-		// resultsum_slice, _ = result_sum.Slice()
-		resultsum_slice = cuda.NewSlice(3, size)
-	}
-
-	if layer_slice.DevPtr(0) == nil {
-		layer_slice = MTTorqueFixedLayer.MSlice()
-	}
-
-	// alpha := Alpha.MSlice()
-	// defer alpha.Recycle()
-
-	cuda.CalcTempTorque(sin_slice, cos_slice, resultsum_slice, dst_slice, M.Buffer(), layer_slice, Wc, ctime, deltah, Brms_vector)
-	cuda.Normalize(dst_slice, geometry.Gpu())
+func SetTempValues(time float64, delta float32) {
+	ctime = time
+	deltah = delta
 }
 
 func AddLLTimeTorque(dst *data.Slice) {
-
+	// func ComputeNewTerm(time float64, delta float32) {
 	if !DisableTimeEvolutionTorque {
 
-		// if result_op.IsNil() {
-		// 	return
+		// Add value to B_eff
+		//q := Mul(Const(ctime), Const(ctime))
+		//AddFieldTerm(q)
+
+		// if dst_slice.DevPtr(0) == nil {
+		// 	dst_slice = dst_res.MSlice()
 		// }
-		if dst_slice.IsNil() {
-			return
+		size := M.Buffer().Size()
+
+		if sin_slice.DevPtr(0) == nil {
+			sin_slice = cuda.NewSlice(3, size) //sine_sum.MSlice()
 		}
 
-      //cuda.Msub2(dst, dst, dst_slice, 1, 1)
+		if cos_slice.DevPtr(0) == nil {
+			cos_slice = cuda.NewSlice(3, size) //cosine_sum.MSlice()
+		}
 
-		    // dst_res.SubTo(dst)
+		if resultsum_slice.DevPtr(0) == nil {
+			resultsum_slice = cuda.NewSlice(3, size) //result_sum.MSlice()
+		}
 
-		       cuda.LLTimeTorque(dst, dst_slice)
+		if layer_slice.DevPtr(0) == nil {
+			layer_slice = MTTorqueFixedLayer.MSlice()
+		}
+
+		wc_slice := Wc.MSlice()
+		defer wc_slice.Recycle()
+
+		brms_slice := B_rms.MSlice()
+		defer brms_slice.Recycle()
+
+		alpha := Alpha.MSlice()
+		defer alpha.Recycle()
+
+		//dst_slice := cuda.NewSlice(3, M.Buffer().Size())
+		//defer dst_slice.Free()
+		// dst_slice := dst_res.MSlice()
+		// defer dst_slice.Recycle()
+
+		cuda.CalcTempTorque(dst, M.Buffer(), sin_slice, cos_slice, resultsum_slice, layer_slice, wc_slice, brms_slice, alpha, ctime, deltah)
+
+		//cuda.Sub(dst, dst, dst_slice)
+		// cuda.Normalize(dst_slice, geometry.Gpu())
+		// }
+		//
+		// func AddLLTimeTorque(dst *data.Slice) {
+
+		// if !DisableTimeEvolutionTorque {
+
+		// ComputeNewTerm(ctime, deltah)
+
+		// if dst_slice.DevPtr(0) == nil {
+		// 	return
+		// }
+		//
+		// cuda.Msub2(dst, dst, dst_slice, 1, 1)
+		//
+		// dst_res.SubTo(dst)
+		//
+		// cuda.LLTimeTorque(dst, dst_slice)
 
 	}
 }

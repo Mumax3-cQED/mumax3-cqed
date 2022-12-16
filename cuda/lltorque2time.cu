@@ -1,6 +1,8 @@
 // MODIFIED INMA
 #include <stdint.h>
 #include "float3.h"
+// #include "amul.h"
+#include "constants.h"
 
 // static __inline__ __device__ float3 operator*(const float3 &a, const float3 &b) {
 //   return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
@@ -27,7 +29,10 @@ extern "C" __global__ void
 //           float ctimeWc, int dt_gt, int N) {
 
 lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
-              float* __restrict__ new_term_x, float* __restrict__ new_term_y, float* __restrict__ new_term_z, int N) {
+              float* __restrict__ new_term_x,
+              float* __restrict__ new_term_y,
+              float* __restrict__ new_term_z,
+               int N) {
 
       int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
      //
@@ -98,15 +103,20 @@ lltorque2time(float* __restrict__  tx, float* __restrict__  ty, float* __restric
         //    // sumy[jj] = 0.0;
         //    // sumz[jj] = 0.0;
 
-        // float3 new_term = make_float3(new_term_x[ii], new_term_y[ii], new_term_z[ii]);
+         // float3 new_term = (2 / HBAR)*make_float3(new_term_x[i], new_term_y[i], new_term_z[i]);
+                  float3 new_term = make_float3(new_term_x[i], new_term_y[i], new_term_z[i]);
         //           torque = gilb * (mxH + alpha * cross(m, mxH)) - new_term;  // LLG equation with full new time-dependant term to plug in equation
 
-float3 norm = make_float3(new_term_x[i], new_term_y[i], new_term_z[i]);
-          // Apply new term to torque
-          tx[i] -= norm.x;
-          ty[i] -= norm.y;
-          tz[i] -= norm.z;
 
+          // Apply new term to torque
+          // tx[i] -= norm.x;
+          // ty[i] -= norm.y;
+          // tz[i] -= norm.z;
+
+  // float3 norm = normalized(new_term);
+          tx[i] -= new_term.x;
+          ty[i] -= new_term.y;
+          tz[i] -= new_term.z;
           }
         //  else {
         //     // torque = gilb * (mxH + alpha * cross(m, mxH));

@@ -97,20 +97,9 @@ func SetSolver(typ int) {
 
 // write torque to dst and increment NEvals
 func torqueFn(dst *data.Slice) {
-
 	SetTorque(dst)
 	NEvals++
 }
-
-func torqueFnTime(dst *data.Slice) {
-
-	SetTorqueTime(dst)
-	NEvals++
-}
-
-// func computeTimeEvolution(time float64, h float32) {
-// 	ComputeTimeEvolution(time, h)
-// }
 
 // returns number of torque evaluations
 func getNEval() int {
@@ -131,17 +120,19 @@ func setMaxTorque(τ *data.Slice) {
 
 // adapt time step: dt *= corr, but limited to sensible values.
 func adaptDt(corr float64) {
+
 	if FixDt != 0 {
 		Dt_si = FixDt
 		return
 	}
-
+	//fmt.Print(Dt_si)
 	// corner case triggered by err = 0: just keep time step.
 	// see test/regression017.mx3
 	if math.IsNaN(corr) {
 		corr = 1
 	}
-	// fmt.Println(corr)
+	// fmt.Println("corr: ", corr)
+	// fmt.Println("timestep: ", Dt_si)
 	util.AssertMsg(corr != 0, "Time step too small, check if parameters are sensible")
 	corr *= Headroom
 	if corr > 2 {
@@ -169,20 +160,6 @@ func adaptDt(corr float64) {
 	util.AssertMsg(Dt_si > 0, fmt.Sprint("Time step too small: ", Dt_si))
 }
 
-func SetParametersTimeEvolution() {
-
-	if !DisableTimeEvolutionTorque {
-
-		fmt.Println("")
-		fmt.Println("------------------------------------------------")
-		fmt.Println(" Time evolution factor in LLG equation: Enabled")
-		fmt.Println(" Brms vector (T): ", Brms_vector)
-		fmt.Println(" Wc (Hz): ", Wc)
-		fmt.Println("------------------------------------------------")
-		fmt.Println("")
-	}
-}
-
 // Run the simulation for a number of seconds.
 func Run(seconds float64) {
 	stop := Time + seconds
@@ -202,7 +179,8 @@ func RunWhile(condition func() bool) {
 	SanityCheck()
 	pause = false // may be set by <-Inject
 
-	SetParametersTimeEvolution()
+	// SetParametersTimeEvolution()
+	PrintParametersTimeEvolution()
 	const output = true
 	runWhile(condition, output)
 	pause = true
