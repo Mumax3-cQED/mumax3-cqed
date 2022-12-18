@@ -90,7 +90,8 @@ func PrintParametersTimeEvolution() {
 func SetTorque(dst *data.Slice) {
 	SetLLTorque(dst)
 	AddSTTorque(dst)
-	AddLLTimeTorque(dst)
+	AddBeffLLTimeTorque(dst)
+	//AddLLTimeTorque(dst)
 	FreezeSpins(dst)
 }
 
@@ -167,17 +168,20 @@ func SetTempValues(time float64, delta float32) {
 	deltah = delta
 }
 
+func AddBeffLLTimeTorque(dst *data.Slice) {
+	// Add value to B_eff
+	q := Const(ctime * ctime)
+	AddFieldTerm(q)
+}
+
 func AddLLTimeTorque(dst *data.Slice) {
 	// func ComputeNewTerm(time float64, delta float32) {
 	if !DisableTimeEvolutionTorque {
 
 		// Add value to B_eff
-		//q := Mul(Const(ctime), Const(ctime))
+		//q := Const(ctime * ctime)
 		//AddFieldTerm(q)
 
-		// if dst_slice.DevPtr(0) == nil {
-		// 	dst_slice = dst_res.MSlice()
-		// }
 		size := M.Buffer().Size()
 
 		if sin_slice.DevPtr(0) == nil {
