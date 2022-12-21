@@ -11,7 +11,6 @@ import (
 
 var (
 	m *data.Slice
-	// current_time float32 = 0.0
 )
 
 type RK45DP struct {
@@ -20,22 +19,9 @@ type RK45DP struct {
 
 func (rk *RK45DP) Step() {
 
-	if !DisableTimeEvolutionTorque {
-		// if m == nil {
-		m = M.Buffer()
-		// }
-	} else {
-		m = M.Buffer()
-	}
+	m = M.Buffer()
 
 	size := m.Size()
-
-	// if !DisableTimeEvolutionTorque {
-	// 	// 	cuda.M_rk = cuda.InitRKStepArray(m.Size())
-	// 	// 	cuda.Sum_temp = cuda.InitSumTemp(m.Size())
-	// 	// 	cuda.New_term_llg = cuda.InitNewTermLLG(m.Size())
-	//
-	// }
 
 	if FixDt != 0 {
 		Dt_si = FixDt
@@ -150,9 +136,7 @@ func (rk *RK45DP) Step() {
 		SetTempValues(Time, h)
 	}
 
-	torqueFn(k7)
-
-	// torqueFn(k7) // next torque if OK
+	torqueFn(k7) // next torque if OK
 
 	// error estimate
 	Err := cuda.Buffer(3, size) //k3 // re-use k3 as error estimate
@@ -173,7 +157,6 @@ func (rk *RK45DP) Step() {
 		data.Copy(rk.k1, k7) // FSAL
 	} else {
 		// undo bad step
-		//util.Println("Bad step at t=", t0, ", err=", err)
 		util.Assert(FixDt == 0)
 		Time = t0
 		data.Copy(m, m0)
@@ -181,10 +164,6 @@ func (rk *RK45DP) Step() {
 		adaptDt(math.Pow(MaxErr/err, 1./6.))
 	}
 }
-
-// func norm(data *data.Slice) {
-// 	cuda.Normalize(data, geometry.Gpu())
-// }
 
 func (rk *RK45DP) Free() {
 	rk.k1.Free()

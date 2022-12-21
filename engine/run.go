@@ -125,14 +125,13 @@ func adaptDt(corr float64) {
 		Dt_si = FixDt
 		return
 	}
-	//fmt.Print(Dt_si)
+
 	// corner case triggered by err = 0: just keep time step.
 	// see test/regression017.mx3
 	if math.IsNaN(corr) {
 		corr = 1
 	}
-	// fmt.Println("corr: ", corr)
-	// fmt.Println("timestep: ", Dt_si)
+
 	util.AssertMsg(corr != 0, "Time step too small, check if parameters are sensible")
 	corr *= Headroom
 	if corr > 2 {
@@ -179,7 +178,6 @@ func RunWhile(condition func() bool) {
 	SanityCheck()
 	pause = false // may be set by <-Inject
 
-	// SetParametersTimeEvolution()
 	PrintParametersTimeEvolution()
 	const output = true
 	runWhile(condition, output)
