@@ -12,7 +12,8 @@ addspin2beff(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__
           float* __restrict__ dst_cos_x,
           float* __restrict__ dst_cos_y,
           float* __restrict__ dst_cos_z,
-          float* __restrict__ wc, float wc_mul, float msat,
+          float* __restrict__ wc, float wc_mul,
+          float* __restrict__ msat, float msat_mul,
           float* __restrict__ brms_x, float brmsx_mul,
           float* __restrict__ brms_y, float brmsy_mul,
           float* __restrict__ brms_z, float brmsz_mul,
@@ -26,6 +27,7 @@ addspin2beff(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__
         if (i < N) {
 
           float wc_val = amul(wc, wc_mul, i);
+          float msat_val = amul(msat, msat_mul, i);
 
           float brmsx = amul(brms_x, brmsx_mul, i);
           float brmsy = amul(brms_y, brmsy_mul, i);
@@ -58,7 +60,7 @@ addspin2beff(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__
 
           __syncthreads();
 
-          float prefactor = (2 / HBAR) * vol * msat;
+          float prefactor = (2 / HBAR) * vol * msat_val;
           float3 brms = {brmsx, brmsy, brmsz};
 
           float3 torque = prefactor * result_sum * brms;
