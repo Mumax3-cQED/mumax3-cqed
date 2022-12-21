@@ -20,11 +20,17 @@ addspin2beff(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__
           float* __restrict__ mx,
           float* __restrict__ my,
           float* __restrict__ mz,
-          float delta_time, float ctime, float vol, int N) {
+          float delta_time, float ctime, float vol, int Nx, int Ny, int Nz, uint8_t PBC) {
 
-        int i = (blockIdx.y * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
+          int ix = blockIdx.x * blockDim.x + threadIdx.x;
+          int iy = blockIdx.y * blockDim.y + threadIdx.y;
+          int iz = blockIdx.z * blockDim.z + threadIdx.z;
 
-        if (i < N) {
+          if (ix >= Nx || iy >= Ny || iz >= Nz) {
+              return;
+          }
+
+          int i = idx(ix, iy, iz);
 
           float wc_val = amul(wc, wc_mul, i);
           float msat_val = amul(msat, msat_mul, i);
@@ -47,15 +53,19 @@ addspin2beff(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__
           // Second summatory
           float result_sum = 0.0;
 
-          for (int ii = (blockIdx.y * blockDim.y + threadIdx.y) * blockDim.x * gridDim.x + (blockIdx.x * blockDim.x + threadIdx.x);
-              ii < N;
-              ii += blockDim.y * gridDim.y * blockDim.x * gridDim.x) {
+          for (int c = 0; c < Nz; c++) {
+            for (int b = 0; b < Ny; b++) {
+              for (int a = 0; a < Nx; a++) {
 
-            float sum_x = brmsx * (delta_time/GAMMA0) * ((dst_sin_x[ii] * cos(ctime * wc_val) - dst_cos_x[ii] * sin(ctime * wc_val)));
-            float sum_y = brmsy * (delta_time/GAMMA0) * ((dst_sin_y[ii] * cos(ctime * wc_val) - dst_cos_y[ii] * sin(ctime * wc_val)));
-            float sum_z = brmsz * (delta_time/GAMMA0) * ((dst_sin_z[ii] * cos(ctime * wc_val) - dst_cos_z[ii] * sin(ctime * wc_val)));
+                  int ii = idx(a, b, c);
 
-            result_sum += (sum_x + sum_y + sum_z);
+                  float sum_x = brmsx * (delta_time/GAMMA0) * ((dst_sin_x[ii] * cos(ctime * wc_val) - dst_cos_x[ii] * sin(ctime * wc_val)));
+                  float sum_y = brmsy * (delta_time/GAMMA0) * ((dst_sin_y[ii] * cos(ctime * wc_val) - dst_cos_y[ii] * sin(ctime * wc_val)));
+                  float sum_z = brmsz * (delta_time/GAMMA0) * ((dst_sin_z[ii] * cos(ctime * wc_val) - dst_cos_z[ii] * sin(ctime * wc_val)));
+
+                  result_sum += (sum_x + sum_y + sum_z);
+              }
+            }
           }
 
           __syncthreads();
@@ -73,5 +83,4 @@ addspin2beff(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__
           tx[i] -= torque.x;
           ty[i] -= torque.y;
           tz[i] -= torque.z;
-       }
 }

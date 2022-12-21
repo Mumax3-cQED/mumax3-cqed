@@ -37,10 +37,11 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 // Apply new value Spin Torque to Beff
 func CalcSpinTorque(dst_slice, m, sin_sum, cos_sum *data.Slice, msat, wc, brms MSlice, ctime float64, deltah float32, mesh *data.Mesh) {
 
-	N := dst_slice.Len()
-	cfg := make1DConf(N)
-	size := mesh.CellSize()
-	vol := size[X] * size[Y] * size[Z]
+	N := mesh.Size()
+	cfg := make3DConf(N)
+	pbc := mesh.PBC_code()
+	c := mesh.CellSize()
+	vol := c[X] * c[Y] * c[Z]
 
 	k_addspin2beff_async(dst_slice.DevPtr(X), dst_slice.DevPtr(Y), dst_slice.DevPtr(Z),
 		sin_sum.DevPtr(X), sin_sum.DevPtr(Y), sin_sum.DevPtr(Z),
@@ -50,7 +51,7 @@ func CalcSpinTorque(dst_slice, m, sin_sum, cos_sum *data.Slice, msat, wc, brms M
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
-		deltah, float32(ctime), float32(vol), N, cfg)
+		deltah, float32(ctime), float32(vol), N[X], N[Y], N[Z], pbc, cfg)
 
 	//fmt.Println(GetElemPos(wc.arr, 0))
 	//fmt.Println("deltat:", deltah/float32(1.7595e11))
