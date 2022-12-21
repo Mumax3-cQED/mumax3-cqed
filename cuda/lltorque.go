@@ -34,93 +34,26 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z), N, cfg)
 }
 
-// func LLTimeTorque(torque, m, B *data.Slice, alpha MSlice, mesh *data.Mesh) {
-func LLTimeTorque(torque, new_term *data.Slice) {
-
-	// if timeEvolution == true {
-
-	// if !IsBrmsZero(Brms_cuda) {
-
-	// initBrmsSlice(m.Size())
-	// initSumSlice(m.Size())
-	// size := N
-	// if sumx == nil {
-	//
-	// 	sumx = NewSlice(1, size)
-	// }
-	//
-	// if sumy == nil {
-	// 	sumy = NewSlice(1, size)
-	// }
-	//
-	// if sumz == nil {
-	// 	sumz = NewSlice(1, size)
-	// }
-
-	// if Fixed_dt_cuda != 0.0 {
-	// 	gt_dtsi = 1
-	//
-	// } else {
-	// 	gt_dtsi = 0
-	//
-	// }
-	//
-	// ctimeWc := CurrentTime * Wc_cuda
-	//
-	// k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
-	// 	m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
-	// 	B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
-	// 	alpha.DevPtr(0), alpha.Mul(0),
-	// 	M_rk.DevPtr(0), M_rk.DevPtr(1), M_rk.DevPtr(2), M_rk.DevPtr(3), M_rk.DevPtr(4), M_rk.DevPtr(5), M_rk.DevPtr(6),
-	// 	M_rk.DevPtr(7), M_rk.DevPtr(8), M_rk.DevPtr(9),
-	// 	sumx.DevPtr(0), sumy.DevPtr(0), sumz.DevPtr(0),
-	// 	float32(ctimeWc), gt_dtsi, N[X], N[Y], N[Z], cfg)
-	// if InternalTimeLatch {
-
-	N := torque.Len()
-	cfg := make1DConf(N)
-	// fmt.Println(GetElemPos(new_term, 2))
-	//	fmt.Println(GetZElem(New_term_llg))
-	k_lltorque2time_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
-		new_term.DevPtr(X),
-		new_term.DevPtr(Y),
-		new_term.DevPtr(Z),
-		N, cfg)
-
-	// fmt.Println(GetElemPos(torque, 0))
-	// }
-	// 	} else {
-	// 		DefaultTorquePrecess(torque, m, B, alpha, N, cfg)
-	// 	}
-	//
-	// } else {
-	//
-	// 	DefaultTorquePrecess(torque, m, B, alpha, N, cfg)
-	// }
-}
-
-func CalcTempTorque(dst_slice, m, sin_sum, cos_sum, sum_slice *data.Slice, layer, wc, brms, alpha MSlice, ctime float64, deltah float32) {
+func CalcTempTorque(dst_slice, m, sin_sum, cos_sum *data.Slice, msat, wc, brms MSlice, ctime float64, deltah float32, mesh *data.Mesh) {
 
 	N := dst_slice.Len()
 	cfg := make1DConf(N)
+	size := mesh.CellSize()
+	vol := size[X] * size[Y] * size[Z]
 
 	k_mdatatemp_async(dst_slice.DevPtr(X), dst_slice.DevPtr(Y), dst_slice.DevPtr(Z),
 		sin_sum.DevPtr(X), sin_sum.DevPtr(Y), sin_sum.DevPtr(Z),
 		cos_sum.DevPtr(X), cos_sum.DevPtr(Y), cos_sum.DevPtr(Z),
-		sum_slice.DevPtr(X), sum_slice.DevPtr(Y), sum_slice.DevPtr(Z),
-		layer.DevPtr(X), layer.Mul(X),
-		layer.DevPtr(Y), layer.Mul(Y),
-		layer.DevPtr(Z), layer.Mul(Z),
-		wc.DevPtr(0), wc.Mul(0),
+		wc.DevPtr(0), wc.Mul(0), msat.Mul(0),
 		brms.DevPtr(X), brms.Mul(X),
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
-		alpha.DevPtr(0), alpha.Mul(0),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
-		deltah, float32(ctime), N, cfg)
+		deltah, float32(ctime), float32(vol), N, cfg)
 
 	// fmt.Println(GetElemPos(wc.arr, 0))
-	// fmt.Println("0:", GetElemPos(dst_slice, 0))
-	// fmt.Println("1:", GetElemPos(dst_slice, 1))
-	// fmt.Println("2:", GetElemPos(dst_slice, 2))
+	//fmt.Println("deltat:", deltah/float32(1.7595e11))
+	//fmt.Println("0:", GetElemPos(dst_slice, 0))
+	//fmt.Println("1:", GetElemPos(dst_slice, 1))
+	//fmt.Println("2:", GetElemPos(dst_slice, 2))
 }
