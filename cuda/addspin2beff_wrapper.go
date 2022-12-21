@@ -12,11 +12,11 @@ import(
 	"sync"
 )
 
-// CUDA handle for mdatatemp kernel
-var mdatatemp_code cu.Function
+// CUDA handle for addspin2beff kernel
+var addspin2beff_code cu.Function
 
-// Stores the arguments for mdatatemp kernel invocation
-type mdatatemp_args_t struct{
+// Stores the arguments for addspin2beff kernel invocation
+type addspin2beff_args_t struct{
 	 arg_tx unsafe.Pointer
 	 arg_ty unsafe.Pointer
 	 arg_tz unsafe.Pointer
@@ -46,137 +46,137 @@ type mdatatemp_args_t struct{
 	sync.Mutex
 }
 
-// Stores the arguments for mdatatemp kernel invocation
-var mdatatemp_args mdatatemp_args_t
+// Stores the arguments for addspin2beff kernel invocation
+var addspin2beff_args addspin2beff_args_t
 
 func init(){
 	// CUDA driver kernel call wants pointers to arguments, set them up once.
-	 mdatatemp_args.argptr[0] = unsafe.Pointer(&mdatatemp_args.arg_tx)
-	 mdatatemp_args.argptr[1] = unsafe.Pointer(&mdatatemp_args.arg_ty)
-	 mdatatemp_args.argptr[2] = unsafe.Pointer(&mdatatemp_args.arg_tz)
-	 mdatatemp_args.argptr[3] = unsafe.Pointer(&mdatatemp_args.arg_dst_sin_x)
-	 mdatatemp_args.argptr[4] = unsafe.Pointer(&mdatatemp_args.arg_dst_sin_y)
-	 mdatatemp_args.argptr[5] = unsafe.Pointer(&mdatatemp_args.arg_dst_sin_z)
-	 mdatatemp_args.argptr[6] = unsafe.Pointer(&mdatatemp_args.arg_dst_cos_x)
-	 mdatatemp_args.argptr[7] = unsafe.Pointer(&mdatatemp_args.arg_dst_cos_y)
-	 mdatatemp_args.argptr[8] = unsafe.Pointer(&mdatatemp_args.arg_dst_cos_z)
-	 mdatatemp_args.argptr[9] = unsafe.Pointer(&mdatatemp_args.arg_wc)
-	 mdatatemp_args.argptr[10] = unsafe.Pointer(&mdatatemp_args.arg_wc_mul)
-	 mdatatemp_args.argptr[11] = unsafe.Pointer(&mdatatemp_args.arg_msat)
-	 mdatatemp_args.argptr[12] = unsafe.Pointer(&mdatatemp_args.arg_brms_x)
-	 mdatatemp_args.argptr[13] = unsafe.Pointer(&mdatatemp_args.arg_brmsx_mul)
-	 mdatatemp_args.argptr[14] = unsafe.Pointer(&mdatatemp_args.arg_brms_y)
-	 mdatatemp_args.argptr[15] = unsafe.Pointer(&mdatatemp_args.arg_brmsy_mul)
-	 mdatatemp_args.argptr[16] = unsafe.Pointer(&mdatatemp_args.arg_brms_z)
-	 mdatatemp_args.argptr[17] = unsafe.Pointer(&mdatatemp_args.arg_brmsz_mul)
-	 mdatatemp_args.argptr[18] = unsafe.Pointer(&mdatatemp_args.arg_mx)
-	 mdatatemp_args.argptr[19] = unsafe.Pointer(&mdatatemp_args.arg_my)
-	 mdatatemp_args.argptr[20] = unsafe.Pointer(&mdatatemp_args.arg_mz)
-	 mdatatemp_args.argptr[21] = unsafe.Pointer(&mdatatemp_args.arg_delta_time)
-	 mdatatemp_args.argptr[22] = unsafe.Pointer(&mdatatemp_args.arg_ctime)
-	 mdatatemp_args.argptr[23] = unsafe.Pointer(&mdatatemp_args.arg_vol)
-	 mdatatemp_args.argptr[24] = unsafe.Pointer(&mdatatemp_args.arg_N)
+	 addspin2beff_args.argptr[0] = unsafe.Pointer(&addspin2beff_args.arg_tx)
+	 addspin2beff_args.argptr[1] = unsafe.Pointer(&addspin2beff_args.arg_ty)
+	 addspin2beff_args.argptr[2] = unsafe.Pointer(&addspin2beff_args.arg_tz)
+	 addspin2beff_args.argptr[3] = unsafe.Pointer(&addspin2beff_args.arg_dst_sin_x)
+	 addspin2beff_args.argptr[4] = unsafe.Pointer(&addspin2beff_args.arg_dst_sin_y)
+	 addspin2beff_args.argptr[5] = unsafe.Pointer(&addspin2beff_args.arg_dst_sin_z)
+	 addspin2beff_args.argptr[6] = unsafe.Pointer(&addspin2beff_args.arg_dst_cos_x)
+	 addspin2beff_args.argptr[7] = unsafe.Pointer(&addspin2beff_args.arg_dst_cos_y)
+	 addspin2beff_args.argptr[8] = unsafe.Pointer(&addspin2beff_args.arg_dst_cos_z)
+	 addspin2beff_args.argptr[9] = unsafe.Pointer(&addspin2beff_args.arg_wc)
+	 addspin2beff_args.argptr[10] = unsafe.Pointer(&addspin2beff_args.arg_wc_mul)
+	 addspin2beff_args.argptr[11] = unsafe.Pointer(&addspin2beff_args.arg_msat)
+	 addspin2beff_args.argptr[12] = unsafe.Pointer(&addspin2beff_args.arg_brms_x)
+	 addspin2beff_args.argptr[13] = unsafe.Pointer(&addspin2beff_args.arg_brmsx_mul)
+	 addspin2beff_args.argptr[14] = unsafe.Pointer(&addspin2beff_args.arg_brms_y)
+	 addspin2beff_args.argptr[15] = unsafe.Pointer(&addspin2beff_args.arg_brmsy_mul)
+	 addspin2beff_args.argptr[16] = unsafe.Pointer(&addspin2beff_args.arg_brms_z)
+	 addspin2beff_args.argptr[17] = unsafe.Pointer(&addspin2beff_args.arg_brmsz_mul)
+	 addspin2beff_args.argptr[18] = unsafe.Pointer(&addspin2beff_args.arg_mx)
+	 addspin2beff_args.argptr[19] = unsafe.Pointer(&addspin2beff_args.arg_my)
+	 addspin2beff_args.argptr[20] = unsafe.Pointer(&addspin2beff_args.arg_mz)
+	 addspin2beff_args.argptr[21] = unsafe.Pointer(&addspin2beff_args.arg_delta_time)
+	 addspin2beff_args.argptr[22] = unsafe.Pointer(&addspin2beff_args.arg_ctime)
+	 addspin2beff_args.argptr[23] = unsafe.Pointer(&addspin2beff_args.arg_vol)
+	 addspin2beff_args.argptr[24] = unsafe.Pointer(&addspin2beff_args.arg_N)
 	 }
 
-// Wrapper for mdatatemp CUDA kernel, asynchronous.
-func k_mdatatemp_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, dst_sin_x unsafe.Pointer, dst_sin_y unsafe.Pointer, dst_sin_z unsafe.Pointer, dst_cos_x unsafe.Pointer, dst_cos_y unsafe.Pointer, dst_cos_z unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, msat float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, delta_time float32, ctime float32, vol float32, N int,  cfg *config) {
+// Wrapper for addspin2beff CUDA kernel, asynchronous.
+func k_addspin2beff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, dst_sin_x unsafe.Pointer, dst_sin_y unsafe.Pointer, dst_sin_z unsafe.Pointer, dst_cos_x unsafe.Pointer, dst_cos_y unsafe.Pointer, dst_cos_z unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, msat float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, delta_time float32, ctime float32, vol float32, N int,  cfg *config) {
 	if Synchronous{ // debug
 		Sync()
-		timer.Start("mdatatemp")
+		timer.Start("addspin2beff")
 	}
 
-	mdatatemp_args.Lock()
-	defer mdatatemp_args.Unlock()
+	addspin2beff_args.Lock()
+	defer addspin2beff_args.Unlock()
 
-	if mdatatemp_code == 0{
-		mdatatemp_code = fatbinLoad(mdatatemp_map, "mdatatemp")
+	if addspin2beff_code == 0{
+		addspin2beff_code = fatbinLoad(addspin2beff_map, "addspin2beff")
 	}
 
-	 mdatatemp_args.arg_tx = tx
-	 mdatatemp_args.arg_ty = ty
-	 mdatatemp_args.arg_tz = tz
-	 mdatatemp_args.arg_dst_sin_x = dst_sin_x
-	 mdatatemp_args.arg_dst_sin_y = dst_sin_y
-	 mdatatemp_args.arg_dst_sin_z = dst_sin_z
-	 mdatatemp_args.arg_dst_cos_x = dst_cos_x
-	 mdatatemp_args.arg_dst_cos_y = dst_cos_y
-	 mdatatemp_args.arg_dst_cos_z = dst_cos_z
-	 mdatatemp_args.arg_wc = wc
-	 mdatatemp_args.arg_wc_mul = wc_mul
-	 mdatatemp_args.arg_msat = msat
-	 mdatatemp_args.arg_brms_x = brms_x
-	 mdatatemp_args.arg_brmsx_mul = brmsx_mul
-	 mdatatemp_args.arg_brms_y = brms_y
-	 mdatatemp_args.arg_brmsy_mul = brmsy_mul
-	 mdatatemp_args.arg_brms_z = brms_z
-	 mdatatemp_args.arg_brmsz_mul = brmsz_mul
-	 mdatatemp_args.arg_mx = mx
-	 mdatatemp_args.arg_my = my
-	 mdatatemp_args.arg_mz = mz
-	 mdatatemp_args.arg_delta_time = delta_time
-	 mdatatemp_args.arg_ctime = ctime
-	 mdatatemp_args.arg_vol = vol
-	 mdatatemp_args.arg_N = N
+	 addspin2beff_args.arg_tx = tx
+	 addspin2beff_args.arg_ty = ty
+	 addspin2beff_args.arg_tz = tz
+	 addspin2beff_args.arg_dst_sin_x = dst_sin_x
+	 addspin2beff_args.arg_dst_sin_y = dst_sin_y
+	 addspin2beff_args.arg_dst_sin_z = dst_sin_z
+	 addspin2beff_args.arg_dst_cos_x = dst_cos_x
+	 addspin2beff_args.arg_dst_cos_y = dst_cos_y
+	 addspin2beff_args.arg_dst_cos_z = dst_cos_z
+	 addspin2beff_args.arg_wc = wc
+	 addspin2beff_args.arg_wc_mul = wc_mul
+	 addspin2beff_args.arg_msat = msat
+	 addspin2beff_args.arg_brms_x = brms_x
+	 addspin2beff_args.arg_brmsx_mul = brmsx_mul
+	 addspin2beff_args.arg_brms_y = brms_y
+	 addspin2beff_args.arg_brmsy_mul = brmsy_mul
+	 addspin2beff_args.arg_brms_z = brms_z
+	 addspin2beff_args.arg_brmsz_mul = brmsz_mul
+	 addspin2beff_args.arg_mx = mx
+	 addspin2beff_args.arg_my = my
+	 addspin2beff_args.arg_mz = mz
+	 addspin2beff_args.arg_delta_time = delta_time
+	 addspin2beff_args.arg_ctime = ctime
+	 addspin2beff_args.arg_vol = vol
+	 addspin2beff_args.arg_N = N
 	
 
-	args := mdatatemp_args.argptr[:]
-	cu.LaunchKernel(mdatatemp_code, cfg.Grid.X, cfg.Grid.Y, cfg.Grid.Z, cfg.Block.X, cfg.Block.Y, cfg.Block.Z, 0, stream0, args)
+	args := addspin2beff_args.argptr[:]
+	cu.LaunchKernel(addspin2beff_code, cfg.Grid.X, cfg.Grid.Y, cfg.Grid.Z, cfg.Block.X, cfg.Block.Y, cfg.Block.Z, 0, stream0, args)
 
 	if Synchronous{ // debug
 		Sync()
-		timer.Stop("mdatatemp")
+		timer.Stop("addspin2beff")
 	}
 }
 
-// maps compute capability on PTX code for mdatatemp kernel.
-var mdatatemp_map = map[int]string{ 0: "" ,
-30: mdatatemp_ptx_30 ,
-35: mdatatemp_ptx_35 ,
-37: mdatatemp_ptx_37 ,
-50: mdatatemp_ptx_50 ,
-52: mdatatemp_ptx_52 ,
-53: mdatatemp_ptx_53 ,
-60: mdatatemp_ptx_60 ,
-61: mdatatemp_ptx_61 ,
-70: mdatatemp_ptx_70 ,
-75: mdatatemp_ptx_75  }
+// maps compute capability on PTX code for addspin2beff kernel.
+var addspin2beff_map = map[int]string{ 0: "" ,
+30: addspin2beff_ptx_30 ,
+35: addspin2beff_ptx_35 ,
+37: addspin2beff_ptx_37 ,
+50: addspin2beff_ptx_50 ,
+52: addspin2beff_ptx_52 ,
+53: addspin2beff_ptx_53 ,
+60: addspin2beff_ptx_60 ,
+61: addspin2beff_ptx_61 ,
+70: addspin2beff_ptx_70 ,
+75: addspin2beff_ptx_75  }
 
-// mdatatemp PTX code for various compute capabilities.
+// addspin2beff PTX code for various compute capabilities.
 const(
-  mdatatemp_ptx_30 = `
+  addspin2beff_ptx_30 = `
 .version 6.4
 .target sm_30
 .address_size 64
 
-	// .globl	mdatatemp
+	// .globl	addspin2beff
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry mdatatemp(
-	.param .u64 mdatatemp_param_0,
-	.param .u64 mdatatemp_param_1,
-	.param .u64 mdatatemp_param_2,
-	.param .u64 mdatatemp_param_3,
-	.param .u64 mdatatemp_param_4,
-	.param .u64 mdatatemp_param_5,
-	.param .u64 mdatatemp_param_6,
-	.param .u64 mdatatemp_param_7,
-	.param .u64 mdatatemp_param_8,
-	.param .u64 mdatatemp_param_9,
-	.param .f32 mdatatemp_param_10,
-	.param .f32 mdatatemp_param_11,
-	.param .u64 mdatatemp_param_12,
-	.param .f32 mdatatemp_param_13,
-	.param .u64 mdatatemp_param_14,
-	.param .f32 mdatatemp_param_15,
-	.param .u64 mdatatemp_param_16,
-	.param .f32 mdatatemp_param_17,
-	.param .u64 mdatatemp_param_18,
-	.param .u64 mdatatemp_param_19,
-	.param .u64 mdatatemp_param_20,
-	.param .f32 mdatatemp_param_21,
-	.param .f32 mdatatemp_param_22,
-	.param .f32 mdatatemp_param_23,
-	.param .u32 mdatatemp_param_24
+.visible .entry addspin2beff(
+	.param .u64 addspin2beff_param_0,
+	.param .u64 addspin2beff_param_1,
+	.param .u64 addspin2beff_param_2,
+	.param .u64 addspin2beff_param_3,
+	.param .u64 addspin2beff_param_4,
+	.param .u64 addspin2beff_param_5,
+	.param .u64 addspin2beff_param_6,
+	.param .u64 addspin2beff_param_7,
+	.param .u64 addspin2beff_param_8,
+	.param .u64 addspin2beff_param_9,
+	.param .f32 addspin2beff_param_10,
+	.param .f32 addspin2beff_param_11,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_20,
+	.param .f32 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_22,
+	.param .f32 addspin2beff_param_23,
+	.param .u32 addspin2beff_param_24
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -191,31 +191,31 @@ const(
 
 	mov.u64 	%SPL, __local_depot0;
 	cvta.local.u64 	%SP, %SPL;
-	ld.param.u64 	%rd22, [mdatatemp_param_0];
-	ld.param.u64 	%rd23, [mdatatemp_param_1];
-	ld.param.u64 	%rd24, [mdatatemp_param_2];
-	ld.param.u64 	%rd25, [mdatatemp_param_3];
-	ld.param.u64 	%rd26, [mdatatemp_param_4];
-	ld.param.u64 	%rd27, [mdatatemp_param_5];
-	ld.param.u64 	%rd28, [mdatatemp_param_6];
-	ld.param.u64 	%rd29, [mdatatemp_param_7];
-	ld.param.u64 	%rd30, [mdatatemp_param_8];
-	ld.param.u64 	%rd31, [mdatatemp_param_9];
-	ld.param.f32 	%f169, [mdatatemp_param_10];
-	ld.param.f32 	%f61, [mdatatemp_param_11];
-	ld.param.u64 	%rd32, [mdatatemp_param_12];
-	ld.param.f32 	%f170, [mdatatemp_param_13];
-	ld.param.u64 	%rd33, [mdatatemp_param_14];
-	ld.param.f32 	%f171, [mdatatemp_param_15];
-	ld.param.u64 	%rd34, [mdatatemp_param_16];
-	ld.param.f32 	%f172, [mdatatemp_param_17];
-	ld.param.u64 	%rd35, [mdatatemp_param_18];
-	ld.param.u64 	%rd36, [mdatatemp_param_19];
-	ld.param.u64 	%rd37, [mdatatemp_param_20];
-	ld.param.f32 	%f65, [mdatatemp_param_21];
-	ld.param.f32 	%f66, [mdatatemp_param_22];
-	ld.param.f32 	%f67, [mdatatemp_param_23];
-	ld.param.u32 	%r77, [mdatatemp_param_24];
+	ld.param.u64 	%rd22, [addspin2beff_param_0];
+	ld.param.u64 	%rd23, [addspin2beff_param_1];
+	ld.param.u64 	%rd24, [addspin2beff_param_2];
+	ld.param.u64 	%rd25, [addspin2beff_param_3];
+	ld.param.u64 	%rd26, [addspin2beff_param_4];
+	ld.param.u64 	%rd27, [addspin2beff_param_5];
+	ld.param.u64 	%rd28, [addspin2beff_param_6];
+	ld.param.u64 	%rd29, [addspin2beff_param_7];
+	ld.param.u64 	%rd30, [addspin2beff_param_8];
+	ld.param.u64 	%rd31, [addspin2beff_param_9];
+	ld.param.f32 	%f169, [addspin2beff_param_10];
+	ld.param.f32 	%f61, [addspin2beff_param_11];
+	ld.param.u64 	%rd32, [addspin2beff_param_12];
+	ld.param.f32 	%f170, [addspin2beff_param_13];
+	ld.param.u64 	%rd33, [addspin2beff_param_14];
+	ld.param.f32 	%f171, [addspin2beff_param_15];
+	ld.param.u64 	%rd34, [addspin2beff_param_16];
+	ld.param.f32 	%f172, [addspin2beff_param_17];
+	ld.param.u64 	%rd35, [addspin2beff_param_18];
+	ld.param.u64 	%rd36, [addspin2beff_param_19];
+	ld.param.u64 	%rd37, [addspin2beff_param_20];
+	ld.param.f32 	%f65, [addspin2beff_param_21];
+	ld.param.f32 	%f66, [addspin2beff_param_22];
+	ld.param.f32 	%f67, [addspin2beff_param_23];
+	ld.param.u32 	%r77, [addspin2beff_param_24];
 	mov.u32 	%r78, %nctaid.x;
 	mov.u32 	%r79, %ctaid.y;
 	mov.u32 	%r80, %ctaid.x;
@@ -804,40 +804,40 @@ BB0_71:
 
 
 `
-   mdatatemp_ptx_35 = `
+   addspin2beff_ptx_35 = `
 .version 6.4
 .target sm_35
 .address_size 64
 
-	// .globl	mdatatemp
+	// .globl	addspin2beff
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry mdatatemp(
-	.param .u64 mdatatemp_param_0,
-	.param .u64 mdatatemp_param_1,
-	.param .u64 mdatatemp_param_2,
-	.param .u64 mdatatemp_param_3,
-	.param .u64 mdatatemp_param_4,
-	.param .u64 mdatatemp_param_5,
-	.param .u64 mdatatemp_param_6,
-	.param .u64 mdatatemp_param_7,
-	.param .u64 mdatatemp_param_8,
-	.param .u64 mdatatemp_param_9,
-	.param .f32 mdatatemp_param_10,
-	.param .f32 mdatatemp_param_11,
-	.param .u64 mdatatemp_param_12,
-	.param .f32 mdatatemp_param_13,
-	.param .u64 mdatatemp_param_14,
-	.param .f32 mdatatemp_param_15,
-	.param .u64 mdatatemp_param_16,
-	.param .f32 mdatatemp_param_17,
-	.param .u64 mdatatemp_param_18,
-	.param .u64 mdatatemp_param_19,
-	.param .u64 mdatatemp_param_20,
-	.param .f32 mdatatemp_param_21,
-	.param .f32 mdatatemp_param_22,
-	.param .f32 mdatatemp_param_23,
-	.param .u32 mdatatemp_param_24
+.visible .entry addspin2beff(
+	.param .u64 addspin2beff_param_0,
+	.param .u64 addspin2beff_param_1,
+	.param .u64 addspin2beff_param_2,
+	.param .u64 addspin2beff_param_3,
+	.param .u64 addspin2beff_param_4,
+	.param .u64 addspin2beff_param_5,
+	.param .u64 addspin2beff_param_6,
+	.param .u64 addspin2beff_param_7,
+	.param .u64 addspin2beff_param_8,
+	.param .u64 addspin2beff_param_9,
+	.param .f32 addspin2beff_param_10,
+	.param .f32 addspin2beff_param_11,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_20,
+	.param .f32 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_22,
+	.param .f32 addspin2beff_param_23,
+	.param .u32 addspin2beff_param_24
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -851,31 +851,31 @@ BB0_71:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd25, [mdatatemp_param_0];
-	ld.param.u64 	%rd26, [mdatatemp_param_1];
-	ld.param.u64 	%rd27, [mdatatemp_param_2];
-	ld.param.u64 	%rd35, [mdatatemp_param_3];
-	ld.param.u64 	%rd36, [mdatatemp_param_4];
-	ld.param.u64 	%rd37, [mdatatemp_param_5];
-	ld.param.u64 	%rd38, [mdatatemp_param_6];
-	ld.param.u64 	%rd39, [mdatatemp_param_7];
-	ld.param.u64 	%rd40, [mdatatemp_param_8];
-	ld.param.u64 	%rd28, [mdatatemp_param_9];
-	ld.param.f32 	%f169, [mdatatemp_param_10];
-	ld.param.f32 	%f61, [mdatatemp_param_11];
-	ld.param.u64 	%rd29, [mdatatemp_param_12];
-	ld.param.f32 	%f170, [mdatatemp_param_13];
-	ld.param.u64 	%rd30, [mdatatemp_param_14];
-	ld.param.f32 	%f171, [mdatatemp_param_15];
-	ld.param.u64 	%rd31, [mdatatemp_param_16];
-	ld.param.f32 	%f172, [mdatatemp_param_17];
-	ld.param.u64 	%rd32, [mdatatemp_param_18];
-	ld.param.u64 	%rd33, [mdatatemp_param_19];
-	ld.param.u64 	%rd34, [mdatatemp_param_20];
-	ld.param.f32 	%f65, [mdatatemp_param_21];
-	ld.param.f32 	%f66, [mdatatemp_param_22];
-	ld.param.f32 	%f67, [mdatatemp_param_23];
-	ld.param.u32 	%r83, [mdatatemp_param_24];
+	ld.param.u64 	%rd25, [addspin2beff_param_0];
+	ld.param.u64 	%rd26, [addspin2beff_param_1];
+	ld.param.u64 	%rd27, [addspin2beff_param_2];
+	ld.param.u64 	%rd35, [addspin2beff_param_3];
+	ld.param.u64 	%rd36, [addspin2beff_param_4];
+	ld.param.u64 	%rd37, [addspin2beff_param_5];
+	ld.param.u64 	%rd38, [addspin2beff_param_6];
+	ld.param.u64 	%rd39, [addspin2beff_param_7];
+	ld.param.u64 	%rd40, [addspin2beff_param_8];
+	ld.param.u64 	%rd28, [addspin2beff_param_9];
+	ld.param.f32 	%f169, [addspin2beff_param_10];
+	ld.param.f32 	%f61, [addspin2beff_param_11];
+	ld.param.u64 	%rd29, [addspin2beff_param_12];
+	ld.param.f32 	%f170, [addspin2beff_param_13];
+	ld.param.u64 	%rd30, [addspin2beff_param_14];
+	ld.param.f32 	%f171, [addspin2beff_param_15];
+	ld.param.u64 	%rd31, [addspin2beff_param_16];
+	ld.param.f32 	%f172, [addspin2beff_param_17];
+	ld.param.u64 	%rd32, [addspin2beff_param_18];
+	ld.param.u64 	%rd33, [addspin2beff_param_19];
+	ld.param.u64 	%rd34, [addspin2beff_param_20];
+	ld.param.f32 	%f65, [addspin2beff_param_21];
+	ld.param.f32 	%f66, [addspin2beff_param_22];
+	ld.param.f32 	%f67, [addspin2beff_param_23];
+	ld.param.u32 	%r83, [addspin2beff_param_24];
 	cvta.to.global.u64 	%rd1, %rd40;
 	cvta.to.global.u64 	%rd2, %rd39;
 	cvta.to.global.u64 	%rd3, %rd38;
@@ -1460,40 +1460,40 @@ BB0_71:
 
 
 `
-   mdatatemp_ptx_37 = `
+   addspin2beff_ptx_37 = `
 .version 6.4
 .target sm_37
 .address_size 64
 
-	// .globl	mdatatemp
+	// .globl	addspin2beff
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry mdatatemp(
-	.param .u64 mdatatemp_param_0,
-	.param .u64 mdatatemp_param_1,
-	.param .u64 mdatatemp_param_2,
-	.param .u64 mdatatemp_param_3,
-	.param .u64 mdatatemp_param_4,
-	.param .u64 mdatatemp_param_5,
-	.param .u64 mdatatemp_param_6,
-	.param .u64 mdatatemp_param_7,
-	.param .u64 mdatatemp_param_8,
-	.param .u64 mdatatemp_param_9,
-	.param .f32 mdatatemp_param_10,
-	.param .f32 mdatatemp_param_11,
-	.param .u64 mdatatemp_param_12,
-	.param .f32 mdatatemp_param_13,
-	.param .u64 mdatatemp_param_14,
-	.param .f32 mdatatemp_param_15,
-	.param .u64 mdatatemp_param_16,
-	.param .f32 mdatatemp_param_17,
-	.param .u64 mdatatemp_param_18,
-	.param .u64 mdatatemp_param_19,
-	.param .u64 mdatatemp_param_20,
-	.param .f32 mdatatemp_param_21,
-	.param .f32 mdatatemp_param_22,
-	.param .f32 mdatatemp_param_23,
-	.param .u32 mdatatemp_param_24
+.visible .entry addspin2beff(
+	.param .u64 addspin2beff_param_0,
+	.param .u64 addspin2beff_param_1,
+	.param .u64 addspin2beff_param_2,
+	.param .u64 addspin2beff_param_3,
+	.param .u64 addspin2beff_param_4,
+	.param .u64 addspin2beff_param_5,
+	.param .u64 addspin2beff_param_6,
+	.param .u64 addspin2beff_param_7,
+	.param .u64 addspin2beff_param_8,
+	.param .u64 addspin2beff_param_9,
+	.param .f32 addspin2beff_param_10,
+	.param .f32 addspin2beff_param_11,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_20,
+	.param .f32 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_22,
+	.param .f32 addspin2beff_param_23,
+	.param .u32 addspin2beff_param_24
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -1507,31 +1507,31 @@ BB0_71:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd25, [mdatatemp_param_0];
-	ld.param.u64 	%rd26, [mdatatemp_param_1];
-	ld.param.u64 	%rd27, [mdatatemp_param_2];
-	ld.param.u64 	%rd35, [mdatatemp_param_3];
-	ld.param.u64 	%rd36, [mdatatemp_param_4];
-	ld.param.u64 	%rd37, [mdatatemp_param_5];
-	ld.param.u64 	%rd38, [mdatatemp_param_6];
-	ld.param.u64 	%rd39, [mdatatemp_param_7];
-	ld.param.u64 	%rd40, [mdatatemp_param_8];
-	ld.param.u64 	%rd28, [mdatatemp_param_9];
-	ld.param.f32 	%f169, [mdatatemp_param_10];
-	ld.param.f32 	%f61, [mdatatemp_param_11];
-	ld.param.u64 	%rd29, [mdatatemp_param_12];
-	ld.param.f32 	%f170, [mdatatemp_param_13];
-	ld.param.u64 	%rd30, [mdatatemp_param_14];
-	ld.param.f32 	%f171, [mdatatemp_param_15];
-	ld.param.u64 	%rd31, [mdatatemp_param_16];
-	ld.param.f32 	%f172, [mdatatemp_param_17];
-	ld.param.u64 	%rd32, [mdatatemp_param_18];
-	ld.param.u64 	%rd33, [mdatatemp_param_19];
-	ld.param.u64 	%rd34, [mdatatemp_param_20];
-	ld.param.f32 	%f65, [mdatatemp_param_21];
-	ld.param.f32 	%f66, [mdatatemp_param_22];
-	ld.param.f32 	%f67, [mdatatemp_param_23];
-	ld.param.u32 	%r83, [mdatatemp_param_24];
+	ld.param.u64 	%rd25, [addspin2beff_param_0];
+	ld.param.u64 	%rd26, [addspin2beff_param_1];
+	ld.param.u64 	%rd27, [addspin2beff_param_2];
+	ld.param.u64 	%rd35, [addspin2beff_param_3];
+	ld.param.u64 	%rd36, [addspin2beff_param_4];
+	ld.param.u64 	%rd37, [addspin2beff_param_5];
+	ld.param.u64 	%rd38, [addspin2beff_param_6];
+	ld.param.u64 	%rd39, [addspin2beff_param_7];
+	ld.param.u64 	%rd40, [addspin2beff_param_8];
+	ld.param.u64 	%rd28, [addspin2beff_param_9];
+	ld.param.f32 	%f169, [addspin2beff_param_10];
+	ld.param.f32 	%f61, [addspin2beff_param_11];
+	ld.param.u64 	%rd29, [addspin2beff_param_12];
+	ld.param.f32 	%f170, [addspin2beff_param_13];
+	ld.param.u64 	%rd30, [addspin2beff_param_14];
+	ld.param.f32 	%f171, [addspin2beff_param_15];
+	ld.param.u64 	%rd31, [addspin2beff_param_16];
+	ld.param.f32 	%f172, [addspin2beff_param_17];
+	ld.param.u64 	%rd32, [addspin2beff_param_18];
+	ld.param.u64 	%rd33, [addspin2beff_param_19];
+	ld.param.u64 	%rd34, [addspin2beff_param_20];
+	ld.param.f32 	%f65, [addspin2beff_param_21];
+	ld.param.f32 	%f66, [addspin2beff_param_22];
+	ld.param.f32 	%f67, [addspin2beff_param_23];
+	ld.param.u32 	%r83, [addspin2beff_param_24];
 	cvta.to.global.u64 	%rd1, %rd40;
 	cvta.to.global.u64 	%rd2, %rd39;
 	cvta.to.global.u64 	%rd3, %rd38;
@@ -2116,40 +2116,40 @@ BB0_71:
 
 
 `
-   mdatatemp_ptx_50 = `
+   addspin2beff_ptx_50 = `
 .version 6.4
 .target sm_50
 .address_size 64
 
-	// .globl	mdatatemp
+	// .globl	addspin2beff
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry mdatatemp(
-	.param .u64 mdatatemp_param_0,
-	.param .u64 mdatatemp_param_1,
-	.param .u64 mdatatemp_param_2,
-	.param .u64 mdatatemp_param_3,
-	.param .u64 mdatatemp_param_4,
-	.param .u64 mdatatemp_param_5,
-	.param .u64 mdatatemp_param_6,
-	.param .u64 mdatatemp_param_7,
-	.param .u64 mdatatemp_param_8,
-	.param .u64 mdatatemp_param_9,
-	.param .f32 mdatatemp_param_10,
-	.param .f32 mdatatemp_param_11,
-	.param .u64 mdatatemp_param_12,
-	.param .f32 mdatatemp_param_13,
-	.param .u64 mdatatemp_param_14,
-	.param .f32 mdatatemp_param_15,
-	.param .u64 mdatatemp_param_16,
-	.param .f32 mdatatemp_param_17,
-	.param .u64 mdatatemp_param_18,
-	.param .u64 mdatatemp_param_19,
-	.param .u64 mdatatemp_param_20,
-	.param .f32 mdatatemp_param_21,
-	.param .f32 mdatatemp_param_22,
-	.param .f32 mdatatemp_param_23,
-	.param .u32 mdatatemp_param_24
+.visible .entry addspin2beff(
+	.param .u64 addspin2beff_param_0,
+	.param .u64 addspin2beff_param_1,
+	.param .u64 addspin2beff_param_2,
+	.param .u64 addspin2beff_param_3,
+	.param .u64 addspin2beff_param_4,
+	.param .u64 addspin2beff_param_5,
+	.param .u64 addspin2beff_param_6,
+	.param .u64 addspin2beff_param_7,
+	.param .u64 addspin2beff_param_8,
+	.param .u64 addspin2beff_param_9,
+	.param .f32 addspin2beff_param_10,
+	.param .f32 addspin2beff_param_11,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_20,
+	.param .f32 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_22,
+	.param .f32 addspin2beff_param_23,
+	.param .u32 addspin2beff_param_24
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -2163,31 +2163,31 @@ BB0_71:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd25, [mdatatemp_param_0];
-	ld.param.u64 	%rd26, [mdatatemp_param_1];
-	ld.param.u64 	%rd27, [mdatatemp_param_2];
-	ld.param.u64 	%rd35, [mdatatemp_param_3];
-	ld.param.u64 	%rd36, [mdatatemp_param_4];
-	ld.param.u64 	%rd37, [mdatatemp_param_5];
-	ld.param.u64 	%rd38, [mdatatemp_param_6];
-	ld.param.u64 	%rd39, [mdatatemp_param_7];
-	ld.param.u64 	%rd40, [mdatatemp_param_8];
-	ld.param.u64 	%rd28, [mdatatemp_param_9];
-	ld.param.f32 	%f169, [mdatatemp_param_10];
-	ld.param.f32 	%f61, [mdatatemp_param_11];
-	ld.param.u64 	%rd29, [mdatatemp_param_12];
-	ld.param.f32 	%f170, [mdatatemp_param_13];
-	ld.param.u64 	%rd30, [mdatatemp_param_14];
-	ld.param.f32 	%f171, [mdatatemp_param_15];
-	ld.param.u64 	%rd31, [mdatatemp_param_16];
-	ld.param.f32 	%f172, [mdatatemp_param_17];
-	ld.param.u64 	%rd32, [mdatatemp_param_18];
-	ld.param.u64 	%rd33, [mdatatemp_param_19];
-	ld.param.u64 	%rd34, [mdatatemp_param_20];
-	ld.param.f32 	%f65, [mdatatemp_param_21];
-	ld.param.f32 	%f66, [mdatatemp_param_22];
-	ld.param.f32 	%f67, [mdatatemp_param_23];
-	ld.param.u32 	%r83, [mdatatemp_param_24];
+	ld.param.u64 	%rd25, [addspin2beff_param_0];
+	ld.param.u64 	%rd26, [addspin2beff_param_1];
+	ld.param.u64 	%rd27, [addspin2beff_param_2];
+	ld.param.u64 	%rd35, [addspin2beff_param_3];
+	ld.param.u64 	%rd36, [addspin2beff_param_4];
+	ld.param.u64 	%rd37, [addspin2beff_param_5];
+	ld.param.u64 	%rd38, [addspin2beff_param_6];
+	ld.param.u64 	%rd39, [addspin2beff_param_7];
+	ld.param.u64 	%rd40, [addspin2beff_param_8];
+	ld.param.u64 	%rd28, [addspin2beff_param_9];
+	ld.param.f32 	%f169, [addspin2beff_param_10];
+	ld.param.f32 	%f61, [addspin2beff_param_11];
+	ld.param.u64 	%rd29, [addspin2beff_param_12];
+	ld.param.f32 	%f170, [addspin2beff_param_13];
+	ld.param.u64 	%rd30, [addspin2beff_param_14];
+	ld.param.f32 	%f171, [addspin2beff_param_15];
+	ld.param.u64 	%rd31, [addspin2beff_param_16];
+	ld.param.f32 	%f172, [addspin2beff_param_17];
+	ld.param.u64 	%rd32, [addspin2beff_param_18];
+	ld.param.u64 	%rd33, [addspin2beff_param_19];
+	ld.param.u64 	%rd34, [addspin2beff_param_20];
+	ld.param.f32 	%f65, [addspin2beff_param_21];
+	ld.param.f32 	%f66, [addspin2beff_param_22];
+	ld.param.f32 	%f67, [addspin2beff_param_23];
+	ld.param.u32 	%r83, [addspin2beff_param_24];
 	cvta.to.global.u64 	%rd1, %rd40;
 	cvta.to.global.u64 	%rd2, %rd39;
 	cvta.to.global.u64 	%rd3, %rd38;
@@ -2772,40 +2772,40 @@ BB0_71:
 
 
 `
-   mdatatemp_ptx_52 = `
+   addspin2beff_ptx_52 = `
 .version 6.4
 .target sm_52
 .address_size 64
 
-	// .globl	mdatatemp
+	// .globl	addspin2beff
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry mdatatemp(
-	.param .u64 mdatatemp_param_0,
-	.param .u64 mdatatemp_param_1,
-	.param .u64 mdatatemp_param_2,
-	.param .u64 mdatatemp_param_3,
-	.param .u64 mdatatemp_param_4,
-	.param .u64 mdatatemp_param_5,
-	.param .u64 mdatatemp_param_6,
-	.param .u64 mdatatemp_param_7,
-	.param .u64 mdatatemp_param_8,
-	.param .u64 mdatatemp_param_9,
-	.param .f32 mdatatemp_param_10,
-	.param .f32 mdatatemp_param_11,
-	.param .u64 mdatatemp_param_12,
-	.param .f32 mdatatemp_param_13,
-	.param .u64 mdatatemp_param_14,
-	.param .f32 mdatatemp_param_15,
-	.param .u64 mdatatemp_param_16,
-	.param .f32 mdatatemp_param_17,
-	.param .u64 mdatatemp_param_18,
-	.param .u64 mdatatemp_param_19,
-	.param .u64 mdatatemp_param_20,
-	.param .f32 mdatatemp_param_21,
-	.param .f32 mdatatemp_param_22,
-	.param .f32 mdatatemp_param_23,
-	.param .u32 mdatatemp_param_24
+.visible .entry addspin2beff(
+	.param .u64 addspin2beff_param_0,
+	.param .u64 addspin2beff_param_1,
+	.param .u64 addspin2beff_param_2,
+	.param .u64 addspin2beff_param_3,
+	.param .u64 addspin2beff_param_4,
+	.param .u64 addspin2beff_param_5,
+	.param .u64 addspin2beff_param_6,
+	.param .u64 addspin2beff_param_7,
+	.param .u64 addspin2beff_param_8,
+	.param .u64 addspin2beff_param_9,
+	.param .f32 addspin2beff_param_10,
+	.param .f32 addspin2beff_param_11,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_20,
+	.param .f32 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_22,
+	.param .f32 addspin2beff_param_23,
+	.param .u32 addspin2beff_param_24
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -2819,31 +2819,31 @@ BB0_71:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd25, [mdatatemp_param_0];
-	ld.param.u64 	%rd26, [mdatatemp_param_1];
-	ld.param.u64 	%rd27, [mdatatemp_param_2];
-	ld.param.u64 	%rd35, [mdatatemp_param_3];
-	ld.param.u64 	%rd36, [mdatatemp_param_4];
-	ld.param.u64 	%rd37, [mdatatemp_param_5];
-	ld.param.u64 	%rd38, [mdatatemp_param_6];
-	ld.param.u64 	%rd39, [mdatatemp_param_7];
-	ld.param.u64 	%rd40, [mdatatemp_param_8];
-	ld.param.u64 	%rd28, [mdatatemp_param_9];
-	ld.param.f32 	%f169, [mdatatemp_param_10];
-	ld.param.f32 	%f61, [mdatatemp_param_11];
-	ld.param.u64 	%rd29, [mdatatemp_param_12];
-	ld.param.f32 	%f170, [mdatatemp_param_13];
-	ld.param.u64 	%rd30, [mdatatemp_param_14];
-	ld.param.f32 	%f171, [mdatatemp_param_15];
-	ld.param.u64 	%rd31, [mdatatemp_param_16];
-	ld.param.f32 	%f172, [mdatatemp_param_17];
-	ld.param.u64 	%rd32, [mdatatemp_param_18];
-	ld.param.u64 	%rd33, [mdatatemp_param_19];
-	ld.param.u64 	%rd34, [mdatatemp_param_20];
-	ld.param.f32 	%f65, [mdatatemp_param_21];
-	ld.param.f32 	%f66, [mdatatemp_param_22];
-	ld.param.f32 	%f67, [mdatatemp_param_23];
-	ld.param.u32 	%r83, [mdatatemp_param_24];
+	ld.param.u64 	%rd25, [addspin2beff_param_0];
+	ld.param.u64 	%rd26, [addspin2beff_param_1];
+	ld.param.u64 	%rd27, [addspin2beff_param_2];
+	ld.param.u64 	%rd35, [addspin2beff_param_3];
+	ld.param.u64 	%rd36, [addspin2beff_param_4];
+	ld.param.u64 	%rd37, [addspin2beff_param_5];
+	ld.param.u64 	%rd38, [addspin2beff_param_6];
+	ld.param.u64 	%rd39, [addspin2beff_param_7];
+	ld.param.u64 	%rd40, [addspin2beff_param_8];
+	ld.param.u64 	%rd28, [addspin2beff_param_9];
+	ld.param.f32 	%f169, [addspin2beff_param_10];
+	ld.param.f32 	%f61, [addspin2beff_param_11];
+	ld.param.u64 	%rd29, [addspin2beff_param_12];
+	ld.param.f32 	%f170, [addspin2beff_param_13];
+	ld.param.u64 	%rd30, [addspin2beff_param_14];
+	ld.param.f32 	%f171, [addspin2beff_param_15];
+	ld.param.u64 	%rd31, [addspin2beff_param_16];
+	ld.param.f32 	%f172, [addspin2beff_param_17];
+	ld.param.u64 	%rd32, [addspin2beff_param_18];
+	ld.param.u64 	%rd33, [addspin2beff_param_19];
+	ld.param.u64 	%rd34, [addspin2beff_param_20];
+	ld.param.f32 	%f65, [addspin2beff_param_21];
+	ld.param.f32 	%f66, [addspin2beff_param_22];
+	ld.param.f32 	%f67, [addspin2beff_param_23];
+	ld.param.u32 	%r83, [addspin2beff_param_24];
 	cvta.to.global.u64 	%rd1, %rd40;
 	cvta.to.global.u64 	%rd2, %rd39;
 	cvta.to.global.u64 	%rd3, %rd38;
@@ -3428,40 +3428,40 @@ BB0_71:
 
 
 `
-   mdatatemp_ptx_53 = `
+   addspin2beff_ptx_53 = `
 .version 6.4
 .target sm_53
 .address_size 64
 
-	// .globl	mdatatemp
+	// .globl	addspin2beff
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry mdatatemp(
-	.param .u64 mdatatemp_param_0,
-	.param .u64 mdatatemp_param_1,
-	.param .u64 mdatatemp_param_2,
-	.param .u64 mdatatemp_param_3,
-	.param .u64 mdatatemp_param_4,
-	.param .u64 mdatatemp_param_5,
-	.param .u64 mdatatemp_param_6,
-	.param .u64 mdatatemp_param_7,
-	.param .u64 mdatatemp_param_8,
-	.param .u64 mdatatemp_param_9,
-	.param .f32 mdatatemp_param_10,
-	.param .f32 mdatatemp_param_11,
-	.param .u64 mdatatemp_param_12,
-	.param .f32 mdatatemp_param_13,
-	.param .u64 mdatatemp_param_14,
-	.param .f32 mdatatemp_param_15,
-	.param .u64 mdatatemp_param_16,
-	.param .f32 mdatatemp_param_17,
-	.param .u64 mdatatemp_param_18,
-	.param .u64 mdatatemp_param_19,
-	.param .u64 mdatatemp_param_20,
-	.param .f32 mdatatemp_param_21,
-	.param .f32 mdatatemp_param_22,
-	.param .f32 mdatatemp_param_23,
-	.param .u32 mdatatemp_param_24
+.visible .entry addspin2beff(
+	.param .u64 addspin2beff_param_0,
+	.param .u64 addspin2beff_param_1,
+	.param .u64 addspin2beff_param_2,
+	.param .u64 addspin2beff_param_3,
+	.param .u64 addspin2beff_param_4,
+	.param .u64 addspin2beff_param_5,
+	.param .u64 addspin2beff_param_6,
+	.param .u64 addspin2beff_param_7,
+	.param .u64 addspin2beff_param_8,
+	.param .u64 addspin2beff_param_9,
+	.param .f32 addspin2beff_param_10,
+	.param .f32 addspin2beff_param_11,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_20,
+	.param .f32 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_22,
+	.param .f32 addspin2beff_param_23,
+	.param .u32 addspin2beff_param_24
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -3475,31 +3475,31 @@ BB0_71:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd25, [mdatatemp_param_0];
-	ld.param.u64 	%rd26, [mdatatemp_param_1];
-	ld.param.u64 	%rd27, [mdatatemp_param_2];
-	ld.param.u64 	%rd35, [mdatatemp_param_3];
-	ld.param.u64 	%rd36, [mdatatemp_param_4];
-	ld.param.u64 	%rd37, [mdatatemp_param_5];
-	ld.param.u64 	%rd38, [mdatatemp_param_6];
-	ld.param.u64 	%rd39, [mdatatemp_param_7];
-	ld.param.u64 	%rd40, [mdatatemp_param_8];
-	ld.param.u64 	%rd28, [mdatatemp_param_9];
-	ld.param.f32 	%f169, [mdatatemp_param_10];
-	ld.param.f32 	%f61, [mdatatemp_param_11];
-	ld.param.u64 	%rd29, [mdatatemp_param_12];
-	ld.param.f32 	%f170, [mdatatemp_param_13];
-	ld.param.u64 	%rd30, [mdatatemp_param_14];
-	ld.param.f32 	%f171, [mdatatemp_param_15];
-	ld.param.u64 	%rd31, [mdatatemp_param_16];
-	ld.param.f32 	%f172, [mdatatemp_param_17];
-	ld.param.u64 	%rd32, [mdatatemp_param_18];
-	ld.param.u64 	%rd33, [mdatatemp_param_19];
-	ld.param.u64 	%rd34, [mdatatemp_param_20];
-	ld.param.f32 	%f65, [mdatatemp_param_21];
-	ld.param.f32 	%f66, [mdatatemp_param_22];
-	ld.param.f32 	%f67, [mdatatemp_param_23];
-	ld.param.u32 	%r83, [mdatatemp_param_24];
+	ld.param.u64 	%rd25, [addspin2beff_param_0];
+	ld.param.u64 	%rd26, [addspin2beff_param_1];
+	ld.param.u64 	%rd27, [addspin2beff_param_2];
+	ld.param.u64 	%rd35, [addspin2beff_param_3];
+	ld.param.u64 	%rd36, [addspin2beff_param_4];
+	ld.param.u64 	%rd37, [addspin2beff_param_5];
+	ld.param.u64 	%rd38, [addspin2beff_param_6];
+	ld.param.u64 	%rd39, [addspin2beff_param_7];
+	ld.param.u64 	%rd40, [addspin2beff_param_8];
+	ld.param.u64 	%rd28, [addspin2beff_param_9];
+	ld.param.f32 	%f169, [addspin2beff_param_10];
+	ld.param.f32 	%f61, [addspin2beff_param_11];
+	ld.param.u64 	%rd29, [addspin2beff_param_12];
+	ld.param.f32 	%f170, [addspin2beff_param_13];
+	ld.param.u64 	%rd30, [addspin2beff_param_14];
+	ld.param.f32 	%f171, [addspin2beff_param_15];
+	ld.param.u64 	%rd31, [addspin2beff_param_16];
+	ld.param.f32 	%f172, [addspin2beff_param_17];
+	ld.param.u64 	%rd32, [addspin2beff_param_18];
+	ld.param.u64 	%rd33, [addspin2beff_param_19];
+	ld.param.u64 	%rd34, [addspin2beff_param_20];
+	ld.param.f32 	%f65, [addspin2beff_param_21];
+	ld.param.f32 	%f66, [addspin2beff_param_22];
+	ld.param.f32 	%f67, [addspin2beff_param_23];
+	ld.param.u32 	%r83, [addspin2beff_param_24];
 	cvta.to.global.u64 	%rd1, %rd40;
 	cvta.to.global.u64 	%rd2, %rd39;
 	cvta.to.global.u64 	%rd3, %rd38;
@@ -4084,40 +4084,40 @@ BB0_71:
 
 
 `
-   mdatatemp_ptx_60 = `
+   addspin2beff_ptx_60 = `
 .version 6.4
 .target sm_60
 .address_size 64
 
-	// .globl	mdatatemp
+	// .globl	addspin2beff
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry mdatatemp(
-	.param .u64 mdatatemp_param_0,
-	.param .u64 mdatatemp_param_1,
-	.param .u64 mdatatemp_param_2,
-	.param .u64 mdatatemp_param_3,
-	.param .u64 mdatatemp_param_4,
-	.param .u64 mdatatemp_param_5,
-	.param .u64 mdatatemp_param_6,
-	.param .u64 mdatatemp_param_7,
-	.param .u64 mdatatemp_param_8,
-	.param .u64 mdatatemp_param_9,
-	.param .f32 mdatatemp_param_10,
-	.param .f32 mdatatemp_param_11,
-	.param .u64 mdatatemp_param_12,
-	.param .f32 mdatatemp_param_13,
-	.param .u64 mdatatemp_param_14,
-	.param .f32 mdatatemp_param_15,
-	.param .u64 mdatatemp_param_16,
-	.param .f32 mdatatemp_param_17,
-	.param .u64 mdatatemp_param_18,
-	.param .u64 mdatatemp_param_19,
-	.param .u64 mdatatemp_param_20,
-	.param .f32 mdatatemp_param_21,
-	.param .f32 mdatatemp_param_22,
-	.param .f32 mdatatemp_param_23,
-	.param .u32 mdatatemp_param_24
+.visible .entry addspin2beff(
+	.param .u64 addspin2beff_param_0,
+	.param .u64 addspin2beff_param_1,
+	.param .u64 addspin2beff_param_2,
+	.param .u64 addspin2beff_param_3,
+	.param .u64 addspin2beff_param_4,
+	.param .u64 addspin2beff_param_5,
+	.param .u64 addspin2beff_param_6,
+	.param .u64 addspin2beff_param_7,
+	.param .u64 addspin2beff_param_8,
+	.param .u64 addspin2beff_param_9,
+	.param .f32 addspin2beff_param_10,
+	.param .f32 addspin2beff_param_11,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_20,
+	.param .f32 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_22,
+	.param .f32 addspin2beff_param_23,
+	.param .u32 addspin2beff_param_24
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -4131,31 +4131,31 @@ BB0_71:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd25, [mdatatemp_param_0];
-	ld.param.u64 	%rd26, [mdatatemp_param_1];
-	ld.param.u64 	%rd27, [mdatatemp_param_2];
-	ld.param.u64 	%rd35, [mdatatemp_param_3];
-	ld.param.u64 	%rd36, [mdatatemp_param_4];
-	ld.param.u64 	%rd37, [mdatatemp_param_5];
-	ld.param.u64 	%rd38, [mdatatemp_param_6];
-	ld.param.u64 	%rd39, [mdatatemp_param_7];
-	ld.param.u64 	%rd40, [mdatatemp_param_8];
-	ld.param.u64 	%rd28, [mdatatemp_param_9];
-	ld.param.f32 	%f169, [mdatatemp_param_10];
-	ld.param.f32 	%f61, [mdatatemp_param_11];
-	ld.param.u64 	%rd29, [mdatatemp_param_12];
-	ld.param.f32 	%f170, [mdatatemp_param_13];
-	ld.param.u64 	%rd30, [mdatatemp_param_14];
-	ld.param.f32 	%f171, [mdatatemp_param_15];
-	ld.param.u64 	%rd31, [mdatatemp_param_16];
-	ld.param.f32 	%f172, [mdatatemp_param_17];
-	ld.param.u64 	%rd32, [mdatatemp_param_18];
-	ld.param.u64 	%rd33, [mdatatemp_param_19];
-	ld.param.u64 	%rd34, [mdatatemp_param_20];
-	ld.param.f32 	%f65, [mdatatemp_param_21];
-	ld.param.f32 	%f66, [mdatatemp_param_22];
-	ld.param.f32 	%f67, [mdatatemp_param_23];
-	ld.param.u32 	%r83, [mdatatemp_param_24];
+	ld.param.u64 	%rd25, [addspin2beff_param_0];
+	ld.param.u64 	%rd26, [addspin2beff_param_1];
+	ld.param.u64 	%rd27, [addspin2beff_param_2];
+	ld.param.u64 	%rd35, [addspin2beff_param_3];
+	ld.param.u64 	%rd36, [addspin2beff_param_4];
+	ld.param.u64 	%rd37, [addspin2beff_param_5];
+	ld.param.u64 	%rd38, [addspin2beff_param_6];
+	ld.param.u64 	%rd39, [addspin2beff_param_7];
+	ld.param.u64 	%rd40, [addspin2beff_param_8];
+	ld.param.u64 	%rd28, [addspin2beff_param_9];
+	ld.param.f32 	%f169, [addspin2beff_param_10];
+	ld.param.f32 	%f61, [addspin2beff_param_11];
+	ld.param.u64 	%rd29, [addspin2beff_param_12];
+	ld.param.f32 	%f170, [addspin2beff_param_13];
+	ld.param.u64 	%rd30, [addspin2beff_param_14];
+	ld.param.f32 	%f171, [addspin2beff_param_15];
+	ld.param.u64 	%rd31, [addspin2beff_param_16];
+	ld.param.f32 	%f172, [addspin2beff_param_17];
+	ld.param.u64 	%rd32, [addspin2beff_param_18];
+	ld.param.u64 	%rd33, [addspin2beff_param_19];
+	ld.param.u64 	%rd34, [addspin2beff_param_20];
+	ld.param.f32 	%f65, [addspin2beff_param_21];
+	ld.param.f32 	%f66, [addspin2beff_param_22];
+	ld.param.f32 	%f67, [addspin2beff_param_23];
+	ld.param.u32 	%r83, [addspin2beff_param_24];
 	cvta.to.global.u64 	%rd1, %rd40;
 	cvta.to.global.u64 	%rd2, %rd39;
 	cvta.to.global.u64 	%rd3, %rd38;
@@ -4740,40 +4740,40 @@ BB0_71:
 
 
 `
-   mdatatemp_ptx_61 = `
+   addspin2beff_ptx_61 = `
 .version 6.4
 .target sm_61
 .address_size 64
 
-	// .globl	mdatatemp
+	// .globl	addspin2beff
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry mdatatemp(
-	.param .u64 mdatatemp_param_0,
-	.param .u64 mdatatemp_param_1,
-	.param .u64 mdatatemp_param_2,
-	.param .u64 mdatatemp_param_3,
-	.param .u64 mdatatemp_param_4,
-	.param .u64 mdatatemp_param_5,
-	.param .u64 mdatatemp_param_6,
-	.param .u64 mdatatemp_param_7,
-	.param .u64 mdatatemp_param_8,
-	.param .u64 mdatatemp_param_9,
-	.param .f32 mdatatemp_param_10,
-	.param .f32 mdatatemp_param_11,
-	.param .u64 mdatatemp_param_12,
-	.param .f32 mdatatemp_param_13,
-	.param .u64 mdatatemp_param_14,
-	.param .f32 mdatatemp_param_15,
-	.param .u64 mdatatemp_param_16,
-	.param .f32 mdatatemp_param_17,
-	.param .u64 mdatatemp_param_18,
-	.param .u64 mdatatemp_param_19,
-	.param .u64 mdatatemp_param_20,
-	.param .f32 mdatatemp_param_21,
-	.param .f32 mdatatemp_param_22,
-	.param .f32 mdatatemp_param_23,
-	.param .u32 mdatatemp_param_24
+.visible .entry addspin2beff(
+	.param .u64 addspin2beff_param_0,
+	.param .u64 addspin2beff_param_1,
+	.param .u64 addspin2beff_param_2,
+	.param .u64 addspin2beff_param_3,
+	.param .u64 addspin2beff_param_4,
+	.param .u64 addspin2beff_param_5,
+	.param .u64 addspin2beff_param_6,
+	.param .u64 addspin2beff_param_7,
+	.param .u64 addspin2beff_param_8,
+	.param .u64 addspin2beff_param_9,
+	.param .f32 addspin2beff_param_10,
+	.param .f32 addspin2beff_param_11,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_20,
+	.param .f32 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_22,
+	.param .f32 addspin2beff_param_23,
+	.param .u32 addspin2beff_param_24
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -4787,31 +4787,31 @@ BB0_71:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd25, [mdatatemp_param_0];
-	ld.param.u64 	%rd26, [mdatatemp_param_1];
-	ld.param.u64 	%rd27, [mdatatemp_param_2];
-	ld.param.u64 	%rd35, [mdatatemp_param_3];
-	ld.param.u64 	%rd36, [mdatatemp_param_4];
-	ld.param.u64 	%rd37, [mdatatemp_param_5];
-	ld.param.u64 	%rd38, [mdatatemp_param_6];
-	ld.param.u64 	%rd39, [mdatatemp_param_7];
-	ld.param.u64 	%rd40, [mdatatemp_param_8];
-	ld.param.u64 	%rd28, [mdatatemp_param_9];
-	ld.param.f32 	%f169, [mdatatemp_param_10];
-	ld.param.f32 	%f61, [mdatatemp_param_11];
-	ld.param.u64 	%rd29, [mdatatemp_param_12];
-	ld.param.f32 	%f170, [mdatatemp_param_13];
-	ld.param.u64 	%rd30, [mdatatemp_param_14];
-	ld.param.f32 	%f171, [mdatatemp_param_15];
-	ld.param.u64 	%rd31, [mdatatemp_param_16];
-	ld.param.f32 	%f172, [mdatatemp_param_17];
-	ld.param.u64 	%rd32, [mdatatemp_param_18];
-	ld.param.u64 	%rd33, [mdatatemp_param_19];
-	ld.param.u64 	%rd34, [mdatatemp_param_20];
-	ld.param.f32 	%f65, [mdatatemp_param_21];
-	ld.param.f32 	%f66, [mdatatemp_param_22];
-	ld.param.f32 	%f67, [mdatatemp_param_23];
-	ld.param.u32 	%r83, [mdatatemp_param_24];
+	ld.param.u64 	%rd25, [addspin2beff_param_0];
+	ld.param.u64 	%rd26, [addspin2beff_param_1];
+	ld.param.u64 	%rd27, [addspin2beff_param_2];
+	ld.param.u64 	%rd35, [addspin2beff_param_3];
+	ld.param.u64 	%rd36, [addspin2beff_param_4];
+	ld.param.u64 	%rd37, [addspin2beff_param_5];
+	ld.param.u64 	%rd38, [addspin2beff_param_6];
+	ld.param.u64 	%rd39, [addspin2beff_param_7];
+	ld.param.u64 	%rd40, [addspin2beff_param_8];
+	ld.param.u64 	%rd28, [addspin2beff_param_9];
+	ld.param.f32 	%f169, [addspin2beff_param_10];
+	ld.param.f32 	%f61, [addspin2beff_param_11];
+	ld.param.u64 	%rd29, [addspin2beff_param_12];
+	ld.param.f32 	%f170, [addspin2beff_param_13];
+	ld.param.u64 	%rd30, [addspin2beff_param_14];
+	ld.param.f32 	%f171, [addspin2beff_param_15];
+	ld.param.u64 	%rd31, [addspin2beff_param_16];
+	ld.param.f32 	%f172, [addspin2beff_param_17];
+	ld.param.u64 	%rd32, [addspin2beff_param_18];
+	ld.param.u64 	%rd33, [addspin2beff_param_19];
+	ld.param.u64 	%rd34, [addspin2beff_param_20];
+	ld.param.f32 	%f65, [addspin2beff_param_21];
+	ld.param.f32 	%f66, [addspin2beff_param_22];
+	ld.param.f32 	%f67, [addspin2beff_param_23];
+	ld.param.u32 	%r83, [addspin2beff_param_24];
 	cvta.to.global.u64 	%rd1, %rd40;
 	cvta.to.global.u64 	%rd2, %rd39;
 	cvta.to.global.u64 	%rd3, %rd38;
@@ -5396,40 +5396,40 @@ BB0_71:
 
 
 `
-   mdatatemp_ptx_70 = `
+   addspin2beff_ptx_70 = `
 .version 6.4
 .target sm_70
 .address_size 64
 
-	// .globl	mdatatemp
+	// .globl	addspin2beff
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry mdatatemp(
-	.param .u64 mdatatemp_param_0,
-	.param .u64 mdatatemp_param_1,
-	.param .u64 mdatatemp_param_2,
-	.param .u64 mdatatemp_param_3,
-	.param .u64 mdatatemp_param_4,
-	.param .u64 mdatatemp_param_5,
-	.param .u64 mdatatemp_param_6,
-	.param .u64 mdatatemp_param_7,
-	.param .u64 mdatatemp_param_8,
-	.param .u64 mdatatemp_param_9,
-	.param .f32 mdatatemp_param_10,
-	.param .f32 mdatatemp_param_11,
-	.param .u64 mdatatemp_param_12,
-	.param .f32 mdatatemp_param_13,
-	.param .u64 mdatatemp_param_14,
-	.param .f32 mdatatemp_param_15,
-	.param .u64 mdatatemp_param_16,
-	.param .f32 mdatatemp_param_17,
-	.param .u64 mdatatemp_param_18,
-	.param .u64 mdatatemp_param_19,
-	.param .u64 mdatatemp_param_20,
-	.param .f32 mdatatemp_param_21,
-	.param .f32 mdatatemp_param_22,
-	.param .f32 mdatatemp_param_23,
-	.param .u32 mdatatemp_param_24
+.visible .entry addspin2beff(
+	.param .u64 addspin2beff_param_0,
+	.param .u64 addspin2beff_param_1,
+	.param .u64 addspin2beff_param_2,
+	.param .u64 addspin2beff_param_3,
+	.param .u64 addspin2beff_param_4,
+	.param .u64 addspin2beff_param_5,
+	.param .u64 addspin2beff_param_6,
+	.param .u64 addspin2beff_param_7,
+	.param .u64 addspin2beff_param_8,
+	.param .u64 addspin2beff_param_9,
+	.param .f32 addspin2beff_param_10,
+	.param .f32 addspin2beff_param_11,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_20,
+	.param .f32 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_22,
+	.param .f32 addspin2beff_param_23,
+	.param .u32 addspin2beff_param_24
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -5443,31 +5443,31 @@ BB0_71:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd25, [mdatatemp_param_0];
-	ld.param.u64 	%rd26, [mdatatemp_param_1];
-	ld.param.u64 	%rd27, [mdatatemp_param_2];
-	ld.param.u64 	%rd35, [mdatatemp_param_3];
-	ld.param.u64 	%rd36, [mdatatemp_param_4];
-	ld.param.u64 	%rd37, [mdatatemp_param_5];
-	ld.param.u64 	%rd38, [mdatatemp_param_6];
-	ld.param.u64 	%rd39, [mdatatemp_param_7];
-	ld.param.u64 	%rd40, [mdatatemp_param_8];
-	ld.param.u64 	%rd28, [mdatatemp_param_9];
-	ld.param.f32 	%f169, [mdatatemp_param_10];
-	ld.param.f32 	%f61, [mdatatemp_param_11];
-	ld.param.u64 	%rd29, [mdatatemp_param_12];
-	ld.param.f32 	%f170, [mdatatemp_param_13];
-	ld.param.u64 	%rd30, [mdatatemp_param_14];
-	ld.param.f32 	%f171, [mdatatemp_param_15];
-	ld.param.u64 	%rd31, [mdatatemp_param_16];
-	ld.param.f32 	%f172, [mdatatemp_param_17];
-	ld.param.u64 	%rd32, [mdatatemp_param_18];
-	ld.param.u64 	%rd33, [mdatatemp_param_19];
-	ld.param.u64 	%rd34, [mdatatemp_param_20];
-	ld.param.f32 	%f65, [mdatatemp_param_21];
-	ld.param.f32 	%f66, [mdatatemp_param_22];
-	ld.param.f32 	%f67, [mdatatemp_param_23];
-	ld.param.u32 	%r83, [mdatatemp_param_24];
+	ld.param.u64 	%rd25, [addspin2beff_param_0];
+	ld.param.u64 	%rd26, [addspin2beff_param_1];
+	ld.param.u64 	%rd27, [addspin2beff_param_2];
+	ld.param.u64 	%rd35, [addspin2beff_param_3];
+	ld.param.u64 	%rd36, [addspin2beff_param_4];
+	ld.param.u64 	%rd37, [addspin2beff_param_5];
+	ld.param.u64 	%rd38, [addspin2beff_param_6];
+	ld.param.u64 	%rd39, [addspin2beff_param_7];
+	ld.param.u64 	%rd40, [addspin2beff_param_8];
+	ld.param.u64 	%rd28, [addspin2beff_param_9];
+	ld.param.f32 	%f169, [addspin2beff_param_10];
+	ld.param.f32 	%f61, [addspin2beff_param_11];
+	ld.param.u64 	%rd29, [addspin2beff_param_12];
+	ld.param.f32 	%f170, [addspin2beff_param_13];
+	ld.param.u64 	%rd30, [addspin2beff_param_14];
+	ld.param.f32 	%f171, [addspin2beff_param_15];
+	ld.param.u64 	%rd31, [addspin2beff_param_16];
+	ld.param.f32 	%f172, [addspin2beff_param_17];
+	ld.param.u64 	%rd32, [addspin2beff_param_18];
+	ld.param.u64 	%rd33, [addspin2beff_param_19];
+	ld.param.u64 	%rd34, [addspin2beff_param_20];
+	ld.param.f32 	%f65, [addspin2beff_param_21];
+	ld.param.f32 	%f66, [addspin2beff_param_22];
+	ld.param.f32 	%f67, [addspin2beff_param_23];
+	ld.param.u32 	%r83, [addspin2beff_param_24];
 	cvta.to.global.u64 	%rd1, %rd40;
 	cvta.to.global.u64 	%rd2, %rd39;
 	cvta.to.global.u64 	%rd3, %rd38;
@@ -6052,40 +6052,40 @@ BB0_71:
 
 
 `
-   mdatatemp_ptx_75 = `
+   addspin2beff_ptx_75 = `
 .version 6.4
 .target sm_75
 .address_size 64
 
-	// .globl	mdatatemp
+	// .globl	addspin2beff
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry mdatatemp(
-	.param .u64 mdatatemp_param_0,
-	.param .u64 mdatatemp_param_1,
-	.param .u64 mdatatemp_param_2,
-	.param .u64 mdatatemp_param_3,
-	.param .u64 mdatatemp_param_4,
-	.param .u64 mdatatemp_param_5,
-	.param .u64 mdatatemp_param_6,
-	.param .u64 mdatatemp_param_7,
-	.param .u64 mdatatemp_param_8,
-	.param .u64 mdatatemp_param_9,
-	.param .f32 mdatatemp_param_10,
-	.param .f32 mdatatemp_param_11,
-	.param .u64 mdatatemp_param_12,
-	.param .f32 mdatatemp_param_13,
-	.param .u64 mdatatemp_param_14,
-	.param .f32 mdatatemp_param_15,
-	.param .u64 mdatatemp_param_16,
-	.param .f32 mdatatemp_param_17,
-	.param .u64 mdatatemp_param_18,
-	.param .u64 mdatatemp_param_19,
-	.param .u64 mdatatemp_param_20,
-	.param .f32 mdatatemp_param_21,
-	.param .f32 mdatatemp_param_22,
-	.param .f32 mdatatemp_param_23,
-	.param .u32 mdatatemp_param_24
+.visible .entry addspin2beff(
+	.param .u64 addspin2beff_param_0,
+	.param .u64 addspin2beff_param_1,
+	.param .u64 addspin2beff_param_2,
+	.param .u64 addspin2beff_param_3,
+	.param .u64 addspin2beff_param_4,
+	.param .u64 addspin2beff_param_5,
+	.param .u64 addspin2beff_param_6,
+	.param .u64 addspin2beff_param_7,
+	.param .u64 addspin2beff_param_8,
+	.param .u64 addspin2beff_param_9,
+	.param .f32 addspin2beff_param_10,
+	.param .f32 addspin2beff_param_11,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_20,
+	.param .f32 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_22,
+	.param .f32 addspin2beff_param_23,
+	.param .u32 addspin2beff_param_24
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -6099,31 +6099,31 @@ BB0_71:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd25, [mdatatemp_param_0];
-	ld.param.u64 	%rd26, [mdatatemp_param_1];
-	ld.param.u64 	%rd27, [mdatatemp_param_2];
-	ld.param.u64 	%rd35, [mdatatemp_param_3];
-	ld.param.u64 	%rd36, [mdatatemp_param_4];
-	ld.param.u64 	%rd37, [mdatatemp_param_5];
-	ld.param.u64 	%rd38, [mdatatemp_param_6];
-	ld.param.u64 	%rd39, [mdatatemp_param_7];
-	ld.param.u64 	%rd40, [mdatatemp_param_8];
-	ld.param.u64 	%rd28, [mdatatemp_param_9];
-	ld.param.f32 	%f169, [mdatatemp_param_10];
-	ld.param.f32 	%f61, [mdatatemp_param_11];
-	ld.param.u64 	%rd29, [mdatatemp_param_12];
-	ld.param.f32 	%f170, [mdatatemp_param_13];
-	ld.param.u64 	%rd30, [mdatatemp_param_14];
-	ld.param.f32 	%f171, [mdatatemp_param_15];
-	ld.param.u64 	%rd31, [mdatatemp_param_16];
-	ld.param.f32 	%f172, [mdatatemp_param_17];
-	ld.param.u64 	%rd32, [mdatatemp_param_18];
-	ld.param.u64 	%rd33, [mdatatemp_param_19];
-	ld.param.u64 	%rd34, [mdatatemp_param_20];
-	ld.param.f32 	%f65, [mdatatemp_param_21];
-	ld.param.f32 	%f66, [mdatatemp_param_22];
-	ld.param.f32 	%f67, [mdatatemp_param_23];
-	ld.param.u32 	%r83, [mdatatemp_param_24];
+	ld.param.u64 	%rd25, [addspin2beff_param_0];
+	ld.param.u64 	%rd26, [addspin2beff_param_1];
+	ld.param.u64 	%rd27, [addspin2beff_param_2];
+	ld.param.u64 	%rd35, [addspin2beff_param_3];
+	ld.param.u64 	%rd36, [addspin2beff_param_4];
+	ld.param.u64 	%rd37, [addspin2beff_param_5];
+	ld.param.u64 	%rd38, [addspin2beff_param_6];
+	ld.param.u64 	%rd39, [addspin2beff_param_7];
+	ld.param.u64 	%rd40, [addspin2beff_param_8];
+	ld.param.u64 	%rd28, [addspin2beff_param_9];
+	ld.param.f32 	%f169, [addspin2beff_param_10];
+	ld.param.f32 	%f61, [addspin2beff_param_11];
+	ld.param.u64 	%rd29, [addspin2beff_param_12];
+	ld.param.f32 	%f170, [addspin2beff_param_13];
+	ld.param.u64 	%rd30, [addspin2beff_param_14];
+	ld.param.f32 	%f171, [addspin2beff_param_15];
+	ld.param.u64 	%rd31, [addspin2beff_param_16];
+	ld.param.f32 	%f172, [addspin2beff_param_17];
+	ld.param.u64 	%rd32, [addspin2beff_param_18];
+	ld.param.u64 	%rd33, [addspin2beff_param_19];
+	ld.param.u64 	%rd34, [addspin2beff_param_20];
+	ld.param.f32 	%f65, [addspin2beff_param_21];
+	ld.param.f32 	%f66, [addspin2beff_param_22];
+	ld.param.f32 	%f67, [addspin2beff_param_23];
+	ld.param.u32 	%r83, [addspin2beff_param_24];
 	cvta.to.global.u64 	%rd1, %rd40;
 	cvta.to.global.u64 	%rd2, %rd39;
 	cvta.to.global.u64 	%rd3, %rd38;

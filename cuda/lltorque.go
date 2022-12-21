@@ -41,7 +41,7 @@ func CalcTempTorque(dst_slice, m, sin_sum, cos_sum *data.Slice, msat, wc, brms M
 	size := mesh.CellSize()
 	vol := size[X] * size[Y] * size[Z]
 
-	k_mdatatemp_async(dst_slice.DevPtr(X), dst_slice.DevPtr(Y), dst_slice.DevPtr(Z),
+	k_addspin2beff_async(dst_slice.DevPtr(X), dst_slice.DevPtr(Y), dst_slice.DevPtr(Z),
 		sin_sum.DevPtr(X), sin_sum.DevPtr(Y), sin_sum.DevPtr(Z),
 		cos_sum.DevPtr(X), cos_sum.DevPtr(Y), cos_sum.DevPtr(Z),
 		wc.DevPtr(0), wc.Mul(0), msat.Mul(0),

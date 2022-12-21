@@ -189,13 +189,14 @@ func AddLLTimeTorque(dst *data.Slice) {
 	if !DisableTimeEvolutionTorque {
 
 		size := M.Buffer().Size()
+		comp := M.Buffer().NComp()
 
 		if sin_slice.DevPtr(0) == nil {
-			sin_slice = cuda.NewSlice(3, size)
+			sin_slice = cuda.NewSlice(comp, size)
 		}
 
 		if cos_slice.DevPtr(0) == nil {
-			cos_slice = cuda.NewSlice(3, size)
+			cos_slice = cuda.NewSlice(comp, size)
 		}
 
 		wc_slice := Wc.MSlice()

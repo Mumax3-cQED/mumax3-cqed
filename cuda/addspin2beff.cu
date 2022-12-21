@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 extern "C" __global__ void
-mdatatemp(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__ tz,
+addspin2beff(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__ tz,
           float* __restrict__ dst_sin_x,
           float* __restrict__ dst_sin_y,
           float* __restrict__ dst_sin_z,
