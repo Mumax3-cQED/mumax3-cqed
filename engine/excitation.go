@@ -67,21 +67,6 @@ func (e *Excitation) AddTo(dst *data.Slice) {
 	}
 }
 
-func (e *Excitation) SubTo(dst *data.Slice) {
-	if !e.perRegion.isZero() {
-		cuda.RegionSubV(dst, e.perRegion.gpuLUT(), regions.Gpu())
-	}
-
-	for _, t := range e.extraTerms {
-		var mul float32 = 1
-		if t.mul != nil {
-			mul = float32(t.mul())
-		}
-
-		cuda.Msub2(dst, dst, t.mask, 1, mul)
-	}
-}
-
 func (e *Excitation) isZero() bool {
 	return e.perRegion.isZero() && len(e.extraTerms) == 0
 }

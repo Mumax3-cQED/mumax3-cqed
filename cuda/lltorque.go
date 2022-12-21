@@ -34,7 +34,8 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z), N, cfg)
 }
 
-func CalcTempTorque(dst_slice, m, sin_sum, cos_sum *data.Slice, msat, wc, brms MSlice, ctime float64, deltah float32, mesh *data.Mesh) {
+// Apply new value Spin Torque to Beff
+func CalcSpinTorque(dst_slice, m, sin_sum, cos_sum *data.Slice, msat, wc, brms MSlice, ctime float64, deltah float32, mesh *data.Mesh) {
 
 	N := dst_slice.Len()
 	cfg := make1DConf(N)

@@ -208,7 +208,7 @@ func AddLLTimeTorque(dst *data.Slice) {
 		msat := Msat.MSlice()
 		defer msat.Recycle()
 
-		cuda.CalcTempTorque(dst, M.Buffer(), sin_slice, cos_slice, msat, wc_slice, brms_slice, ctime, deltah, Mesh())
+		cuda.CalcSpinTorque(dst, M.Buffer(), sin_slice, cos_slice, msat, wc_slice, brms_slice, ctime, deltah, Mesh())
 	}
 }
 
