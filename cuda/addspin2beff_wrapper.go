@@ -20,6 +20,9 @@ type addspin2beff_args_t struct{
 	 arg_tx unsafe.Pointer
 	 arg_ty unsafe.Pointer
 	 arg_tz unsafe.Pointer
+	 arg_mx unsafe.Pointer
+	 arg_my unsafe.Pointer
+	 arg_mz unsafe.Pointer
 	 arg_dst_sin_x unsafe.Pointer
 	 arg_dst_sin_y unsafe.Pointer
 	 arg_dst_sin_z unsafe.Pointer
@@ -36,9 +39,6 @@ type addspin2beff_args_t struct{
 	 arg_brmsy_mul float32
 	 arg_brms_z unsafe.Pointer
 	 arg_brmsz_mul float32
-	 arg_mx unsafe.Pointer
-	 arg_my unsafe.Pointer
-	 arg_mz unsafe.Pointer
 	 arg_delta_time float32
 	 arg_ctime float32
 	 arg_vol float32
@@ -58,25 +58,25 @@ func init(){
 	 addspin2beff_args.argptr[0] = unsafe.Pointer(&addspin2beff_args.arg_tx)
 	 addspin2beff_args.argptr[1] = unsafe.Pointer(&addspin2beff_args.arg_ty)
 	 addspin2beff_args.argptr[2] = unsafe.Pointer(&addspin2beff_args.arg_tz)
-	 addspin2beff_args.argptr[3] = unsafe.Pointer(&addspin2beff_args.arg_dst_sin_x)
-	 addspin2beff_args.argptr[4] = unsafe.Pointer(&addspin2beff_args.arg_dst_sin_y)
-	 addspin2beff_args.argptr[5] = unsafe.Pointer(&addspin2beff_args.arg_dst_sin_z)
-	 addspin2beff_args.argptr[6] = unsafe.Pointer(&addspin2beff_args.arg_dst_cos_x)
-	 addspin2beff_args.argptr[7] = unsafe.Pointer(&addspin2beff_args.arg_dst_cos_y)
-	 addspin2beff_args.argptr[8] = unsafe.Pointer(&addspin2beff_args.arg_dst_cos_z)
-	 addspin2beff_args.argptr[9] = unsafe.Pointer(&addspin2beff_args.arg_wc)
-	 addspin2beff_args.argptr[10] = unsafe.Pointer(&addspin2beff_args.arg_wc_mul)
-	 addspin2beff_args.argptr[11] = unsafe.Pointer(&addspin2beff_args.arg_msat)
-	 addspin2beff_args.argptr[12] = unsafe.Pointer(&addspin2beff_args.arg_msat_mul)
-	 addspin2beff_args.argptr[13] = unsafe.Pointer(&addspin2beff_args.arg_brms_x)
-	 addspin2beff_args.argptr[14] = unsafe.Pointer(&addspin2beff_args.arg_brmsx_mul)
-	 addspin2beff_args.argptr[15] = unsafe.Pointer(&addspin2beff_args.arg_brms_y)
-	 addspin2beff_args.argptr[16] = unsafe.Pointer(&addspin2beff_args.arg_brmsy_mul)
-	 addspin2beff_args.argptr[17] = unsafe.Pointer(&addspin2beff_args.arg_brms_z)
-	 addspin2beff_args.argptr[18] = unsafe.Pointer(&addspin2beff_args.arg_brmsz_mul)
-	 addspin2beff_args.argptr[19] = unsafe.Pointer(&addspin2beff_args.arg_mx)
-	 addspin2beff_args.argptr[20] = unsafe.Pointer(&addspin2beff_args.arg_my)
-	 addspin2beff_args.argptr[21] = unsafe.Pointer(&addspin2beff_args.arg_mz)
+	 addspin2beff_args.argptr[3] = unsafe.Pointer(&addspin2beff_args.arg_mx)
+	 addspin2beff_args.argptr[4] = unsafe.Pointer(&addspin2beff_args.arg_my)
+	 addspin2beff_args.argptr[5] = unsafe.Pointer(&addspin2beff_args.arg_mz)
+	 addspin2beff_args.argptr[6] = unsafe.Pointer(&addspin2beff_args.arg_dst_sin_x)
+	 addspin2beff_args.argptr[7] = unsafe.Pointer(&addspin2beff_args.arg_dst_sin_y)
+	 addspin2beff_args.argptr[8] = unsafe.Pointer(&addspin2beff_args.arg_dst_sin_z)
+	 addspin2beff_args.argptr[9] = unsafe.Pointer(&addspin2beff_args.arg_dst_cos_x)
+	 addspin2beff_args.argptr[10] = unsafe.Pointer(&addspin2beff_args.arg_dst_cos_y)
+	 addspin2beff_args.argptr[11] = unsafe.Pointer(&addspin2beff_args.arg_dst_cos_z)
+	 addspin2beff_args.argptr[12] = unsafe.Pointer(&addspin2beff_args.arg_wc)
+	 addspin2beff_args.argptr[13] = unsafe.Pointer(&addspin2beff_args.arg_wc_mul)
+	 addspin2beff_args.argptr[14] = unsafe.Pointer(&addspin2beff_args.arg_msat)
+	 addspin2beff_args.argptr[15] = unsafe.Pointer(&addspin2beff_args.arg_msat_mul)
+	 addspin2beff_args.argptr[16] = unsafe.Pointer(&addspin2beff_args.arg_brms_x)
+	 addspin2beff_args.argptr[17] = unsafe.Pointer(&addspin2beff_args.arg_brmsx_mul)
+	 addspin2beff_args.argptr[18] = unsafe.Pointer(&addspin2beff_args.arg_brms_y)
+	 addspin2beff_args.argptr[19] = unsafe.Pointer(&addspin2beff_args.arg_brmsy_mul)
+	 addspin2beff_args.argptr[20] = unsafe.Pointer(&addspin2beff_args.arg_brms_z)
+	 addspin2beff_args.argptr[21] = unsafe.Pointer(&addspin2beff_args.arg_brmsz_mul)
 	 addspin2beff_args.argptr[22] = unsafe.Pointer(&addspin2beff_args.arg_delta_time)
 	 addspin2beff_args.argptr[23] = unsafe.Pointer(&addspin2beff_args.arg_ctime)
 	 addspin2beff_args.argptr[24] = unsafe.Pointer(&addspin2beff_args.arg_vol)
@@ -87,7 +87,7 @@ func init(){
 	 }
 
 // Wrapper for addspin2beff CUDA kernel, asynchronous.
-func k_addspin2beff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, dst_sin_x unsafe.Pointer, dst_sin_y unsafe.Pointer, dst_sin_z unsafe.Pointer, dst_cos_x unsafe.Pointer, dst_cos_y unsafe.Pointer, dst_cos_z unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, msat unsafe.Pointer, msat_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, delta_time float32, ctime float32, vol float32, Nx int, Ny int, Nz int, PBC byte,  cfg *config) {
+func k_addspin2beff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, dst_sin_x unsafe.Pointer, dst_sin_y unsafe.Pointer, dst_sin_z unsafe.Pointer, dst_cos_x unsafe.Pointer, dst_cos_y unsafe.Pointer, dst_cos_z unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, msat unsafe.Pointer, msat_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, delta_time float32, ctime float32, vol float32, Nx int, Ny int, Nz int, PBC byte,  cfg *config) {
 	if Synchronous{ // debug
 		Sync()
 		timer.Start("addspin2beff")
@@ -103,6 +103,9 @@ func k_addspin2beff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Poin
 	 addspin2beff_args.arg_tx = tx
 	 addspin2beff_args.arg_ty = ty
 	 addspin2beff_args.arg_tz = tz
+	 addspin2beff_args.arg_mx = mx
+	 addspin2beff_args.arg_my = my
+	 addspin2beff_args.arg_mz = mz
 	 addspin2beff_args.arg_dst_sin_x = dst_sin_x
 	 addspin2beff_args.arg_dst_sin_y = dst_sin_y
 	 addspin2beff_args.arg_dst_sin_z = dst_sin_z
@@ -119,9 +122,6 @@ func k_addspin2beff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Poin
 	 addspin2beff_args.arg_brmsy_mul = brmsy_mul
 	 addspin2beff_args.arg_brms_z = brms_z
 	 addspin2beff_args.arg_brmsz_mul = brmsz_mul
-	 addspin2beff_args.arg_mx = mx
-	 addspin2beff_args.arg_my = my
-	 addspin2beff_args.arg_mz = mz
 	 addspin2beff_args.arg_delta_time = delta_time
 	 addspin2beff_args.arg_ctime = ctime
 	 addspin2beff_args.arg_vol = vol
@@ -174,18 +174,18 @@ const(
 	.param .u64 addspin2beff_param_7,
 	.param .u64 addspin2beff_param_8,
 	.param .u64 addspin2beff_param_9,
-	.param .f32 addspin2beff_param_10,
+	.param .u64 addspin2beff_param_10,
 	.param .u64 addspin2beff_param_11,
-	.param .f32 addspin2beff_param_12,
-	.param .u64 addspin2beff_param_13,
-	.param .f32 addspin2beff_param_14,
-	.param .u64 addspin2beff_param_15,
-	.param .f32 addspin2beff_param_16,
-	.param .u64 addspin2beff_param_17,
-	.param .f32 addspin2beff_param_18,
-	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .f32 addspin2beff_param_19,
 	.param .u64 addspin2beff_param_20,
-	.param .u64 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_21,
 	.param .f32 addspin2beff_param_22,
 	.param .f32 addspin2beff_param_23,
 	.param .f32 addspin2beff_param_24,
@@ -217,18 +217,18 @@ const(
 	ld.param.u64 	%rd26, [addspin2beff_param_7];
 	ld.param.u64 	%rd27, [addspin2beff_param_8];
 	ld.param.u64 	%rd28, [addspin2beff_param_9];
-	ld.param.f32 	%f307, [addspin2beff_param_10];
-	ld.param.u64 	%rd29, [addspin2beff_param_11];
-	ld.param.f32 	%f308, [addspin2beff_param_12];
-	ld.param.u64 	%rd30, [addspin2beff_param_13];
-	ld.param.f32 	%f309, [addspin2beff_param_14];
-	ld.param.u64 	%rd31, [addspin2beff_param_15];
-	ld.param.f32 	%f310, [addspin2beff_param_16];
-	ld.param.u64 	%rd32, [addspin2beff_param_17];
-	ld.param.f32 	%f311, [addspin2beff_param_18];
-	ld.param.u64 	%rd33, [addspin2beff_param_19];
-	ld.param.u64 	%rd34, [addspin2beff_param_20];
-	ld.param.u64 	%rd35, [addspin2beff_param_21];
+	ld.param.u64 	%rd29, [addspin2beff_param_10];
+	ld.param.u64 	%rd30, [addspin2beff_param_11];
+	ld.param.u64 	%rd31, [addspin2beff_param_12];
+	ld.param.f32 	%f307, [addspin2beff_param_13];
+	ld.param.u64 	%rd32, [addspin2beff_param_14];
+	ld.param.f32 	%f308, [addspin2beff_param_15];
+	ld.param.u64 	%rd33, [addspin2beff_param_16];
+	ld.param.f32 	%f309, [addspin2beff_param_17];
+	ld.param.u64 	%rd34, [addspin2beff_param_18];
+	ld.param.f32 	%f310, [addspin2beff_param_19];
+	ld.param.u64 	%rd35, [addspin2beff_param_20];
+	ld.param.f32 	%f311, [addspin2beff_param_21];
 	ld.param.f32 	%f78, [addspin2beff_param_22];
 	ld.param.f32 	%f79, [addspin2beff_param_23];
 	ld.param.f32 	%f80, [addspin2beff_param_24];
@@ -256,50 +256,50 @@ const(
 
 	mad.lo.s32 	%r99, %r3, %r88, %r2;
 	mad.lo.s32 	%r4, %r99, %r87, %r1;
-	setp.eq.s64	%p6, %rd28, 0;
+	setp.eq.s64	%p6, %rd31, 0;
 	@%p6 bra 	BB0_3;
 
-	cvta.to.global.u64 	%rd36, %rd28;
+	cvta.to.global.u64 	%rd36, %rd31;
 	mul.wide.s32 	%rd37, %r4, 4;
 	add.s64 	%rd38, %rd36, %rd37;
 	ld.global.f32 	%f81, [%rd38];
 	mul.f32 	%f307, %f81, %f307;
 
 BB0_3:
-	setp.eq.s64	%p7, %rd29, 0;
+	setp.eq.s64	%p7, %rd32, 0;
 	@%p7 bra 	BB0_5;
 
-	cvta.to.global.u64 	%rd39, %rd29;
+	cvta.to.global.u64 	%rd39, %rd32;
 	mul.wide.s32 	%rd40, %r4, 4;
 	add.s64 	%rd41, %rd39, %rd40;
 	ld.global.f32 	%f82, [%rd41];
 	mul.f32 	%f308, %f82, %f308;
 
 BB0_5:
-	setp.eq.s64	%p8, %rd30, 0;
+	setp.eq.s64	%p8, %rd33, 0;
 	@%p8 bra 	BB0_7;
 
-	cvta.to.global.u64 	%rd42, %rd30;
+	cvta.to.global.u64 	%rd42, %rd33;
 	mul.wide.s32 	%rd43, %r4, 4;
 	add.s64 	%rd44, %rd42, %rd43;
 	ld.global.f32 	%f83, [%rd44];
 	mul.f32 	%f309, %f83, %f309;
 
 BB0_7:
-	setp.eq.s64	%p9, %rd31, 0;
+	setp.eq.s64	%p9, %rd34, 0;
 	@%p9 bra 	BB0_9;
 
-	cvta.to.global.u64 	%rd45, %rd31;
+	cvta.to.global.u64 	%rd45, %rd34;
 	mul.wide.s32 	%rd46, %r4, 4;
 	add.s64 	%rd47, %rd45, %rd46;
 	ld.global.f32 	%f84, [%rd47];
 	mul.f32 	%f310, %f84, %f310;
 
 BB0_9:
-	setp.eq.s64	%p10, %rd32, 0;
+	setp.eq.s64	%p10, %rd35, 0;
 	@%p10 bra 	BB0_11;
 
-	cvta.to.global.u64 	%rd48, %rd32;
+	cvta.to.global.u64 	%rd48, %rd35;
 	mul.wide.s32 	%rd49, %r4, 4;
 	add.s64 	%rd50, %rd48, %rd49;
 	ld.global.f32 	%f85, [%rd50];
@@ -487,8 +487,8 @@ BB0_32:
 	fma.rn.f32 	%f316, %f316, %f108, %f107;
 
 BB0_34:
-	cvta.to.global.u64 	%rd7, %rd33;
-	setp.eq.s64	%p24, %rd33, 0;
+	cvta.to.global.u64 	%rd7, %rd22;
+	setp.eq.s64	%p24, %rd22, 0;
 	mov.f32 	%f318, %f316;
 	@%p24 bra 	BB0_36;
 
@@ -498,14 +498,14 @@ BB0_34:
 	mul.f32 	%f318, %f316, %f109;
 
 BB0_36:
-	cvta.to.global.u64 	%rd58, %rd22;
+	cvta.to.global.u64 	%rd58, %rd25;
 	mul.wide.s32 	%rd59, %r4, 4;
 	add.s64 	%rd60, %rd58, %rd59;
 	ld.global.f32 	%f110, [%rd60];
 	add.f32 	%f111, %f318, %f110;
 	st.global.f32 	[%rd60], %f111;
-	cvta.to.global.u64 	%rd8, %rd34;
-	setp.eq.s64	%p25, %rd34, 0;
+	cvta.to.global.u64 	%rd8, %rd23;
+	setp.eq.s64	%p25, %rd23, 0;
 	mov.f32 	%f319, %f316;
 	@%p25 bra 	BB0_38;
 
@@ -514,13 +514,13 @@ BB0_36:
 	mul.f32 	%f319, %f316, %f112;
 
 BB0_38:
-	cvta.to.global.u64 	%rd63, %rd23;
+	cvta.to.global.u64 	%rd63, %rd26;
 	add.s64 	%rd65, %rd63, %rd59;
 	ld.global.f32 	%f113, [%rd65];
 	add.f32 	%f114, %f319, %f113;
 	st.global.f32 	[%rd65], %f114;
-	cvta.to.global.u64 	%rd9, %rd35;
-	setp.eq.s64	%p26, %rd35, 0;
+	cvta.to.global.u64 	%rd9, %rd24;
+	setp.eq.s64	%p26, %rd24, 0;
 	mov.f32 	%f320, %f316;
 	@%p26 bra 	BB0_40;
 
@@ -529,7 +529,7 @@ BB0_38:
 	mul.f32 	%f320, %f316, %f115;
 
 BB0_40:
-	cvta.to.global.u64 	%rd68, %rd24;
+	cvta.to.global.u64 	%rd68, %rd27;
 	add.s64 	%rd70, %rd68, %rd59;
 	ld.global.f32 	%f116, [%rd70];
 	add.f32 	%f117, %f320, %f116;
@@ -717,7 +717,7 @@ BB0_63:
 	mul.f32 	%f327, %f325, %f141;
 
 BB0_65:
-	cvta.to.global.u64 	%rd79, %rd25;
+	cvta.to.global.u64 	%rd79, %rd28;
 	add.s64 	%rd81, %rd79, %rd59;
 	ld.global.f32 	%f142, [%rd81];
 	add.f32 	%f143, %f327, %f142;
@@ -730,7 +730,7 @@ BB0_65:
 	mul.f32 	%f328, %f325, %f144;
 
 BB0_67:
-	cvta.to.global.u64 	%rd85, %rd26;
+	cvta.to.global.u64 	%rd85, %rd29;
 	add.s64 	%rd87, %rd85, %rd59;
 	ld.global.f32 	%f145, [%rd87];
 	add.f32 	%f146, %f328, %f145;
@@ -743,7 +743,7 @@ BB0_67:
 	mul.f32 	%f329, %f325, %f147;
 
 BB0_69:
-	cvta.to.global.u64 	%rd91, %rd27;
+	cvta.to.global.u64 	%rd91, %rd30;
 	add.s64 	%rd93, %rd91, %rd59;
 	ld.global.f32 	%f148, [%rd93];
 	add.f32 	%f149, %f329, %f148;
@@ -1096,18 +1096,18 @@ BB0_87:
 	.param .u64 addspin2beff_param_7,
 	.param .u64 addspin2beff_param_8,
 	.param .u64 addspin2beff_param_9,
-	.param .f32 addspin2beff_param_10,
+	.param .u64 addspin2beff_param_10,
 	.param .u64 addspin2beff_param_11,
-	.param .f32 addspin2beff_param_12,
-	.param .u64 addspin2beff_param_13,
-	.param .f32 addspin2beff_param_14,
-	.param .u64 addspin2beff_param_15,
-	.param .f32 addspin2beff_param_16,
-	.param .u64 addspin2beff_param_17,
-	.param .f32 addspin2beff_param_18,
-	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .f32 addspin2beff_param_19,
 	.param .u64 addspin2beff_param_20,
-	.param .u64 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_21,
 	.param .f32 addspin2beff_param_22,
 	.param .f32 addspin2beff_param_23,
 	.param .f32 addspin2beff_param_24,
@@ -1131,25 +1131,25 @@ BB0_87:
 	ld.param.u64 	%rd28, [addspin2beff_param_0];
 	ld.param.u64 	%rd29, [addspin2beff_param_1];
 	ld.param.u64 	%rd30, [addspin2beff_param_2];
-	ld.param.u64 	%rd39, [addspin2beff_param_3];
-	ld.param.u64 	%rd40, [addspin2beff_param_4];
-	ld.param.u64 	%rd41, [addspin2beff_param_5];
-	ld.param.u64 	%rd42, [addspin2beff_param_6];
-	ld.param.u64 	%rd43, [addspin2beff_param_7];
-	ld.param.u64 	%rd44, [addspin2beff_param_8];
-	ld.param.u64 	%rd31, [addspin2beff_param_9];
-	ld.param.f32 	%f307, [addspin2beff_param_10];
-	ld.param.u64 	%rd32, [addspin2beff_param_11];
-	ld.param.f32 	%f308, [addspin2beff_param_12];
-	ld.param.u64 	%rd33, [addspin2beff_param_13];
-	ld.param.f32 	%f309, [addspin2beff_param_14];
-	ld.param.u64 	%rd34, [addspin2beff_param_15];
-	ld.param.f32 	%f310, [addspin2beff_param_16];
-	ld.param.u64 	%rd35, [addspin2beff_param_17];
-	ld.param.f32 	%f311, [addspin2beff_param_18];
-	ld.param.u64 	%rd36, [addspin2beff_param_19];
-	ld.param.u64 	%rd37, [addspin2beff_param_20];
-	ld.param.u64 	%rd38, [addspin2beff_param_21];
+	ld.param.u64 	%rd31, [addspin2beff_param_3];
+	ld.param.u64 	%rd32, [addspin2beff_param_4];
+	ld.param.u64 	%rd33, [addspin2beff_param_5];
+	ld.param.u64 	%rd39, [addspin2beff_param_6];
+	ld.param.u64 	%rd40, [addspin2beff_param_7];
+	ld.param.u64 	%rd41, [addspin2beff_param_8];
+	ld.param.u64 	%rd42, [addspin2beff_param_9];
+	ld.param.u64 	%rd43, [addspin2beff_param_10];
+	ld.param.u64 	%rd44, [addspin2beff_param_11];
+	ld.param.u64 	%rd34, [addspin2beff_param_12];
+	ld.param.f32 	%f307, [addspin2beff_param_13];
+	ld.param.u64 	%rd35, [addspin2beff_param_14];
+	ld.param.f32 	%f308, [addspin2beff_param_15];
+	ld.param.u64 	%rd36, [addspin2beff_param_16];
+	ld.param.f32 	%f309, [addspin2beff_param_17];
+	ld.param.u64 	%rd37, [addspin2beff_param_18];
+	ld.param.f32 	%f310, [addspin2beff_param_19];
+	ld.param.u64 	%rd38, [addspin2beff_param_20];
+	ld.param.f32 	%f311, [addspin2beff_param_21];
 	ld.param.f32 	%f78, [addspin2beff_param_22];
 	ld.param.f32 	%f79, [addspin2beff_param_23];
 	ld.param.f32 	%f80, [addspin2beff_param_24];
@@ -1183,50 +1183,50 @@ BB0_87:
 
 	mad.lo.s32 	%r102, %r3, %r91, %r2;
 	mad.lo.s32 	%r4, %r102, %r90, %r1;
-	setp.eq.s64	%p6, %rd31, 0;
+	setp.eq.s64	%p6, %rd34, 0;
 	@%p6 bra 	BB0_3;
 
-	cvta.to.global.u64 	%rd45, %rd31;
+	cvta.to.global.u64 	%rd45, %rd34;
 	mul.wide.s32 	%rd46, %r4, 4;
 	add.s64 	%rd47, %rd45, %rd46;
 	ld.global.nc.f32 	%f81, [%rd47];
 	mul.f32 	%f307, %f81, %f307;
 
 BB0_3:
-	setp.eq.s64	%p7, %rd32, 0;
+	setp.eq.s64	%p7, %rd35, 0;
 	@%p7 bra 	BB0_5;
 
-	cvta.to.global.u64 	%rd48, %rd32;
+	cvta.to.global.u64 	%rd48, %rd35;
 	mul.wide.s32 	%rd49, %r4, 4;
 	add.s64 	%rd50, %rd48, %rd49;
 	ld.global.nc.f32 	%f82, [%rd50];
 	mul.f32 	%f308, %f82, %f308;
 
 BB0_5:
-	setp.eq.s64	%p8, %rd33, 0;
+	setp.eq.s64	%p8, %rd36, 0;
 	@%p8 bra 	BB0_7;
 
-	cvta.to.global.u64 	%rd51, %rd33;
+	cvta.to.global.u64 	%rd51, %rd36;
 	mul.wide.s32 	%rd52, %r4, 4;
 	add.s64 	%rd53, %rd51, %rd52;
 	ld.global.nc.f32 	%f83, [%rd53];
 	mul.f32 	%f309, %f83, %f309;
 
 BB0_7:
-	setp.eq.s64	%p9, %rd34, 0;
+	setp.eq.s64	%p9, %rd37, 0;
 	@%p9 bra 	BB0_9;
 
-	cvta.to.global.u64 	%rd54, %rd34;
+	cvta.to.global.u64 	%rd54, %rd37;
 	mul.wide.s32 	%rd55, %r4, 4;
 	add.s64 	%rd56, %rd54, %rd55;
 	ld.global.nc.f32 	%f84, [%rd56];
 	mul.f32 	%f310, %f84, %f310;
 
 BB0_9:
-	setp.eq.s64	%p10, %rd35, 0;
+	setp.eq.s64	%p10, %rd38, 0;
 	@%p10 bra 	BB0_11;
 
-	cvta.to.global.u64 	%rd57, %rd35;
+	cvta.to.global.u64 	%rd57, %rd38;
 	mul.wide.s32 	%rd58, %r4, 4;
 	add.s64 	%rd59, %rd57, %rd58;
 	ld.global.nc.f32 	%f85, [%rd59];
@@ -1415,10 +1415,10 @@ BB0_32:
 	fma.rn.f32 	%f316, %f316, %f108, %f107;
 
 BB0_34:
-	cvta.to.global.u64 	%rd63, %rd36;
+	cvta.to.global.u64 	%rd63, %rd31;
 	mul.wide.s32 	%rd64, %r4, 4;
 	add.s64 	%rd14, %rd63, %rd64;
-	setp.eq.s64	%p24, %rd36, 0;
+	setp.eq.s64	%p24, %rd31, 0;
 	mov.f32 	%f318, %f316;
 	@%p24 bra 	BB0_36;
 
@@ -1426,13 +1426,13 @@ BB0_34:
 	mul.f32 	%f318, %f316, %f109;
 
 BB0_36:
-	cvta.to.global.u64 	%rd65, %rd37;
+	cvta.to.global.u64 	%rd65, %rd32;
 	add.s64 	%rd67, %rd6, %rd64;
 	ld.global.f32 	%f110, [%rd67];
 	add.f32 	%f111, %f318, %f110;
 	st.global.f32 	[%rd67], %f111;
 	add.s64 	%rd15, %rd65, %rd64;
-	setp.eq.s64	%p25, %rd37, 0;
+	setp.eq.s64	%p25, %rd32, 0;
 	mov.f32 	%f319, %f316;
 	@%p25 bra 	BB0_38;
 
@@ -1440,13 +1440,13 @@ BB0_36:
 	mul.f32 	%f319, %f316, %f112;
 
 BB0_38:
-	cvta.to.global.u64 	%rd68, %rd38;
+	cvta.to.global.u64 	%rd68, %rd33;
 	add.s64 	%rd70, %rd5, %rd64;
 	ld.global.f32 	%f113, [%rd70];
 	add.f32 	%f114, %f319, %f113;
 	st.global.f32 	[%rd70], %f114;
 	add.s64 	%rd16, %rd68, %rd64;
-	setp.eq.s64	%p26, %rd38, 0;
+	setp.eq.s64	%p26, %rd33, 0;
 	mov.f32 	%f320, %f316;
 	@%p26 bra 	BB0_40;
 
@@ -2015,18 +2015,18 @@ BB0_87:
 	.param .u64 addspin2beff_param_7,
 	.param .u64 addspin2beff_param_8,
 	.param .u64 addspin2beff_param_9,
-	.param .f32 addspin2beff_param_10,
+	.param .u64 addspin2beff_param_10,
 	.param .u64 addspin2beff_param_11,
-	.param .f32 addspin2beff_param_12,
-	.param .u64 addspin2beff_param_13,
-	.param .f32 addspin2beff_param_14,
-	.param .u64 addspin2beff_param_15,
-	.param .f32 addspin2beff_param_16,
-	.param .u64 addspin2beff_param_17,
-	.param .f32 addspin2beff_param_18,
-	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .f32 addspin2beff_param_19,
 	.param .u64 addspin2beff_param_20,
-	.param .u64 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_21,
 	.param .f32 addspin2beff_param_22,
 	.param .f32 addspin2beff_param_23,
 	.param .f32 addspin2beff_param_24,
@@ -2050,25 +2050,25 @@ BB0_87:
 	ld.param.u64 	%rd28, [addspin2beff_param_0];
 	ld.param.u64 	%rd29, [addspin2beff_param_1];
 	ld.param.u64 	%rd30, [addspin2beff_param_2];
-	ld.param.u64 	%rd39, [addspin2beff_param_3];
-	ld.param.u64 	%rd40, [addspin2beff_param_4];
-	ld.param.u64 	%rd41, [addspin2beff_param_5];
-	ld.param.u64 	%rd42, [addspin2beff_param_6];
-	ld.param.u64 	%rd43, [addspin2beff_param_7];
-	ld.param.u64 	%rd44, [addspin2beff_param_8];
-	ld.param.u64 	%rd31, [addspin2beff_param_9];
-	ld.param.f32 	%f307, [addspin2beff_param_10];
-	ld.param.u64 	%rd32, [addspin2beff_param_11];
-	ld.param.f32 	%f308, [addspin2beff_param_12];
-	ld.param.u64 	%rd33, [addspin2beff_param_13];
-	ld.param.f32 	%f309, [addspin2beff_param_14];
-	ld.param.u64 	%rd34, [addspin2beff_param_15];
-	ld.param.f32 	%f310, [addspin2beff_param_16];
-	ld.param.u64 	%rd35, [addspin2beff_param_17];
-	ld.param.f32 	%f311, [addspin2beff_param_18];
-	ld.param.u64 	%rd36, [addspin2beff_param_19];
-	ld.param.u64 	%rd37, [addspin2beff_param_20];
-	ld.param.u64 	%rd38, [addspin2beff_param_21];
+	ld.param.u64 	%rd31, [addspin2beff_param_3];
+	ld.param.u64 	%rd32, [addspin2beff_param_4];
+	ld.param.u64 	%rd33, [addspin2beff_param_5];
+	ld.param.u64 	%rd39, [addspin2beff_param_6];
+	ld.param.u64 	%rd40, [addspin2beff_param_7];
+	ld.param.u64 	%rd41, [addspin2beff_param_8];
+	ld.param.u64 	%rd42, [addspin2beff_param_9];
+	ld.param.u64 	%rd43, [addspin2beff_param_10];
+	ld.param.u64 	%rd44, [addspin2beff_param_11];
+	ld.param.u64 	%rd34, [addspin2beff_param_12];
+	ld.param.f32 	%f307, [addspin2beff_param_13];
+	ld.param.u64 	%rd35, [addspin2beff_param_14];
+	ld.param.f32 	%f308, [addspin2beff_param_15];
+	ld.param.u64 	%rd36, [addspin2beff_param_16];
+	ld.param.f32 	%f309, [addspin2beff_param_17];
+	ld.param.u64 	%rd37, [addspin2beff_param_18];
+	ld.param.f32 	%f310, [addspin2beff_param_19];
+	ld.param.u64 	%rd38, [addspin2beff_param_20];
+	ld.param.f32 	%f311, [addspin2beff_param_21];
 	ld.param.f32 	%f78, [addspin2beff_param_22];
 	ld.param.f32 	%f79, [addspin2beff_param_23];
 	ld.param.f32 	%f80, [addspin2beff_param_24];
@@ -2102,50 +2102,50 @@ BB0_87:
 
 	mad.lo.s32 	%r102, %r3, %r91, %r2;
 	mad.lo.s32 	%r4, %r102, %r90, %r1;
-	setp.eq.s64	%p6, %rd31, 0;
+	setp.eq.s64	%p6, %rd34, 0;
 	@%p6 bra 	BB0_3;
 
-	cvta.to.global.u64 	%rd45, %rd31;
+	cvta.to.global.u64 	%rd45, %rd34;
 	mul.wide.s32 	%rd46, %r4, 4;
 	add.s64 	%rd47, %rd45, %rd46;
 	ld.global.nc.f32 	%f81, [%rd47];
 	mul.f32 	%f307, %f81, %f307;
 
 BB0_3:
-	setp.eq.s64	%p7, %rd32, 0;
+	setp.eq.s64	%p7, %rd35, 0;
 	@%p7 bra 	BB0_5;
 
-	cvta.to.global.u64 	%rd48, %rd32;
+	cvta.to.global.u64 	%rd48, %rd35;
 	mul.wide.s32 	%rd49, %r4, 4;
 	add.s64 	%rd50, %rd48, %rd49;
 	ld.global.nc.f32 	%f82, [%rd50];
 	mul.f32 	%f308, %f82, %f308;
 
 BB0_5:
-	setp.eq.s64	%p8, %rd33, 0;
+	setp.eq.s64	%p8, %rd36, 0;
 	@%p8 bra 	BB0_7;
 
-	cvta.to.global.u64 	%rd51, %rd33;
+	cvta.to.global.u64 	%rd51, %rd36;
 	mul.wide.s32 	%rd52, %r4, 4;
 	add.s64 	%rd53, %rd51, %rd52;
 	ld.global.nc.f32 	%f83, [%rd53];
 	mul.f32 	%f309, %f83, %f309;
 
 BB0_7:
-	setp.eq.s64	%p9, %rd34, 0;
+	setp.eq.s64	%p9, %rd37, 0;
 	@%p9 bra 	BB0_9;
 
-	cvta.to.global.u64 	%rd54, %rd34;
+	cvta.to.global.u64 	%rd54, %rd37;
 	mul.wide.s32 	%rd55, %r4, 4;
 	add.s64 	%rd56, %rd54, %rd55;
 	ld.global.nc.f32 	%f84, [%rd56];
 	mul.f32 	%f310, %f84, %f310;
 
 BB0_9:
-	setp.eq.s64	%p10, %rd35, 0;
+	setp.eq.s64	%p10, %rd38, 0;
 	@%p10 bra 	BB0_11;
 
-	cvta.to.global.u64 	%rd57, %rd35;
+	cvta.to.global.u64 	%rd57, %rd38;
 	mul.wide.s32 	%rd58, %r4, 4;
 	add.s64 	%rd59, %rd57, %rd58;
 	ld.global.nc.f32 	%f85, [%rd59];
@@ -2334,10 +2334,10 @@ BB0_32:
 	fma.rn.f32 	%f316, %f316, %f108, %f107;
 
 BB0_34:
-	cvta.to.global.u64 	%rd63, %rd36;
+	cvta.to.global.u64 	%rd63, %rd31;
 	mul.wide.s32 	%rd64, %r4, 4;
 	add.s64 	%rd14, %rd63, %rd64;
-	setp.eq.s64	%p24, %rd36, 0;
+	setp.eq.s64	%p24, %rd31, 0;
 	mov.f32 	%f318, %f316;
 	@%p24 bra 	BB0_36;
 
@@ -2345,13 +2345,13 @@ BB0_34:
 	mul.f32 	%f318, %f316, %f109;
 
 BB0_36:
-	cvta.to.global.u64 	%rd65, %rd37;
+	cvta.to.global.u64 	%rd65, %rd32;
 	add.s64 	%rd67, %rd6, %rd64;
 	ld.global.f32 	%f110, [%rd67];
 	add.f32 	%f111, %f318, %f110;
 	st.global.f32 	[%rd67], %f111;
 	add.s64 	%rd15, %rd65, %rd64;
-	setp.eq.s64	%p25, %rd37, 0;
+	setp.eq.s64	%p25, %rd32, 0;
 	mov.f32 	%f319, %f316;
 	@%p25 bra 	BB0_38;
 
@@ -2359,13 +2359,13 @@ BB0_36:
 	mul.f32 	%f319, %f316, %f112;
 
 BB0_38:
-	cvta.to.global.u64 	%rd68, %rd38;
+	cvta.to.global.u64 	%rd68, %rd33;
 	add.s64 	%rd70, %rd5, %rd64;
 	ld.global.f32 	%f113, [%rd70];
 	add.f32 	%f114, %f319, %f113;
 	st.global.f32 	[%rd70], %f114;
 	add.s64 	%rd16, %rd68, %rd64;
-	setp.eq.s64	%p26, %rd38, 0;
+	setp.eq.s64	%p26, %rd33, 0;
 	mov.f32 	%f320, %f316;
 	@%p26 bra 	BB0_40;
 
@@ -2934,18 +2934,18 @@ BB0_87:
 	.param .u64 addspin2beff_param_7,
 	.param .u64 addspin2beff_param_8,
 	.param .u64 addspin2beff_param_9,
-	.param .f32 addspin2beff_param_10,
+	.param .u64 addspin2beff_param_10,
 	.param .u64 addspin2beff_param_11,
-	.param .f32 addspin2beff_param_12,
-	.param .u64 addspin2beff_param_13,
-	.param .f32 addspin2beff_param_14,
-	.param .u64 addspin2beff_param_15,
-	.param .f32 addspin2beff_param_16,
-	.param .u64 addspin2beff_param_17,
-	.param .f32 addspin2beff_param_18,
-	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .f32 addspin2beff_param_19,
 	.param .u64 addspin2beff_param_20,
-	.param .u64 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_21,
 	.param .f32 addspin2beff_param_22,
 	.param .f32 addspin2beff_param_23,
 	.param .f32 addspin2beff_param_24,
@@ -2969,25 +2969,25 @@ BB0_87:
 	ld.param.u64 	%rd28, [addspin2beff_param_0];
 	ld.param.u64 	%rd29, [addspin2beff_param_1];
 	ld.param.u64 	%rd30, [addspin2beff_param_2];
-	ld.param.u64 	%rd39, [addspin2beff_param_3];
-	ld.param.u64 	%rd40, [addspin2beff_param_4];
-	ld.param.u64 	%rd41, [addspin2beff_param_5];
-	ld.param.u64 	%rd42, [addspin2beff_param_6];
-	ld.param.u64 	%rd43, [addspin2beff_param_7];
-	ld.param.u64 	%rd44, [addspin2beff_param_8];
-	ld.param.u64 	%rd31, [addspin2beff_param_9];
-	ld.param.f32 	%f307, [addspin2beff_param_10];
-	ld.param.u64 	%rd32, [addspin2beff_param_11];
-	ld.param.f32 	%f308, [addspin2beff_param_12];
-	ld.param.u64 	%rd33, [addspin2beff_param_13];
-	ld.param.f32 	%f309, [addspin2beff_param_14];
-	ld.param.u64 	%rd34, [addspin2beff_param_15];
-	ld.param.f32 	%f310, [addspin2beff_param_16];
-	ld.param.u64 	%rd35, [addspin2beff_param_17];
-	ld.param.f32 	%f311, [addspin2beff_param_18];
-	ld.param.u64 	%rd36, [addspin2beff_param_19];
-	ld.param.u64 	%rd37, [addspin2beff_param_20];
-	ld.param.u64 	%rd38, [addspin2beff_param_21];
+	ld.param.u64 	%rd31, [addspin2beff_param_3];
+	ld.param.u64 	%rd32, [addspin2beff_param_4];
+	ld.param.u64 	%rd33, [addspin2beff_param_5];
+	ld.param.u64 	%rd39, [addspin2beff_param_6];
+	ld.param.u64 	%rd40, [addspin2beff_param_7];
+	ld.param.u64 	%rd41, [addspin2beff_param_8];
+	ld.param.u64 	%rd42, [addspin2beff_param_9];
+	ld.param.u64 	%rd43, [addspin2beff_param_10];
+	ld.param.u64 	%rd44, [addspin2beff_param_11];
+	ld.param.u64 	%rd34, [addspin2beff_param_12];
+	ld.param.f32 	%f307, [addspin2beff_param_13];
+	ld.param.u64 	%rd35, [addspin2beff_param_14];
+	ld.param.f32 	%f308, [addspin2beff_param_15];
+	ld.param.u64 	%rd36, [addspin2beff_param_16];
+	ld.param.f32 	%f309, [addspin2beff_param_17];
+	ld.param.u64 	%rd37, [addspin2beff_param_18];
+	ld.param.f32 	%f310, [addspin2beff_param_19];
+	ld.param.u64 	%rd38, [addspin2beff_param_20];
+	ld.param.f32 	%f311, [addspin2beff_param_21];
 	ld.param.f32 	%f78, [addspin2beff_param_22];
 	ld.param.f32 	%f79, [addspin2beff_param_23];
 	ld.param.f32 	%f80, [addspin2beff_param_24];
@@ -3021,50 +3021,50 @@ BB0_87:
 
 	mad.lo.s32 	%r102, %r3, %r91, %r2;
 	mad.lo.s32 	%r4, %r102, %r90, %r1;
-	setp.eq.s64	%p6, %rd31, 0;
+	setp.eq.s64	%p6, %rd34, 0;
 	@%p6 bra 	BB0_3;
 
-	cvta.to.global.u64 	%rd45, %rd31;
+	cvta.to.global.u64 	%rd45, %rd34;
 	mul.wide.s32 	%rd46, %r4, 4;
 	add.s64 	%rd47, %rd45, %rd46;
 	ld.global.nc.f32 	%f81, [%rd47];
 	mul.f32 	%f307, %f81, %f307;
 
 BB0_3:
-	setp.eq.s64	%p7, %rd32, 0;
+	setp.eq.s64	%p7, %rd35, 0;
 	@%p7 bra 	BB0_5;
 
-	cvta.to.global.u64 	%rd48, %rd32;
+	cvta.to.global.u64 	%rd48, %rd35;
 	mul.wide.s32 	%rd49, %r4, 4;
 	add.s64 	%rd50, %rd48, %rd49;
 	ld.global.nc.f32 	%f82, [%rd50];
 	mul.f32 	%f308, %f82, %f308;
 
 BB0_5:
-	setp.eq.s64	%p8, %rd33, 0;
+	setp.eq.s64	%p8, %rd36, 0;
 	@%p8 bra 	BB0_7;
 
-	cvta.to.global.u64 	%rd51, %rd33;
+	cvta.to.global.u64 	%rd51, %rd36;
 	mul.wide.s32 	%rd52, %r4, 4;
 	add.s64 	%rd53, %rd51, %rd52;
 	ld.global.nc.f32 	%f83, [%rd53];
 	mul.f32 	%f309, %f83, %f309;
 
 BB0_7:
-	setp.eq.s64	%p9, %rd34, 0;
+	setp.eq.s64	%p9, %rd37, 0;
 	@%p9 bra 	BB0_9;
 
-	cvta.to.global.u64 	%rd54, %rd34;
+	cvta.to.global.u64 	%rd54, %rd37;
 	mul.wide.s32 	%rd55, %r4, 4;
 	add.s64 	%rd56, %rd54, %rd55;
 	ld.global.nc.f32 	%f84, [%rd56];
 	mul.f32 	%f310, %f84, %f310;
 
 BB0_9:
-	setp.eq.s64	%p10, %rd35, 0;
+	setp.eq.s64	%p10, %rd38, 0;
 	@%p10 bra 	BB0_11;
 
-	cvta.to.global.u64 	%rd57, %rd35;
+	cvta.to.global.u64 	%rd57, %rd38;
 	mul.wide.s32 	%rd58, %r4, 4;
 	add.s64 	%rd59, %rd57, %rd58;
 	ld.global.nc.f32 	%f85, [%rd59];
@@ -3253,10 +3253,10 @@ BB0_32:
 	fma.rn.f32 	%f316, %f316, %f108, %f107;
 
 BB0_34:
-	cvta.to.global.u64 	%rd63, %rd36;
+	cvta.to.global.u64 	%rd63, %rd31;
 	mul.wide.s32 	%rd64, %r4, 4;
 	add.s64 	%rd14, %rd63, %rd64;
-	setp.eq.s64	%p24, %rd36, 0;
+	setp.eq.s64	%p24, %rd31, 0;
 	mov.f32 	%f318, %f316;
 	@%p24 bra 	BB0_36;
 
@@ -3264,13 +3264,13 @@ BB0_34:
 	mul.f32 	%f318, %f316, %f109;
 
 BB0_36:
-	cvta.to.global.u64 	%rd65, %rd37;
+	cvta.to.global.u64 	%rd65, %rd32;
 	add.s64 	%rd67, %rd6, %rd64;
 	ld.global.f32 	%f110, [%rd67];
 	add.f32 	%f111, %f318, %f110;
 	st.global.f32 	[%rd67], %f111;
 	add.s64 	%rd15, %rd65, %rd64;
-	setp.eq.s64	%p25, %rd37, 0;
+	setp.eq.s64	%p25, %rd32, 0;
 	mov.f32 	%f319, %f316;
 	@%p25 bra 	BB0_38;
 
@@ -3278,13 +3278,13 @@ BB0_36:
 	mul.f32 	%f319, %f316, %f112;
 
 BB0_38:
-	cvta.to.global.u64 	%rd68, %rd38;
+	cvta.to.global.u64 	%rd68, %rd33;
 	add.s64 	%rd70, %rd5, %rd64;
 	ld.global.f32 	%f113, [%rd70];
 	add.f32 	%f114, %f319, %f113;
 	st.global.f32 	[%rd70], %f114;
 	add.s64 	%rd16, %rd68, %rd64;
-	setp.eq.s64	%p26, %rd38, 0;
+	setp.eq.s64	%p26, %rd33, 0;
 	mov.f32 	%f320, %f316;
 	@%p26 bra 	BB0_40;
 
@@ -3853,18 +3853,18 @@ BB0_87:
 	.param .u64 addspin2beff_param_7,
 	.param .u64 addspin2beff_param_8,
 	.param .u64 addspin2beff_param_9,
-	.param .f32 addspin2beff_param_10,
+	.param .u64 addspin2beff_param_10,
 	.param .u64 addspin2beff_param_11,
-	.param .f32 addspin2beff_param_12,
-	.param .u64 addspin2beff_param_13,
-	.param .f32 addspin2beff_param_14,
-	.param .u64 addspin2beff_param_15,
-	.param .f32 addspin2beff_param_16,
-	.param .u64 addspin2beff_param_17,
-	.param .f32 addspin2beff_param_18,
-	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .f32 addspin2beff_param_19,
 	.param .u64 addspin2beff_param_20,
-	.param .u64 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_21,
 	.param .f32 addspin2beff_param_22,
 	.param .f32 addspin2beff_param_23,
 	.param .f32 addspin2beff_param_24,
@@ -3888,25 +3888,25 @@ BB0_87:
 	ld.param.u64 	%rd28, [addspin2beff_param_0];
 	ld.param.u64 	%rd29, [addspin2beff_param_1];
 	ld.param.u64 	%rd30, [addspin2beff_param_2];
-	ld.param.u64 	%rd39, [addspin2beff_param_3];
-	ld.param.u64 	%rd40, [addspin2beff_param_4];
-	ld.param.u64 	%rd41, [addspin2beff_param_5];
-	ld.param.u64 	%rd42, [addspin2beff_param_6];
-	ld.param.u64 	%rd43, [addspin2beff_param_7];
-	ld.param.u64 	%rd44, [addspin2beff_param_8];
-	ld.param.u64 	%rd31, [addspin2beff_param_9];
-	ld.param.f32 	%f307, [addspin2beff_param_10];
-	ld.param.u64 	%rd32, [addspin2beff_param_11];
-	ld.param.f32 	%f308, [addspin2beff_param_12];
-	ld.param.u64 	%rd33, [addspin2beff_param_13];
-	ld.param.f32 	%f309, [addspin2beff_param_14];
-	ld.param.u64 	%rd34, [addspin2beff_param_15];
-	ld.param.f32 	%f310, [addspin2beff_param_16];
-	ld.param.u64 	%rd35, [addspin2beff_param_17];
-	ld.param.f32 	%f311, [addspin2beff_param_18];
-	ld.param.u64 	%rd36, [addspin2beff_param_19];
-	ld.param.u64 	%rd37, [addspin2beff_param_20];
-	ld.param.u64 	%rd38, [addspin2beff_param_21];
+	ld.param.u64 	%rd31, [addspin2beff_param_3];
+	ld.param.u64 	%rd32, [addspin2beff_param_4];
+	ld.param.u64 	%rd33, [addspin2beff_param_5];
+	ld.param.u64 	%rd39, [addspin2beff_param_6];
+	ld.param.u64 	%rd40, [addspin2beff_param_7];
+	ld.param.u64 	%rd41, [addspin2beff_param_8];
+	ld.param.u64 	%rd42, [addspin2beff_param_9];
+	ld.param.u64 	%rd43, [addspin2beff_param_10];
+	ld.param.u64 	%rd44, [addspin2beff_param_11];
+	ld.param.u64 	%rd34, [addspin2beff_param_12];
+	ld.param.f32 	%f307, [addspin2beff_param_13];
+	ld.param.u64 	%rd35, [addspin2beff_param_14];
+	ld.param.f32 	%f308, [addspin2beff_param_15];
+	ld.param.u64 	%rd36, [addspin2beff_param_16];
+	ld.param.f32 	%f309, [addspin2beff_param_17];
+	ld.param.u64 	%rd37, [addspin2beff_param_18];
+	ld.param.f32 	%f310, [addspin2beff_param_19];
+	ld.param.u64 	%rd38, [addspin2beff_param_20];
+	ld.param.f32 	%f311, [addspin2beff_param_21];
 	ld.param.f32 	%f78, [addspin2beff_param_22];
 	ld.param.f32 	%f79, [addspin2beff_param_23];
 	ld.param.f32 	%f80, [addspin2beff_param_24];
@@ -3940,50 +3940,50 @@ BB0_87:
 
 	mad.lo.s32 	%r102, %r3, %r91, %r2;
 	mad.lo.s32 	%r4, %r102, %r90, %r1;
-	setp.eq.s64	%p6, %rd31, 0;
+	setp.eq.s64	%p6, %rd34, 0;
 	@%p6 bra 	BB0_3;
 
-	cvta.to.global.u64 	%rd45, %rd31;
+	cvta.to.global.u64 	%rd45, %rd34;
 	mul.wide.s32 	%rd46, %r4, 4;
 	add.s64 	%rd47, %rd45, %rd46;
 	ld.global.nc.f32 	%f81, [%rd47];
 	mul.f32 	%f307, %f81, %f307;
 
 BB0_3:
-	setp.eq.s64	%p7, %rd32, 0;
+	setp.eq.s64	%p7, %rd35, 0;
 	@%p7 bra 	BB0_5;
 
-	cvta.to.global.u64 	%rd48, %rd32;
+	cvta.to.global.u64 	%rd48, %rd35;
 	mul.wide.s32 	%rd49, %r4, 4;
 	add.s64 	%rd50, %rd48, %rd49;
 	ld.global.nc.f32 	%f82, [%rd50];
 	mul.f32 	%f308, %f82, %f308;
 
 BB0_5:
-	setp.eq.s64	%p8, %rd33, 0;
+	setp.eq.s64	%p8, %rd36, 0;
 	@%p8 bra 	BB0_7;
 
-	cvta.to.global.u64 	%rd51, %rd33;
+	cvta.to.global.u64 	%rd51, %rd36;
 	mul.wide.s32 	%rd52, %r4, 4;
 	add.s64 	%rd53, %rd51, %rd52;
 	ld.global.nc.f32 	%f83, [%rd53];
 	mul.f32 	%f309, %f83, %f309;
 
 BB0_7:
-	setp.eq.s64	%p9, %rd34, 0;
+	setp.eq.s64	%p9, %rd37, 0;
 	@%p9 bra 	BB0_9;
 
-	cvta.to.global.u64 	%rd54, %rd34;
+	cvta.to.global.u64 	%rd54, %rd37;
 	mul.wide.s32 	%rd55, %r4, 4;
 	add.s64 	%rd56, %rd54, %rd55;
 	ld.global.nc.f32 	%f84, [%rd56];
 	mul.f32 	%f310, %f84, %f310;
 
 BB0_9:
-	setp.eq.s64	%p10, %rd35, 0;
+	setp.eq.s64	%p10, %rd38, 0;
 	@%p10 bra 	BB0_11;
 
-	cvta.to.global.u64 	%rd57, %rd35;
+	cvta.to.global.u64 	%rd57, %rd38;
 	mul.wide.s32 	%rd58, %r4, 4;
 	add.s64 	%rd59, %rd57, %rd58;
 	ld.global.nc.f32 	%f85, [%rd59];
@@ -4172,10 +4172,10 @@ BB0_32:
 	fma.rn.f32 	%f316, %f316, %f108, %f107;
 
 BB0_34:
-	cvta.to.global.u64 	%rd63, %rd36;
+	cvta.to.global.u64 	%rd63, %rd31;
 	mul.wide.s32 	%rd64, %r4, 4;
 	add.s64 	%rd14, %rd63, %rd64;
-	setp.eq.s64	%p24, %rd36, 0;
+	setp.eq.s64	%p24, %rd31, 0;
 	mov.f32 	%f318, %f316;
 	@%p24 bra 	BB0_36;
 
@@ -4183,13 +4183,13 @@ BB0_34:
 	mul.f32 	%f318, %f316, %f109;
 
 BB0_36:
-	cvta.to.global.u64 	%rd65, %rd37;
+	cvta.to.global.u64 	%rd65, %rd32;
 	add.s64 	%rd67, %rd6, %rd64;
 	ld.global.f32 	%f110, [%rd67];
 	add.f32 	%f111, %f318, %f110;
 	st.global.f32 	[%rd67], %f111;
 	add.s64 	%rd15, %rd65, %rd64;
-	setp.eq.s64	%p25, %rd37, 0;
+	setp.eq.s64	%p25, %rd32, 0;
 	mov.f32 	%f319, %f316;
 	@%p25 bra 	BB0_38;
 
@@ -4197,13 +4197,13 @@ BB0_36:
 	mul.f32 	%f319, %f316, %f112;
 
 BB0_38:
-	cvta.to.global.u64 	%rd68, %rd38;
+	cvta.to.global.u64 	%rd68, %rd33;
 	add.s64 	%rd70, %rd5, %rd64;
 	ld.global.f32 	%f113, [%rd70];
 	add.f32 	%f114, %f319, %f113;
 	st.global.f32 	[%rd70], %f114;
 	add.s64 	%rd16, %rd68, %rd64;
-	setp.eq.s64	%p26, %rd38, 0;
+	setp.eq.s64	%p26, %rd33, 0;
 	mov.f32 	%f320, %f316;
 	@%p26 bra 	BB0_40;
 
@@ -4772,18 +4772,18 @@ BB0_87:
 	.param .u64 addspin2beff_param_7,
 	.param .u64 addspin2beff_param_8,
 	.param .u64 addspin2beff_param_9,
-	.param .f32 addspin2beff_param_10,
+	.param .u64 addspin2beff_param_10,
 	.param .u64 addspin2beff_param_11,
-	.param .f32 addspin2beff_param_12,
-	.param .u64 addspin2beff_param_13,
-	.param .f32 addspin2beff_param_14,
-	.param .u64 addspin2beff_param_15,
-	.param .f32 addspin2beff_param_16,
-	.param .u64 addspin2beff_param_17,
-	.param .f32 addspin2beff_param_18,
-	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .f32 addspin2beff_param_19,
 	.param .u64 addspin2beff_param_20,
-	.param .u64 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_21,
 	.param .f32 addspin2beff_param_22,
 	.param .f32 addspin2beff_param_23,
 	.param .f32 addspin2beff_param_24,
@@ -4807,25 +4807,25 @@ BB0_87:
 	ld.param.u64 	%rd28, [addspin2beff_param_0];
 	ld.param.u64 	%rd29, [addspin2beff_param_1];
 	ld.param.u64 	%rd30, [addspin2beff_param_2];
-	ld.param.u64 	%rd39, [addspin2beff_param_3];
-	ld.param.u64 	%rd40, [addspin2beff_param_4];
-	ld.param.u64 	%rd41, [addspin2beff_param_5];
-	ld.param.u64 	%rd42, [addspin2beff_param_6];
-	ld.param.u64 	%rd43, [addspin2beff_param_7];
-	ld.param.u64 	%rd44, [addspin2beff_param_8];
-	ld.param.u64 	%rd31, [addspin2beff_param_9];
-	ld.param.f32 	%f307, [addspin2beff_param_10];
-	ld.param.u64 	%rd32, [addspin2beff_param_11];
-	ld.param.f32 	%f308, [addspin2beff_param_12];
-	ld.param.u64 	%rd33, [addspin2beff_param_13];
-	ld.param.f32 	%f309, [addspin2beff_param_14];
-	ld.param.u64 	%rd34, [addspin2beff_param_15];
-	ld.param.f32 	%f310, [addspin2beff_param_16];
-	ld.param.u64 	%rd35, [addspin2beff_param_17];
-	ld.param.f32 	%f311, [addspin2beff_param_18];
-	ld.param.u64 	%rd36, [addspin2beff_param_19];
-	ld.param.u64 	%rd37, [addspin2beff_param_20];
-	ld.param.u64 	%rd38, [addspin2beff_param_21];
+	ld.param.u64 	%rd31, [addspin2beff_param_3];
+	ld.param.u64 	%rd32, [addspin2beff_param_4];
+	ld.param.u64 	%rd33, [addspin2beff_param_5];
+	ld.param.u64 	%rd39, [addspin2beff_param_6];
+	ld.param.u64 	%rd40, [addspin2beff_param_7];
+	ld.param.u64 	%rd41, [addspin2beff_param_8];
+	ld.param.u64 	%rd42, [addspin2beff_param_9];
+	ld.param.u64 	%rd43, [addspin2beff_param_10];
+	ld.param.u64 	%rd44, [addspin2beff_param_11];
+	ld.param.u64 	%rd34, [addspin2beff_param_12];
+	ld.param.f32 	%f307, [addspin2beff_param_13];
+	ld.param.u64 	%rd35, [addspin2beff_param_14];
+	ld.param.f32 	%f308, [addspin2beff_param_15];
+	ld.param.u64 	%rd36, [addspin2beff_param_16];
+	ld.param.f32 	%f309, [addspin2beff_param_17];
+	ld.param.u64 	%rd37, [addspin2beff_param_18];
+	ld.param.f32 	%f310, [addspin2beff_param_19];
+	ld.param.u64 	%rd38, [addspin2beff_param_20];
+	ld.param.f32 	%f311, [addspin2beff_param_21];
 	ld.param.f32 	%f78, [addspin2beff_param_22];
 	ld.param.f32 	%f79, [addspin2beff_param_23];
 	ld.param.f32 	%f80, [addspin2beff_param_24];
@@ -4859,50 +4859,50 @@ BB0_87:
 
 	mad.lo.s32 	%r102, %r3, %r91, %r2;
 	mad.lo.s32 	%r4, %r102, %r90, %r1;
-	setp.eq.s64	%p6, %rd31, 0;
+	setp.eq.s64	%p6, %rd34, 0;
 	@%p6 bra 	BB0_3;
 
-	cvta.to.global.u64 	%rd45, %rd31;
+	cvta.to.global.u64 	%rd45, %rd34;
 	mul.wide.s32 	%rd46, %r4, 4;
 	add.s64 	%rd47, %rd45, %rd46;
 	ld.global.nc.f32 	%f81, [%rd47];
 	mul.f32 	%f307, %f81, %f307;
 
 BB0_3:
-	setp.eq.s64	%p7, %rd32, 0;
+	setp.eq.s64	%p7, %rd35, 0;
 	@%p7 bra 	BB0_5;
 
-	cvta.to.global.u64 	%rd48, %rd32;
+	cvta.to.global.u64 	%rd48, %rd35;
 	mul.wide.s32 	%rd49, %r4, 4;
 	add.s64 	%rd50, %rd48, %rd49;
 	ld.global.nc.f32 	%f82, [%rd50];
 	mul.f32 	%f308, %f82, %f308;
 
 BB0_5:
-	setp.eq.s64	%p8, %rd33, 0;
+	setp.eq.s64	%p8, %rd36, 0;
 	@%p8 bra 	BB0_7;
 
-	cvta.to.global.u64 	%rd51, %rd33;
+	cvta.to.global.u64 	%rd51, %rd36;
 	mul.wide.s32 	%rd52, %r4, 4;
 	add.s64 	%rd53, %rd51, %rd52;
 	ld.global.nc.f32 	%f83, [%rd53];
 	mul.f32 	%f309, %f83, %f309;
 
 BB0_7:
-	setp.eq.s64	%p9, %rd34, 0;
+	setp.eq.s64	%p9, %rd37, 0;
 	@%p9 bra 	BB0_9;
 
-	cvta.to.global.u64 	%rd54, %rd34;
+	cvta.to.global.u64 	%rd54, %rd37;
 	mul.wide.s32 	%rd55, %r4, 4;
 	add.s64 	%rd56, %rd54, %rd55;
 	ld.global.nc.f32 	%f84, [%rd56];
 	mul.f32 	%f310, %f84, %f310;
 
 BB0_9:
-	setp.eq.s64	%p10, %rd35, 0;
+	setp.eq.s64	%p10, %rd38, 0;
 	@%p10 bra 	BB0_11;
 
-	cvta.to.global.u64 	%rd57, %rd35;
+	cvta.to.global.u64 	%rd57, %rd38;
 	mul.wide.s32 	%rd58, %r4, 4;
 	add.s64 	%rd59, %rd57, %rd58;
 	ld.global.nc.f32 	%f85, [%rd59];
@@ -5091,10 +5091,10 @@ BB0_32:
 	fma.rn.f32 	%f316, %f316, %f108, %f107;
 
 BB0_34:
-	cvta.to.global.u64 	%rd63, %rd36;
+	cvta.to.global.u64 	%rd63, %rd31;
 	mul.wide.s32 	%rd64, %r4, 4;
 	add.s64 	%rd14, %rd63, %rd64;
-	setp.eq.s64	%p24, %rd36, 0;
+	setp.eq.s64	%p24, %rd31, 0;
 	mov.f32 	%f318, %f316;
 	@%p24 bra 	BB0_36;
 
@@ -5102,13 +5102,13 @@ BB0_34:
 	mul.f32 	%f318, %f316, %f109;
 
 BB0_36:
-	cvta.to.global.u64 	%rd65, %rd37;
+	cvta.to.global.u64 	%rd65, %rd32;
 	add.s64 	%rd67, %rd6, %rd64;
 	ld.global.f32 	%f110, [%rd67];
 	add.f32 	%f111, %f318, %f110;
 	st.global.f32 	[%rd67], %f111;
 	add.s64 	%rd15, %rd65, %rd64;
-	setp.eq.s64	%p25, %rd37, 0;
+	setp.eq.s64	%p25, %rd32, 0;
 	mov.f32 	%f319, %f316;
 	@%p25 bra 	BB0_38;
 
@@ -5116,13 +5116,13 @@ BB0_36:
 	mul.f32 	%f319, %f316, %f112;
 
 BB0_38:
-	cvta.to.global.u64 	%rd68, %rd38;
+	cvta.to.global.u64 	%rd68, %rd33;
 	add.s64 	%rd70, %rd5, %rd64;
 	ld.global.f32 	%f113, [%rd70];
 	add.f32 	%f114, %f319, %f113;
 	st.global.f32 	[%rd70], %f114;
 	add.s64 	%rd16, %rd68, %rd64;
-	setp.eq.s64	%p26, %rd38, 0;
+	setp.eq.s64	%p26, %rd33, 0;
 	mov.f32 	%f320, %f316;
 	@%p26 bra 	BB0_40;
 
@@ -5691,18 +5691,18 @@ BB0_87:
 	.param .u64 addspin2beff_param_7,
 	.param .u64 addspin2beff_param_8,
 	.param .u64 addspin2beff_param_9,
-	.param .f32 addspin2beff_param_10,
+	.param .u64 addspin2beff_param_10,
 	.param .u64 addspin2beff_param_11,
-	.param .f32 addspin2beff_param_12,
-	.param .u64 addspin2beff_param_13,
-	.param .f32 addspin2beff_param_14,
-	.param .u64 addspin2beff_param_15,
-	.param .f32 addspin2beff_param_16,
-	.param .u64 addspin2beff_param_17,
-	.param .f32 addspin2beff_param_18,
-	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .f32 addspin2beff_param_19,
 	.param .u64 addspin2beff_param_20,
-	.param .u64 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_21,
 	.param .f32 addspin2beff_param_22,
 	.param .f32 addspin2beff_param_23,
 	.param .f32 addspin2beff_param_24,
@@ -5726,25 +5726,25 @@ BB0_87:
 	ld.param.u64 	%rd28, [addspin2beff_param_0];
 	ld.param.u64 	%rd29, [addspin2beff_param_1];
 	ld.param.u64 	%rd30, [addspin2beff_param_2];
-	ld.param.u64 	%rd39, [addspin2beff_param_3];
-	ld.param.u64 	%rd40, [addspin2beff_param_4];
-	ld.param.u64 	%rd41, [addspin2beff_param_5];
-	ld.param.u64 	%rd42, [addspin2beff_param_6];
-	ld.param.u64 	%rd43, [addspin2beff_param_7];
-	ld.param.u64 	%rd44, [addspin2beff_param_8];
-	ld.param.u64 	%rd31, [addspin2beff_param_9];
-	ld.param.f32 	%f307, [addspin2beff_param_10];
-	ld.param.u64 	%rd32, [addspin2beff_param_11];
-	ld.param.f32 	%f308, [addspin2beff_param_12];
-	ld.param.u64 	%rd33, [addspin2beff_param_13];
-	ld.param.f32 	%f309, [addspin2beff_param_14];
-	ld.param.u64 	%rd34, [addspin2beff_param_15];
-	ld.param.f32 	%f310, [addspin2beff_param_16];
-	ld.param.u64 	%rd35, [addspin2beff_param_17];
-	ld.param.f32 	%f311, [addspin2beff_param_18];
-	ld.param.u64 	%rd36, [addspin2beff_param_19];
-	ld.param.u64 	%rd37, [addspin2beff_param_20];
-	ld.param.u64 	%rd38, [addspin2beff_param_21];
+	ld.param.u64 	%rd31, [addspin2beff_param_3];
+	ld.param.u64 	%rd32, [addspin2beff_param_4];
+	ld.param.u64 	%rd33, [addspin2beff_param_5];
+	ld.param.u64 	%rd39, [addspin2beff_param_6];
+	ld.param.u64 	%rd40, [addspin2beff_param_7];
+	ld.param.u64 	%rd41, [addspin2beff_param_8];
+	ld.param.u64 	%rd42, [addspin2beff_param_9];
+	ld.param.u64 	%rd43, [addspin2beff_param_10];
+	ld.param.u64 	%rd44, [addspin2beff_param_11];
+	ld.param.u64 	%rd34, [addspin2beff_param_12];
+	ld.param.f32 	%f307, [addspin2beff_param_13];
+	ld.param.u64 	%rd35, [addspin2beff_param_14];
+	ld.param.f32 	%f308, [addspin2beff_param_15];
+	ld.param.u64 	%rd36, [addspin2beff_param_16];
+	ld.param.f32 	%f309, [addspin2beff_param_17];
+	ld.param.u64 	%rd37, [addspin2beff_param_18];
+	ld.param.f32 	%f310, [addspin2beff_param_19];
+	ld.param.u64 	%rd38, [addspin2beff_param_20];
+	ld.param.f32 	%f311, [addspin2beff_param_21];
 	ld.param.f32 	%f78, [addspin2beff_param_22];
 	ld.param.f32 	%f79, [addspin2beff_param_23];
 	ld.param.f32 	%f80, [addspin2beff_param_24];
@@ -5778,50 +5778,50 @@ BB0_87:
 
 	mad.lo.s32 	%r102, %r3, %r91, %r2;
 	mad.lo.s32 	%r4, %r102, %r90, %r1;
-	setp.eq.s64	%p6, %rd31, 0;
+	setp.eq.s64	%p6, %rd34, 0;
 	@%p6 bra 	BB0_3;
 
-	cvta.to.global.u64 	%rd45, %rd31;
+	cvta.to.global.u64 	%rd45, %rd34;
 	mul.wide.s32 	%rd46, %r4, 4;
 	add.s64 	%rd47, %rd45, %rd46;
 	ld.global.nc.f32 	%f81, [%rd47];
 	mul.f32 	%f307, %f81, %f307;
 
 BB0_3:
-	setp.eq.s64	%p7, %rd32, 0;
+	setp.eq.s64	%p7, %rd35, 0;
 	@%p7 bra 	BB0_5;
 
-	cvta.to.global.u64 	%rd48, %rd32;
+	cvta.to.global.u64 	%rd48, %rd35;
 	mul.wide.s32 	%rd49, %r4, 4;
 	add.s64 	%rd50, %rd48, %rd49;
 	ld.global.nc.f32 	%f82, [%rd50];
 	mul.f32 	%f308, %f82, %f308;
 
 BB0_5:
-	setp.eq.s64	%p8, %rd33, 0;
+	setp.eq.s64	%p8, %rd36, 0;
 	@%p8 bra 	BB0_7;
 
-	cvta.to.global.u64 	%rd51, %rd33;
+	cvta.to.global.u64 	%rd51, %rd36;
 	mul.wide.s32 	%rd52, %r4, 4;
 	add.s64 	%rd53, %rd51, %rd52;
 	ld.global.nc.f32 	%f83, [%rd53];
 	mul.f32 	%f309, %f83, %f309;
 
 BB0_7:
-	setp.eq.s64	%p9, %rd34, 0;
+	setp.eq.s64	%p9, %rd37, 0;
 	@%p9 bra 	BB0_9;
 
-	cvta.to.global.u64 	%rd54, %rd34;
+	cvta.to.global.u64 	%rd54, %rd37;
 	mul.wide.s32 	%rd55, %r4, 4;
 	add.s64 	%rd56, %rd54, %rd55;
 	ld.global.nc.f32 	%f84, [%rd56];
 	mul.f32 	%f310, %f84, %f310;
 
 BB0_9:
-	setp.eq.s64	%p10, %rd35, 0;
+	setp.eq.s64	%p10, %rd38, 0;
 	@%p10 bra 	BB0_11;
 
-	cvta.to.global.u64 	%rd57, %rd35;
+	cvta.to.global.u64 	%rd57, %rd38;
 	mul.wide.s32 	%rd58, %r4, 4;
 	add.s64 	%rd59, %rd57, %rd58;
 	ld.global.nc.f32 	%f85, [%rd59];
@@ -6010,10 +6010,10 @@ BB0_32:
 	fma.rn.f32 	%f316, %f316, %f108, %f107;
 
 BB0_34:
-	cvta.to.global.u64 	%rd63, %rd36;
+	cvta.to.global.u64 	%rd63, %rd31;
 	mul.wide.s32 	%rd64, %r4, 4;
 	add.s64 	%rd14, %rd63, %rd64;
-	setp.eq.s64	%p24, %rd36, 0;
+	setp.eq.s64	%p24, %rd31, 0;
 	mov.f32 	%f318, %f316;
 	@%p24 bra 	BB0_36;
 
@@ -6021,13 +6021,13 @@ BB0_34:
 	mul.f32 	%f318, %f316, %f109;
 
 BB0_36:
-	cvta.to.global.u64 	%rd65, %rd37;
+	cvta.to.global.u64 	%rd65, %rd32;
 	add.s64 	%rd67, %rd6, %rd64;
 	ld.global.f32 	%f110, [%rd67];
 	add.f32 	%f111, %f318, %f110;
 	st.global.f32 	[%rd67], %f111;
 	add.s64 	%rd15, %rd65, %rd64;
-	setp.eq.s64	%p25, %rd37, 0;
+	setp.eq.s64	%p25, %rd32, 0;
 	mov.f32 	%f319, %f316;
 	@%p25 bra 	BB0_38;
 
@@ -6035,13 +6035,13 @@ BB0_36:
 	mul.f32 	%f319, %f316, %f112;
 
 BB0_38:
-	cvta.to.global.u64 	%rd68, %rd38;
+	cvta.to.global.u64 	%rd68, %rd33;
 	add.s64 	%rd70, %rd5, %rd64;
 	ld.global.f32 	%f113, [%rd70];
 	add.f32 	%f114, %f319, %f113;
 	st.global.f32 	[%rd70], %f114;
 	add.s64 	%rd16, %rd68, %rd64;
-	setp.eq.s64	%p26, %rd38, 0;
+	setp.eq.s64	%p26, %rd33, 0;
 	mov.f32 	%f320, %f316;
 	@%p26 bra 	BB0_40;
 
@@ -6610,18 +6610,18 @@ BB0_87:
 	.param .u64 addspin2beff_param_7,
 	.param .u64 addspin2beff_param_8,
 	.param .u64 addspin2beff_param_9,
-	.param .f32 addspin2beff_param_10,
+	.param .u64 addspin2beff_param_10,
 	.param .u64 addspin2beff_param_11,
-	.param .f32 addspin2beff_param_12,
-	.param .u64 addspin2beff_param_13,
-	.param .f32 addspin2beff_param_14,
-	.param .u64 addspin2beff_param_15,
-	.param .f32 addspin2beff_param_16,
-	.param .u64 addspin2beff_param_17,
-	.param .f32 addspin2beff_param_18,
-	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .f32 addspin2beff_param_19,
 	.param .u64 addspin2beff_param_20,
-	.param .u64 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_21,
 	.param .f32 addspin2beff_param_22,
 	.param .f32 addspin2beff_param_23,
 	.param .f32 addspin2beff_param_24,
@@ -6645,25 +6645,25 @@ BB0_87:
 	ld.param.u64 	%rd28, [addspin2beff_param_0];
 	ld.param.u64 	%rd29, [addspin2beff_param_1];
 	ld.param.u64 	%rd30, [addspin2beff_param_2];
-	ld.param.u64 	%rd39, [addspin2beff_param_3];
-	ld.param.u64 	%rd40, [addspin2beff_param_4];
-	ld.param.u64 	%rd41, [addspin2beff_param_5];
-	ld.param.u64 	%rd42, [addspin2beff_param_6];
-	ld.param.u64 	%rd43, [addspin2beff_param_7];
-	ld.param.u64 	%rd44, [addspin2beff_param_8];
-	ld.param.u64 	%rd31, [addspin2beff_param_9];
-	ld.param.f32 	%f307, [addspin2beff_param_10];
-	ld.param.u64 	%rd32, [addspin2beff_param_11];
-	ld.param.f32 	%f308, [addspin2beff_param_12];
-	ld.param.u64 	%rd33, [addspin2beff_param_13];
-	ld.param.f32 	%f309, [addspin2beff_param_14];
-	ld.param.u64 	%rd34, [addspin2beff_param_15];
-	ld.param.f32 	%f310, [addspin2beff_param_16];
-	ld.param.u64 	%rd35, [addspin2beff_param_17];
-	ld.param.f32 	%f311, [addspin2beff_param_18];
-	ld.param.u64 	%rd36, [addspin2beff_param_19];
-	ld.param.u64 	%rd37, [addspin2beff_param_20];
-	ld.param.u64 	%rd38, [addspin2beff_param_21];
+	ld.param.u64 	%rd31, [addspin2beff_param_3];
+	ld.param.u64 	%rd32, [addspin2beff_param_4];
+	ld.param.u64 	%rd33, [addspin2beff_param_5];
+	ld.param.u64 	%rd39, [addspin2beff_param_6];
+	ld.param.u64 	%rd40, [addspin2beff_param_7];
+	ld.param.u64 	%rd41, [addspin2beff_param_8];
+	ld.param.u64 	%rd42, [addspin2beff_param_9];
+	ld.param.u64 	%rd43, [addspin2beff_param_10];
+	ld.param.u64 	%rd44, [addspin2beff_param_11];
+	ld.param.u64 	%rd34, [addspin2beff_param_12];
+	ld.param.f32 	%f307, [addspin2beff_param_13];
+	ld.param.u64 	%rd35, [addspin2beff_param_14];
+	ld.param.f32 	%f308, [addspin2beff_param_15];
+	ld.param.u64 	%rd36, [addspin2beff_param_16];
+	ld.param.f32 	%f309, [addspin2beff_param_17];
+	ld.param.u64 	%rd37, [addspin2beff_param_18];
+	ld.param.f32 	%f310, [addspin2beff_param_19];
+	ld.param.u64 	%rd38, [addspin2beff_param_20];
+	ld.param.f32 	%f311, [addspin2beff_param_21];
 	ld.param.f32 	%f78, [addspin2beff_param_22];
 	ld.param.f32 	%f79, [addspin2beff_param_23];
 	ld.param.f32 	%f80, [addspin2beff_param_24];
@@ -6697,50 +6697,50 @@ BB0_87:
 
 	mad.lo.s32 	%r102, %r3, %r91, %r2;
 	mad.lo.s32 	%r4, %r102, %r90, %r1;
-	setp.eq.s64	%p6, %rd31, 0;
+	setp.eq.s64	%p6, %rd34, 0;
 	@%p6 bra 	BB0_3;
 
-	cvta.to.global.u64 	%rd45, %rd31;
+	cvta.to.global.u64 	%rd45, %rd34;
 	mul.wide.s32 	%rd46, %r4, 4;
 	add.s64 	%rd47, %rd45, %rd46;
 	ld.global.nc.f32 	%f81, [%rd47];
 	mul.f32 	%f307, %f81, %f307;
 
 BB0_3:
-	setp.eq.s64	%p7, %rd32, 0;
+	setp.eq.s64	%p7, %rd35, 0;
 	@%p7 bra 	BB0_5;
 
-	cvta.to.global.u64 	%rd48, %rd32;
+	cvta.to.global.u64 	%rd48, %rd35;
 	mul.wide.s32 	%rd49, %r4, 4;
 	add.s64 	%rd50, %rd48, %rd49;
 	ld.global.nc.f32 	%f82, [%rd50];
 	mul.f32 	%f308, %f82, %f308;
 
 BB0_5:
-	setp.eq.s64	%p8, %rd33, 0;
+	setp.eq.s64	%p8, %rd36, 0;
 	@%p8 bra 	BB0_7;
 
-	cvta.to.global.u64 	%rd51, %rd33;
+	cvta.to.global.u64 	%rd51, %rd36;
 	mul.wide.s32 	%rd52, %r4, 4;
 	add.s64 	%rd53, %rd51, %rd52;
 	ld.global.nc.f32 	%f83, [%rd53];
 	mul.f32 	%f309, %f83, %f309;
 
 BB0_7:
-	setp.eq.s64	%p9, %rd34, 0;
+	setp.eq.s64	%p9, %rd37, 0;
 	@%p9 bra 	BB0_9;
 
-	cvta.to.global.u64 	%rd54, %rd34;
+	cvta.to.global.u64 	%rd54, %rd37;
 	mul.wide.s32 	%rd55, %r4, 4;
 	add.s64 	%rd56, %rd54, %rd55;
 	ld.global.nc.f32 	%f84, [%rd56];
 	mul.f32 	%f310, %f84, %f310;
 
 BB0_9:
-	setp.eq.s64	%p10, %rd35, 0;
+	setp.eq.s64	%p10, %rd38, 0;
 	@%p10 bra 	BB0_11;
 
-	cvta.to.global.u64 	%rd57, %rd35;
+	cvta.to.global.u64 	%rd57, %rd38;
 	mul.wide.s32 	%rd58, %r4, 4;
 	add.s64 	%rd59, %rd57, %rd58;
 	ld.global.nc.f32 	%f85, [%rd59];
@@ -6929,10 +6929,10 @@ BB0_32:
 	fma.rn.f32 	%f316, %f316, %f108, %f107;
 
 BB0_34:
-	cvta.to.global.u64 	%rd63, %rd36;
+	cvta.to.global.u64 	%rd63, %rd31;
 	mul.wide.s32 	%rd64, %r4, 4;
 	add.s64 	%rd14, %rd63, %rd64;
-	setp.eq.s64	%p24, %rd36, 0;
+	setp.eq.s64	%p24, %rd31, 0;
 	mov.f32 	%f318, %f316;
 	@%p24 bra 	BB0_36;
 
@@ -6940,13 +6940,13 @@ BB0_34:
 	mul.f32 	%f318, %f316, %f109;
 
 BB0_36:
-	cvta.to.global.u64 	%rd65, %rd37;
+	cvta.to.global.u64 	%rd65, %rd32;
 	add.s64 	%rd67, %rd6, %rd64;
 	ld.global.f32 	%f110, [%rd67];
 	add.f32 	%f111, %f318, %f110;
 	st.global.f32 	[%rd67], %f111;
 	add.s64 	%rd15, %rd65, %rd64;
-	setp.eq.s64	%p25, %rd37, 0;
+	setp.eq.s64	%p25, %rd32, 0;
 	mov.f32 	%f319, %f316;
 	@%p25 bra 	BB0_38;
 
@@ -6954,13 +6954,13 @@ BB0_36:
 	mul.f32 	%f319, %f316, %f112;
 
 BB0_38:
-	cvta.to.global.u64 	%rd68, %rd38;
+	cvta.to.global.u64 	%rd68, %rd33;
 	add.s64 	%rd70, %rd5, %rd64;
 	ld.global.f32 	%f113, [%rd70];
 	add.f32 	%f114, %f319, %f113;
 	st.global.f32 	[%rd70], %f114;
 	add.s64 	%rd16, %rd68, %rd64;
-	setp.eq.s64	%p26, %rd38, 0;
+	setp.eq.s64	%p26, %rd33, 0;
 	mov.f32 	%f320, %f316;
 	@%p26 bra 	BB0_40;
 
@@ -7529,18 +7529,18 @@ BB0_87:
 	.param .u64 addspin2beff_param_7,
 	.param .u64 addspin2beff_param_8,
 	.param .u64 addspin2beff_param_9,
-	.param .f32 addspin2beff_param_10,
+	.param .u64 addspin2beff_param_10,
 	.param .u64 addspin2beff_param_11,
-	.param .f32 addspin2beff_param_12,
-	.param .u64 addspin2beff_param_13,
-	.param .f32 addspin2beff_param_14,
-	.param .u64 addspin2beff_param_15,
-	.param .f32 addspin2beff_param_16,
-	.param .u64 addspin2beff_param_17,
-	.param .f32 addspin2beff_param_18,
-	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .f32 addspin2beff_param_19,
 	.param .u64 addspin2beff_param_20,
-	.param .u64 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_21,
 	.param .f32 addspin2beff_param_22,
 	.param .f32 addspin2beff_param_23,
 	.param .f32 addspin2beff_param_24,
@@ -7564,25 +7564,25 @@ BB0_87:
 	ld.param.u64 	%rd28, [addspin2beff_param_0];
 	ld.param.u64 	%rd29, [addspin2beff_param_1];
 	ld.param.u64 	%rd30, [addspin2beff_param_2];
-	ld.param.u64 	%rd39, [addspin2beff_param_3];
-	ld.param.u64 	%rd40, [addspin2beff_param_4];
-	ld.param.u64 	%rd41, [addspin2beff_param_5];
-	ld.param.u64 	%rd42, [addspin2beff_param_6];
-	ld.param.u64 	%rd43, [addspin2beff_param_7];
-	ld.param.u64 	%rd44, [addspin2beff_param_8];
-	ld.param.u64 	%rd31, [addspin2beff_param_9];
-	ld.param.f32 	%f307, [addspin2beff_param_10];
-	ld.param.u64 	%rd32, [addspin2beff_param_11];
-	ld.param.f32 	%f308, [addspin2beff_param_12];
-	ld.param.u64 	%rd33, [addspin2beff_param_13];
-	ld.param.f32 	%f309, [addspin2beff_param_14];
-	ld.param.u64 	%rd34, [addspin2beff_param_15];
-	ld.param.f32 	%f310, [addspin2beff_param_16];
-	ld.param.u64 	%rd35, [addspin2beff_param_17];
-	ld.param.f32 	%f311, [addspin2beff_param_18];
-	ld.param.u64 	%rd36, [addspin2beff_param_19];
-	ld.param.u64 	%rd37, [addspin2beff_param_20];
-	ld.param.u64 	%rd38, [addspin2beff_param_21];
+	ld.param.u64 	%rd31, [addspin2beff_param_3];
+	ld.param.u64 	%rd32, [addspin2beff_param_4];
+	ld.param.u64 	%rd33, [addspin2beff_param_5];
+	ld.param.u64 	%rd39, [addspin2beff_param_6];
+	ld.param.u64 	%rd40, [addspin2beff_param_7];
+	ld.param.u64 	%rd41, [addspin2beff_param_8];
+	ld.param.u64 	%rd42, [addspin2beff_param_9];
+	ld.param.u64 	%rd43, [addspin2beff_param_10];
+	ld.param.u64 	%rd44, [addspin2beff_param_11];
+	ld.param.u64 	%rd34, [addspin2beff_param_12];
+	ld.param.f32 	%f307, [addspin2beff_param_13];
+	ld.param.u64 	%rd35, [addspin2beff_param_14];
+	ld.param.f32 	%f308, [addspin2beff_param_15];
+	ld.param.u64 	%rd36, [addspin2beff_param_16];
+	ld.param.f32 	%f309, [addspin2beff_param_17];
+	ld.param.u64 	%rd37, [addspin2beff_param_18];
+	ld.param.f32 	%f310, [addspin2beff_param_19];
+	ld.param.u64 	%rd38, [addspin2beff_param_20];
+	ld.param.f32 	%f311, [addspin2beff_param_21];
 	ld.param.f32 	%f78, [addspin2beff_param_22];
 	ld.param.f32 	%f79, [addspin2beff_param_23];
 	ld.param.f32 	%f80, [addspin2beff_param_24];
@@ -7616,50 +7616,50 @@ BB0_87:
 
 	mad.lo.s32 	%r102, %r3, %r91, %r2;
 	mad.lo.s32 	%r4, %r102, %r90, %r1;
-	setp.eq.s64	%p6, %rd31, 0;
+	setp.eq.s64	%p6, %rd34, 0;
 	@%p6 bra 	BB0_3;
 
-	cvta.to.global.u64 	%rd45, %rd31;
+	cvta.to.global.u64 	%rd45, %rd34;
 	mul.wide.s32 	%rd46, %r4, 4;
 	add.s64 	%rd47, %rd45, %rd46;
 	ld.global.nc.f32 	%f81, [%rd47];
 	mul.f32 	%f307, %f81, %f307;
 
 BB0_3:
-	setp.eq.s64	%p7, %rd32, 0;
+	setp.eq.s64	%p7, %rd35, 0;
 	@%p7 bra 	BB0_5;
 
-	cvta.to.global.u64 	%rd48, %rd32;
+	cvta.to.global.u64 	%rd48, %rd35;
 	mul.wide.s32 	%rd49, %r4, 4;
 	add.s64 	%rd50, %rd48, %rd49;
 	ld.global.nc.f32 	%f82, [%rd50];
 	mul.f32 	%f308, %f82, %f308;
 
 BB0_5:
-	setp.eq.s64	%p8, %rd33, 0;
+	setp.eq.s64	%p8, %rd36, 0;
 	@%p8 bra 	BB0_7;
 
-	cvta.to.global.u64 	%rd51, %rd33;
+	cvta.to.global.u64 	%rd51, %rd36;
 	mul.wide.s32 	%rd52, %r4, 4;
 	add.s64 	%rd53, %rd51, %rd52;
 	ld.global.nc.f32 	%f83, [%rd53];
 	mul.f32 	%f309, %f83, %f309;
 
 BB0_7:
-	setp.eq.s64	%p9, %rd34, 0;
+	setp.eq.s64	%p9, %rd37, 0;
 	@%p9 bra 	BB0_9;
 
-	cvta.to.global.u64 	%rd54, %rd34;
+	cvta.to.global.u64 	%rd54, %rd37;
 	mul.wide.s32 	%rd55, %r4, 4;
 	add.s64 	%rd56, %rd54, %rd55;
 	ld.global.nc.f32 	%f84, [%rd56];
 	mul.f32 	%f310, %f84, %f310;
 
 BB0_9:
-	setp.eq.s64	%p10, %rd35, 0;
+	setp.eq.s64	%p10, %rd38, 0;
 	@%p10 bra 	BB0_11;
 
-	cvta.to.global.u64 	%rd57, %rd35;
+	cvta.to.global.u64 	%rd57, %rd38;
 	mul.wide.s32 	%rd58, %r4, 4;
 	add.s64 	%rd59, %rd57, %rd58;
 	ld.global.nc.f32 	%f85, [%rd59];
@@ -7848,10 +7848,10 @@ BB0_32:
 	fma.rn.f32 	%f316, %f316, %f108, %f107;
 
 BB0_34:
-	cvta.to.global.u64 	%rd63, %rd36;
+	cvta.to.global.u64 	%rd63, %rd31;
 	mul.wide.s32 	%rd64, %r4, 4;
 	add.s64 	%rd14, %rd63, %rd64;
-	setp.eq.s64	%p24, %rd36, 0;
+	setp.eq.s64	%p24, %rd31, 0;
 	mov.f32 	%f318, %f316;
 	@%p24 bra 	BB0_36;
 
@@ -7859,13 +7859,13 @@ BB0_34:
 	mul.f32 	%f318, %f316, %f109;
 
 BB0_36:
-	cvta.to.global.u64 	%rd65, %rd37;
+	cvta.to.global.u64 	%rd65, %rd32;
 	add.s64 	%rd67, %rd6, %rd64;
 	ld.global.f32 	%f110, [%rd67];
 	add.f32 	%f111, %f318, %f110;
 	st.global.f32 	[%rd67], %f111;
 	add.s64 	%rd15, %rd65, %rd64;
-	setp.eq.s64	%p25, %rd37, 0;
+	setp.eq.s64	%p25, %rd32, 0;
 	mov.f32 	%f319, %f316;
 	@%p25 bra 	BB0_38;
 
@@ -7873,13 +7873,13 @@ BB0_36:
 	mul.f32 	%f319, %f316, %f112;
 
 BB0_38:
-	cvta.to.global.u64 	%rd68, %rd38;
+	cvta.to.global.u64 	%rd68, %rd33;
 	add.s64 	%rd70, %rd5, %rd64;
 	ld.global.f32 	%f113, [%rd70];
 	add.f32 	%f114, %f319, %f113;
 	st.global.f32 	[%rd70], %f114;
 	add.s64 	%rd16, %rd68, %rd64;
-	setp.eq.s64	%p26, %rd38, 0;
+	setp.eq.s64	%p26, %rd33, 0;
 	mov.f32 	%f320, %f316;
 	@%p26 bra 	BB0_40;
 
@@ -8448,18 +8448,18 @@ BB0_87:
 	.param .u64 addspin2beff_param_7,
 	.param .u64 addspin2beff_param_8,
 	.param .u64 addspin2beff_param_9,
-	.param .f32 addspin2beff_param_10,
+	.param .u64 addspin2beff_param_10,
 	.param .u64 addspin2beff_param_11,
-	.param .f32 addspin2beff_param_12,
-	.param .u64 addspin2beff_param_13,
-	.param .f32 addspin2beff_param_14,
-	.param .u64 addspin2beff_param_15,
-	.param .f32 addspin2beff_param_16,
-	.param .u64 addspin2beff_param_17,
-	.param .f32 addspin2beff_param_18,
-	.param .u64 addspin2beff_param_19,
+	.param .u64 addspin2beff_param_12,
+	.param .f32 addspin2beff_param_13,
+	.param .u64 addspin2beff_param_14,
+	.param .f32 addspin2beff_param_15,
+	.param .u64 addspin2beff_param_16,
+	.param .f32 addspin2beff_param_17,
+	.param .u64 addspin2beff_param_18,
+	.param .f32 addspin2beff_param_19,
 	.param .u64 addspin2beff_param_20,
-	.param .u64 addspin2beff_param_21,
+	.param .f32 addspin2beff_param_21,
 	.param .f32 addspin2beff_param_22,
 	.param .f32 addspin2beff_param_23,
 	.param .f32 addspin2beff_param_24,
@@ -8483,25 +8483,25 @@ BB0_87:
 	ld.param.u64 	%rd28, [addspin2beff_param_0];
 	ld.param.u64 	%rd29, [addspin2beff_param_1];
 	ld.param.u64 	%rd30, [addspin2beff_param_2];
-	ld.param.u64 	%rd39, [addspin2beff_param_3];
-	ld.param.u64 	%rd40, [addspin2beff_param_4];
-	ld.param.u64 	%rd41, [addspin2beff_param_5];
-	ld.param.u64 	%rd42, [addspin2beff_param_6];
-	ld.param.u64 	%rd43, [addspin2beff_param_7];
-	ld.param.u64 	%rd44, [addspin2beff_param_8];
-	ld.param.u64 	%rd31, [addspin2beff_param_9];
-	ld.param.f32 	%f307, [addspin2beff_param_10];
-	ld.param.u64 	%rd32, [addspin2beff_param_11];
-	ld.param.f32 	%f308, [addspin2beff_param_12];
-	ld.param.u64 	%rd33, [addspin2beff_param_13];
-	ld.param.f32 	%f309, [addspin2beff_param_14];
-	ld.param.u64 	%rd34, [addspin2beff_param_15];
-	ld.param.f32 	%f310, [addspin2beff_param_16];
-	ld.param.u64 	%rd35, [addspin2beff_param_17];
-	ld.param.f32 	%f311, [addspin2beff_param_18];
-	ld.param.u64 	%rd36, [addspin2beff_param_19];
-	ld.param.u64 	%rd37, [addspin2beff_param_20];
-	ld.param.u64 	%rd38, [addspin2beff_param_21];
+	ld.param.u64 	%rd31, [addspin2beff_param_3];
+	ld.param.u64 	%rd32, [addspin2beff_param_4];
+	ld.param.u64 	%rd33, [addspin2beff_param_5];
+	ld.param.u64 	%rd39, [addspin2beff_param_6];
+	ld.param.u64 	%rd40, [addspin2beff_param_7];
+	ld.param.u64 	%rd41, [addspin2beff_param_8];
+	ld.param.u64 	%rd42, [addspin2beff_param_9];
+	ld.param.u64 	%rd43, [addspin2beff_param_10];
+	ld.param.u64 	%rd44, [addspin2beff_param_11];
+	ld.param.u64 	%rd34, [addspin2beff_param_12];
+	ld.param.f32 	%f307, [addspin2beff_param_13];
+	ld.param.u64 	%rd35, [addspin2beff_param_14];
+	ld.param.f32 	%f308, [addspin2beff_param_15];
+	ld.param.u64 	%rd36, [addspin2beff_param_16];
+	ld.param.f32 	%f309, [addspin2beff_param_17];
+	ld.param.u64 	%rd37, [addspin2beff_param_18];
+	ld.param.f32 	%f310, [addspin2beff_param_19];
+	ld.param.u64 	%rd38, [addspin2beff_param_20];
+	ld.param.f32 	%f311, [addspin2beff_param_21];
 	ld.param.f32 	%f78, [addspin2beff_param_22];
 	ld.param.f32 	%f79, [addspin2beff_param_23];
 	ld.param.f32 	%f80, [addspin2beff_param_24];
@@ -8535,50 +8535,50 @@ BB0_87:
 
 	mad.lo.s32 	%r102, %r3, %r91, %r2;
 	mad.lo.s32 	%r4, %r102, %r90, %r1;
-	setp.eq.s64	%p6, %rd31, 0;
+	setp.eq.s64	%p6, %rd34, 0;
 	@%p6 bra 	BB0_3;
 
-	cvta.to.global.u64 	%rd45, %rd31;
+	cvta.to.global.u64 	%rd45, %rd34;
 	mul.wide.s32 	%rd46, %r4, 4;
 	add.s64 	%rd47, %rd45, %rd46;
 	ld.global.nc.f32 	%f81, [%rd47];
 	mul.f32 	%f307, %f81, %f307;
 
 BB0_3:
-	setp.eq.s64	%p7, %rd32, 0;
+	setp.eq.s64	%p7, %rd35, 0;
 	@%p7 bra 	BB0_5;
 
-	cvta.to.global.u64 	%rd48, %rd32;
+	cvta.to.global.u64 	%rd48, %rd35;
 	mul.wide.s32 	%rd49, %r4, 4;
 	add.s64 	%rd50, %rd48, %rd49;
 	ld.global.nc.f32 	%f82, [%rd50];
 	mul.f32 	%f308, %f82, %f308;
 
 BB0_5:
-	setp.eq.s64	%p8, %rd33, 0;
+	setp.eq.s64	%p8, %rd36, 0;
 	@%p8 bra 	BB0_7;
 
-	cvta.to.global.u64 	%rd51, %rd33;
+	cvta.to.global.u64 	%rd51, %rd36;
 	mul.wide.s32 	%rd52, %r4, 4;
 	add.s64 	%rd53, %rd51, %rd52;
 	ld.global.nc.f32 	%f83, [%rd53];
 	mul.f32 	%f309, %f83, %f309;
 
 BB0_7:
-	setp.eq.s64	%p9, %rd34, 0;
+	setp.eq.s64	%p9, %rd37, 0;
 	@%p9 bra 	BB0_9;
 
-	cvta.to.global.u64 	%rd54, %rd34;
+	cvta.to.global.u64 	%rd54, %rd37;
 	mul.wide.s32 	%rd55, %r4, 4;
 	add.s64 	%rd56, %rd54, %rd55;
 	ld.global.nc.f32 	%f84, [%rd56];
 	mul.f32 	%f310, %f84, %f310;
 
 BB0_9:
-	setp.eq.s64	%p10, %rd35, 0;
+	setp.eq.s64	%p10, %rd38, 0;
 	@%p10 bra 	BB0_11;
 
-	cvta.to.global.u64 	%rd57, %rd35;
+	cvta.to.global.u64 	%rd57, %rd38;
 	mul.wide.s32 	%rd58, %r4, 4;
 	add.s64 	%rd59, %rd57, %rd58;
 	ld.global.nc.f32 	%f85, [%rd59];
@@ -8767,10 +8767,10 @@ BB0_32:
 	fma.rn.f32 	%f316, %f316, %f108, %f107;
 
 BB0_34:
-	cvta.to.global.u64 	%rd63, %rd36;
+	cvta.to.global.u64 	%rd63, %rd31;
 	mul.wide.s32 	%rd64, %r4, 4;
 	add.s64 	%rd14, %rd63, %rd64;
-	setp.eq.s64	%p24, %rd36, 0;
+	setp.eq.s64	%p24, %rd31, 0;
 	mov.f32 	%f318, %f316;
 	@%p24 bra 	BB0_36;
 
@@ -8778,13 +8778,13 @@ BB0_34:
 	mul.f32 	%f318, %f316, %f109;
 
 BB0_36:
-	cvta.to.global.u64 	%rd65, %rd37;
+	cvta.to.global.u64 	%rd65, %rd32;
 	add.s64 	%rd67, %rd6, %rd64;
 	ld.global.f32 	%f110, [%rd67];
 	add.f32 	%f111, %f318, %f110;
 	st.global.f32 	[%rd67], %f111;
 	add.s64 	%rd15, %rd65, %rd64;
-	setp.eq.s64	%p25, %rd37, 0;
+	setp.eq.s64	%p25, %rd32, 0;
 	mov.f32 	%f319, %f316;
 	@%p25 bra 	BB0_38;
 
@@ -8792,13 +8792,13 @@ BB0_36:
 	mul.f32 	%f319, %f316, %f112;
 
 BB0_38:
-	cvta.to.global.u64 	%rd68, %rd38;
+	cvta.to.global.u64 	%rd68, %rd33;
 	add.s64 	%rd70, %rd5, %rd64;
 	ld.global.f32 	%f113, [%rd70];
 	add.f32 	%f114, %f319, %f113;
 	st.global.f32 	[%rd70], %f114;
 	add.s64 	%rd16, %rd68, %rd64;
-	setp.eq.s64	%p26, %rd38, 0;
+	setp.eq.s64	%p26, %rd33, 0;
 	mov.f32 	%f320, %f316;
 	@%p26 bra 	BB0_40;
 

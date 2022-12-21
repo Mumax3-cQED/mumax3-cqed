@@ -6,21 +6,15 @@
 
 extern "C" __global__ void
 addspin2beff(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__ tz,
-          float* __restrict__ dst_sin_x,
-          float* __restrict__ dst_sin_y,
-          float* __restrict__ dst_sin_z,
-          float* __restrict__ dst_cos_x,
-          float* __restrict__ dst_cos_y,
-          float* __restrict__ dst_cos_z,
-          float* __restrict__ wc, float wc_mul,
-          float* __restrict__ msat, float msat_mul,
-          float* __restrict__ brms_x, float brmsx_mul,
-          float* __restrict__ brms_y, float brmsy_mul,
-          float* __restrict__ brms_z, float brmsz_mul,
-          float* __restrict__ mx,
-          float* __restrict__ my,
-          float* __restrict__ mz,
-          float delta_time, float ctime, float vol, int Nx, int Ny, int Nz, uint8_t PBC) {
+             float* __restrict__ mx, float* __restrict__ my, float* __restrict__ mz,
+             float* __restrict__ dst_sin_x, float* __restrict__ dst_sin_y, float* __restrict__ dst_sin_z,
+             float* __restrict__ dst_cos_x, float* __restrict__ dst_cos_y, float* __restrict__ dst_cos_z,
+             float* __restrict__ wc, float wc_mul,
+             float* __restrict__ msat, float msat_mul,
+             float* __restrict__ brms_x, float brmsx_mul,
+             float* __restrict__ brms_y, float brmsy_mul,
+             float* __restrict__ brms_z, float brmsz_mul,
+             float delta_time, float ctime, float vol, int Nx, int Ny, int Nz, uint8_t PBC) {
 
           int ix = blockIdx.x * blockDim.x + threadIdx.x;
           int iy = blockIdx.y * blockDim.y + threadIdx.y;

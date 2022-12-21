@@ -44,13 +44,14 @@ func CalcSpinTorque(dst_slice, m, sin_sum, cos_sum *data.Slice, msat, wc, brms M
 	vol := c[X] * c[Y] * c[Z]
 
 	k_addspin2beff_async(dst_slice.DevPtr(X), dst_slice.DevPtr(Y), dst_slice.DevPtr(Z),
+		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		sin_sum.DevPtr(X), sin_sum.DevPtr(Y), sin_sum.DevPtr(Z),
 		cos_sum.DevPtr(X), cos_sum.DevPtr(Y), cos_sum.DevPtr(Z),
-		wc.DevPtr(0), wc.Mul(0), msat.DevPtr(0), msat.Mul(0),
+		wc.DevPtr(0), wc.Mul(0),
+		msat.DevPtr(0), msat.Mul(0),
 		brms.DevPtr(X), brms.Mul(X),
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
-		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		deltah, float32(ctime), float32(vol), N[X], N[Y], N[Z], pbc, cfg)
 
 	//fmt.Println(GetElemPos(wc.arr, 0))
