@@ -20,7 +20,6 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
 		alpha.DevPtr(0), alpha.Mul(0), N, cfg)
-	// alpha.DevPtr(0), alpha.Mul(0), hbar_factor, N, cfg)
 }
 
 // Landau-Lifshitz torque with precession disabled.

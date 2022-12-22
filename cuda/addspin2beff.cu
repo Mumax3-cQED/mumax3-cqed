@@ -33,42 +33,99 @@ addspin2beff(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__
           float brmsy = amul(brms_y, brmsy_mul, i);
           float brmsz = amul(brms_z, brmsz_mul, i);
 
+          float dt = delta_time/GAMMA0;
+
+          ////////// START IMPLEMENTACION 1
+
           // First summatory
-          dst_sin_x[i] += amul(mx, sin(ctime * wc_val), i);
-          dst_sin_y[i] += amul(my, sin(ctime * wc_val), i);
-          dst_sin_z[i] += amul(mz, sin(ctime * wc_val), i);
-
-          dst_cos_x[i] += amul(mx, cos(ctime * wc_val), i);
-          dst_cos_y[i] += amul(my, cos(ctime * wc_val), i);
-          dst_cos_z[i] += amul(mz, cos(ctime * wc_val), i);
-
-          __syncthreads();
-
-          // Second summatory
-          float result_sum = 0.0;
-
+          float cell_sum = 0.0;
           for (int c = 0; c < Nz; c++) {
             for (int b = 0; b < Ny; b++) {
               for (int a = 0; a < Nx; a++) {
 
-                  int ii = idx(a, b, c);
+                int ii = idx(a, b, c);
 
-                  float sum_x = brmsx * (delta_time/GAMMA0) * ((dst_sin_x[ii] * cos(ctime * wc_val) - dst_cos_x[ii] * sin(ctime * wc_val)));
-                  float sum_y = brmsy * (delta_time/GAMMA0) * ((dst_sin_y[ii] * cos(ctime * wc_val) - dst_cos_y[ii] * sin(ctime * wc_val)));
-                  float sum_z = brmsz * (delta_time/GAMMA0) * ((dst_sin_z[ii] * cos(ctime * wc_val) - dst_cos_z[ii] * sin(ctime * wc_val)));
+                float sum_resx = amul(mx, brmsx, ii);
+                float sum_resy = amul(my, brmsy, ii);
+                float sum_resz = amul(mz, brmsz, ii);
 
-                  result_sum += (sum_x + sum_y + sum_z);
+                cell_sum += (sum_resx + sum_resy + sum_resz);
               }
             }
           }
 
-          __syncthreads();
-
-          float prefactor = (2 / HBAR) * vol * msat_val;
           float3 brms = {brmsx, brmsy, brmsz};
+          float prefactor = (2 / HBAR) * vol * msat_val;
 
-          float3 torque = prefactor * result_sum * brms;
+          dst_sin_x[i] += sin(wc_val * ctime) * cell_sum * dt;
+          dst_cos_x[i] += cos(wc_val * ctime) * cell_sum * dt;
 
+          float gamma =  prefactor * (cos(wc_val * ctime) * dst_sin_x[i] - sin(wc_val * ctime) * dst_cos_x[i]);
+
+          float3 torque = brms * gamma;
+
+          ////////// END IMPLEMENTACION 1
+
+
+          ////////// START IMPLEMENTACION 2
+          // Second summatory
+          // dst_sin_x[i] += sin(wc_val * ctime) * sum_resx * dt;
+          // dst_sin_y[i] += sin(wc_val * ctime) * sum_resy * dt;
+          // dst_sin_z[i] += sin(wc_val * ctime) * sum_resz * dt;
+          //
+          // dst_cos_x[i] += cos(wc_val * ctime) * sum_resx * dt;
+          // dst_cos_y[i] += cos(wc_val * ctime) * sum_resy * dt;
+          // dst_cos_z[i] += cos(wc_val * ctime) * sum_resz * dt;
+
+          // // First summatory
+          // dst_sin_x[i] += amul(mx, sin(ctime * wc_val), i);
+          // dst_sin_y[i] += amul(my, sin(ctime * wc_val), i);
+          // dst_sin_z[i] += amul(mz, sin(ctime * wc_val), i);
+          //
+          // dst_cos_x[i] += amul(mx, cos(ctime * wc_val), i);
+          // dst_cos_y[i] += amul(my, cos(ctime * wc_val), i);
+          // dst_cos_z[i] += amul(mz, cos(ctime * wc_val), i);
+          //
+          // __syncthreads();
+          //
+          // // Second summatory
+          // float result_sum = 0.0;
+          //
+          // for (int c = 0; c < Nz; c++) {
+          //   for (int b = 0; b < Ny; b++) {
+          //     for (int a = 0; a < Nx; a++) {
+          //
+          //         int ii = idx(a, b, c);
+          //
+          //         // First summatory
+          //         dst_sin_x[ii] += amul(mx, sin(ctime * wc_val), ii);
+          //         dst_sin_y[ii] += amul(my, sin(ctime * wc_val), ii);
+          //         dst_sin_z[ii] += amul(mz, sin(ctime * wc_val), ii);
+          //
+          //         dst_cos_x[ii] += amul(mx, cos(ctime * wc_val), ii);
+          //         dst_cos_y[ii] += amul(my, cos(ctime * wc_val), ii);
+          //         dst_cos_z[ii] += amul(mz, cos(ctime * wc_val), ii);
+          //
+          //         // __syncthreads();
+          //
+          //         float sum_x = brmsx * dt * ((dst_sin_x[ii] * cos(ctime * wc_val) - dst_cos_x[ii] * sin(ctime * wc_val)));
+          //         float sum_y = brmsy * dt * ((dst_sin_y[ii] * cos(ctime * wc_val) - dst_cos_y[ii] * sin(ctime * wc_val)));
+          //         float sum_z = brmsz * dt * ((dst_sin_z[ii] * cos(ctime * wc_val) - dst_cos_z[ii] * sin(ctime * wc_val)));
+          //
+          //         result_sum += (sum_x + sum_y + sum_z);
+          //     }
+          //   }
+          // }
+          //
+          //__syncthreads();
+          //
+          //float3 brms = {brmsx, brmsy, brmsz};
+          //float prefactor = (2 / HBAR) * vol * msat_val;
+          //
+          //float3 torque = prefactor * result_sum * brms;
+
+          ////////// END IMPLEMENTACION 2
+          
           //printf("torque.x: %.8f\n", torque.x);
           //printf(torque.y: "%.8f\n", torque.y);
           //printf(torque.z: "%.8f\n", torque.z);

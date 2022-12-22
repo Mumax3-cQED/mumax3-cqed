@@ -58,6 +58,9 @@ func PrintParametersTimeEvolution() {
 
 	if !DisableTimeEvolutionTorque {
 
+		sin_slice = cuda.NewSlice(M.Buffer().NComp(), M.Buffer().Size())
+		cos_slice = cuda.NewSlice(M.Buffer().NComp(), M.Buffer().Size())
+
 		c, _ := B_rms.Slice()
 		v := Wc.MSlice()
 		m_sat := Msat.MSlice()
@@ -98,7 +101,6 @@ func PrintParametersTimeEvolution() {
 
 // Sets dst to the current total torque
 func SetTorque(dst *data.Slice) {
-
 	SetLLTorque(dst)
 	AddSTTorque(dst)
 	FreezeSpins(dst)
@@ -119,6 +121,7 @@ func SetLLTorque(dst *data.Slice) {
 
 		cuda.LLTorque(dst, M.Buffer(), dst, alpha) // overwrite dst with torque
 	} else {
+
 		cuda.LLNoPrecess(dst, M.Buffer(), dst)
 	}
 }
@@ -187,14 +190,6 @@ func SetTempValues(time float64, delta float32) {
 func AddLLTimeTorque(dst *data.Slice) {
 
 	if !DisableTimeEvolutionTorque {
-
-		if sin_slice.DevPtr(0) == nil {
-			sin_slice = cuda.NewSlice(M.Buffer().NComp(), M.Buffer().Size())
-		}
-
-		if cos_slice.DevPtr(0) == nil {
-			cos_slice = cuda.NewSlice(M.Buffer().NComp(), M.Buffer().Size())
-		}
 
 		wc_slice := Wc.MSlice()
 		defer wc_slice.Recycle()
