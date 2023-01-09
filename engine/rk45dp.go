@@ -9,9 +9,9 @@ import (
 	"github.com/mumax/3/util"
 )
 
-var (
-	m *data.Slice
-)
+// var (
+// 	m *data.Slice
+// )
 
 type RK45DP struct {
 	k1 *data.Slice // torque at end of step is kept for beginning of next step
@@ -19,8 +19,7 @@ type RK45DP struct {
 
 func (rk *RK45DP) Step() {
 
-	m = M.Buffer()
-
+	m := M.Buffer()
 	size := m.Size()
 
 	if FixDt != 0 {
@@ -36,11 +35,19 @@ func (rk *RK45DP) Step() {
 	if rk.k1 == nil {
 		rk.k1 = cuda.NewSlice(3, size)
 
+		if !DisableTimeEvolutionTorque {
+			SetTempValues(Time, 0)
+		}
+
 		torqueFn(rk.k1)
 	}
 
 	// FSAL cannot be used with finite temperature
 	if !Temp.isZero() {
+
+		if !DisableTimeEvolutionTorque {
+			SetTempValues(Time, 0)
+		}
 
 		torqueFn(rk.k1)
 	}

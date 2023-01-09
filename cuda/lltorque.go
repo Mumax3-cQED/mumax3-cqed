@@ -12,7 +12,7 @@ import (
 // 	B in Tesla
 // see lltorque.cu
 func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
-	// func LLTorque(torque, m, B *data.Slice, alpha MSlice, hbar_factor int) {
+
 	N := torque.Len()
 	cfg := make1DConf(N)
 
@@ -20,6 +20,28 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
 		alpha.DevPtr(0), alpha.Mul(0), N, cfg)
+}
+
+func LLTorque2(torque, m, B, sin_sum, cos_sum *data.Slice, msat, wc, brms, alpha MSlice, ctime float64, deltah float32, mesh *data.Mesh) {
+
+	N := mesh.Size()
+	cfg := make3DConf(N)
+	pbc := mesh.PBC_code()
+	c := mesh.CellSize()
+	vol := c[X] * c[Y] * c[Z]
+
+	k_lltorque21_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
+		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
+		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
+		sin_sum.DevPtr(X), sin_sum.DevPtr(Y), sin_sum.DevPtr(Z),
+		cos_sum.DevPtr(X), cos_sum.DevPtr(Y), cos_sum.DevPtr(Z),
+		wc.DevPtr(0), wc.Mul(0),
+		msat.DevPtr(0), msat.Mul(0),
+		brms.DevPtr(X), brms.Mul(X),
+		brms.DevPtr(Y), brms.Mul(Y),
+		brms.DevPtr(Z), brms.Mul(Z),
+		deltah, float32(ctime), float32(vol),
+		alpha.DevPtr(0), alpha.Mul(0), N[X], N[Y], N[Z], pbc, cfg)
 }
 
 // Landau-Lifshitz torque with precession disabled.
