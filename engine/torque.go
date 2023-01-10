@@ -31,12 +31,12 @@ var (
 	DisableTimeEvolutionTorque         = true
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
-	B_rms               = NewExcitation("B_rms", "T", "Brms extra parameter for LLG time evolution")
-	Wc                  = NewScalarParam("Wc", "rad/s", "Wc extra parameter for LLG time evolution")
+	B_rms = NewExcitation("B_rms", "T", "Brms extra parameter for LLG time evolution")
+	Wc    = NewScalarParam("Wc", "rad/s", "Wc extra parameter for LLG time evolution")
+
 	Bext_custom float64 = 0.0
 
-	sin_slice, cos_slice *data.Slice
-
+	scn    *data.Slice
 	ctime  float64 = 0.0
 	deltah float32 = 0.0
 )
@@ -60,15 +60,6 @@ func PrintParametersTimeEvolution() {
 	if !DisableTimeEvolutionTorque {
 
 		// Init global variables
-
-		if sin_slice.IsNil() {
-			sin_slice = cuda.NewSlice(M.Buffer().NComp(), M.Buffer().Size())
-		}
-
-		if cos_slice.IsNil() {
-			cos_slice = cuda.NewSlice(M.Buffer().NComp(), M.Buffer().Size())
-		}
-
 		c, _ := B_rms.Slice()
 		v := Wc.MSlice()
 		m_sat := Msat.MSlice()
@@ -119,31 +110,38 @@ func SetTorque(dst *data.Slice) {
 func SetLLTorque(dst *data.Slice) {
 
 	SetEffectiveField(dst) // calc and store B_eff
+	ApplyExtraFieldBeff(dst)
 
 	alpha := Alpha.MSlice()
 	defer alpha.Recycle()
 
 	if Precess {
+		cuda.LLTorque(dst, M.Buffer(), dst, alpha)
+	} else {
+		//fmt.Println("LLNoPrecess")
+		cuda.LLNoPrecess(dst, M.Buffer(), dst)
+	}
+}
 
-		if !DisableTimeEvolutionTorque {
+func ApplyExtraFieldBeff(dst *data.Slice) {
 
-			wc_slice := Wc.MSlice()
-			defer wc_slice.Recycle()
+	if !DisableTimeEvolutionTorque {
 
-			brms_slice := B_rms.MSlice()
-			defer brms_slice.Recycle()
-
-			msat := Msat.MSlice()
-			defer msat.Recycle()
-
-			cuda.LLTorque2(dst, M.Buffer(), dst, sin_slice, cos_slice, msat, wc_slice, brms_slice, alpha, ctime, deltah, Mesh()) // overwrite dst with torque
-		} else {
-			cuda.LLTorque(dst, M.Buffer(), dst, alpha) // overwrite dst with torque
+		if scn.IsNil() {
+			scn = cuda.Buffer(2, M.Buffer().Size())
+			//fmt.Println("Init SCN")
 		}
 
-	} else {
+		wc_slice := Wc.MSlice()
+		defer wc_slice.Recycle()
 
-		cuda.LLNoPrecess(dst, M.Buffer(), dst)
+		brms_slice := B_rms.MSlice()
+		defer brms_slice.Recycle()
+
+		msat := Msat.MSlice()
+		defer msat.Recycle()
+
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), scn, msat, wc_slice, brms_slice, float32(ctime), deltah, Mesh())
 	}
 }
 
@@ -207,23 +205,6 @@ func SetTempValues(time float64, delta float32) {
 	ctime = time
 	deltah = delta
 }
-
-// func AddLLTimeTorque(dst *data.Slice) {
-//
-// 	if !DisableTimeEvolutionTorque {
-//
-// 		wc_slice := Wc.MSlice()
-// 		defer wc_slice.Recycle()
-//
-// 		brms_slice := B_rms.MSlice()
-// 		defer brms_slice.Recycle()
-//
-// 		msat := Msat.MSlice()
-// 		defer msat.Recycle()
-//
-// 		cuda.CalcSpinTorque(dst, M.Buffer(), sin_slice, cos_slice, msat, wc_slice, brms_slice, ctime, deltah, Mesh())
-// 	}
-// }
 
 func GetMaxTorque() float64 {
 	torque := ValueOf(Torque)

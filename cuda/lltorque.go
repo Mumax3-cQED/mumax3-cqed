@@ -3,6 +3,7 @@ package cuda
 // MODIFIED INMA
 import (
 	"github.com/mumax/3/data"
+	"github.com/mumax/3/util"
 )
 
 // Landau-Lifshitz torque divided by gamma0:
@@ -22,28 +23,6 @@ func LLTorque(torque, m, B *data.Slice, alpha MSlice) {
 		alpha.DevPtr(0), alpha.Mul(0), N, cfg)
 }
 
-func LLTorque2(torque, m, B, sin_sum, cos_sum *data.Slice, msat, wc, brms, alpha MSlice, ctime float64, deltah float32, mesh *data.Mesh) {
-
-	N := mesh.Size()
-	cfg := make3DConf(N)
-	pbc := mesh.PBC_code()
-	c := mesh.CellSize()
-	vol := c[X] * c[Y] * c[Z]
-
-	k_lltorque21_async(torque.DevPtr(X), torque.DevPtr(Y), torque.DevPtr(Z),
-		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
-		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z),
-		sin_sum.DevPtr(X), sin_sum.DevPtr(Y), sin_sum.DevPtr(Z),
-		cos_sum.DevPtr(X), cos_sum.DevPtr(Y), cos_sum.DevPtr(Z),
-		wc.DevPtr(0), wc.Mul(0),
-		msat.DevPtr(0), msat.Mul(0),
-		brms.DevPtr(X), brms.Mul(X),
-		brms.DevPtr(Y), brms.Mul(Y),
-		brms.DevPtr(Z), brms.Mul(Z),
-		deltah, float32(ctime), float32(vol),
-		alpha.DevPtr(0), alpha.Mul(0), N[X], N[Y], N[Z], pbc, cfg)
-}
-
 // Landau-Lifshitz torque with precession disabled.
 // Used by engine.Relax().
 func LLNoPrecess(torque, m, B *data.Slice) {
@@ -56,28 +35,22 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 }
 
 // Apply new value Spin Torque to Beff
-func CalcSpinTorque(dst_slice, m, sin_sum, cos_sum *data.Slice, msat, wc, brms MSlice, ctime float64, deltah float32, mesh *data.Mesh) {
+func SubSpinBextraBeff(dst, m, scn *data.Slice, msat, wc, brms MSlice, ctime, deltah float32, mesh *data.Mesh) {
 
-	N := mesh.Size()
+	N := dst.Size()
 	cfg := make3DConf(N)
+	util.Assert(m.Size() == N)
 	pbc := mesh.PBC_code()
 	c := mesh.CellSize()
 	vol := c[X] * c[Y] * c[Z]
 
-	k_addspin2beff_async(dst_slice.DevPtr(X), dst_slice.DevPtr(Y), dst_slice.DevPtr(Z),
+	k_calcspinbeff_async(dst.DevPtr(X), dst.DevPtr(Y), dst.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
-		sin_sum.DevPtr(X), sin_sum.DevPtr(Y), sin_sum.DevPtr(Z),
-		cos_sum.DevPtr(X), cos_sum.DevPtr(Y), cos_sum.DevPtr(Z),
+		scn.DevPtr(X), scn.DevPtr(Y),
 		wc.DevPtr(0), wc.Mul(0),
 		msat.DevPtr(0), msat.Mul(0),
 		brms.DevPtr(X), brms.Mul(X),
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
-		deltah, float32(ctime), float32(vol), N[X], N[Y], N[Z], pbc, cfg)
-
-	//fmt.Println(GetElemPos(wc.arr, 0))
-	//fmt.Println("deltat:", deltah/float32(1.7595e11))
-	//fmt.Println("0:", GetElemPos(dst_slice, 0))
-	//fmt.Println("1:", GetElemPos(dst_slice, 1))
-	//fmt.Println("2:", GetElemPos(dst_slice, 2))
+		deltah, ctime, float32(vol), N[X], N[Y], N[Z], pbc, cfg)
 }

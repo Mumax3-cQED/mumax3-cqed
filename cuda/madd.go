@@ -67,6 +67,11 @@ func Msub2(dst, src1, src2 *data.Slice, factor1, factor2 float32) {
 	}
 }
 
+// Added INMA
+func Msub21(dst, src1, src2 *data.Slice) {
+	Msub2(dst, src1, src2, 1, 1)
+}
+
 // multiply-add: dst[i] = src1[i] * factor1 + src2[i] * factor2 + src3 * factor3
 func Madd3(dst, src1, src2, src3 *data.Slice, factor1, factor2, factor3 float32) {
 	N := dst.Len()

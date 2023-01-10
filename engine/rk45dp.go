@@ -9,10 +9,6 @@ import (
 	"github.com/mumax/3/util"
 )
 
-// var (
-// 	m *data.Slice
-// )
-
 type RK45DP struct {
 	k1 *data.Slice // torque at end of step is kept for beginning of next step
 }
