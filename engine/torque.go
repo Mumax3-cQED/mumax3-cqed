@@ -2,9 +2,8 @@ package engine
 
 // MODIFIED INMA
 import (
-	"reflect"
-	// "math"
 	"fmt"
+	"reflect"
 
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
@@ -36,9 +35,8 @@ var (
 
 	Bext_custom float64 = 0.0
 
-	scn    *data.Slice
-	ctime  float64 = 0.0
-	deltah float32 = 0.0
+	scn           *data.Slice
+	ctime, deltah float32
 )
 
 func init() {
@@ -60,6 +58,7 @@ func PrintParametersTimeEvolution() {
 	if !DisableTimeEvolutionTorque {
 
 		// Init global variables
+
 		c, _ := B_rms.Slice()
 		v := Wc.MSlice()
 		m_sat := Msat.MSlice()
@@ -110,7 +109,7 @@ func SetTorque(dst *data.Slice) {
 func SetLLTorque(dst *data.Slice) {
 
 	SetEffectiveField(dst) // calc and store B_eff
-	ApplyExtraFieldBeff(dst)
+	// ApplyExtraFieldBeff(dst)
 
 	alpha := Alpha.MSlice()
 	defer alpha.Recycle()
@@ -123,14 +122,18 @@ func SetLLTorque(dst *data.Slice) {
 	}
 }
 
+func getScn() *data.Slice {
+
+	if scn == nil {
+		scn = cuda.Buffer(2, M.Buffer().Size())
+	}
+
+	return scn
+}
+
 func ApplyExtraFieldBeff(dst *data.Slice) {
 
 	if !DisableTimeEvolutionTorque {
-
-		if scn.IsNil() {
-			scn = cuda.Buffer(2, M.Buffer().Size())
-			//fmt.Println("Init SCN")
-		}
 
 		wc_slice := Wc.MSlice()
 		defer wc_slice.Recycle()
@@ -141,7 +144,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		msat := Msat.MSlice()
 		defer msat.Recycle()
 
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), scn, msat, wc_slice, brms_slice, float32(ctime), deltah, Mesh())
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScn(), msat, wc_slice, brms_slice, ctime, deltah, Mesh())
 	}
 }
 
@@ -202,7 +205,7 @@ func FreezeSpins(dst *data.Slice) {
 
 // New function for LLG formula time evolution
 func SetTempValues(time float64, delta float32) {
-	ctime = time
+	ctime = float32(time)
 	deltah = delta
 }
 

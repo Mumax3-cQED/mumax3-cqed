@@ -5,7 +5,7 @@
 #include "constants.h"
 #include "stencil.h"
 
-// Landau-Lifshitz torque.
+// Bcustom amount calculation.
 extern "C" __global__ void
 calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
           float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
@@ -69,6 +69,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     float3 brms = {brmsx, brmsy, brmsz};
     float3 bext = brms * gamma;
 
+    // Beff - Bcustom
     tx[i] -= bext.x;
     ty[i] -= bext.y;
     tz[i] -= bext.z;

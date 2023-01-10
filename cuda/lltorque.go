@@ -34,12 +34,12 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z), N, cfg)
 }
 
-// Apply new value Spin Torque to Beff
+// Apply new value Spin Torque to Beff --> Beff - Bcustom
 func SubSpinBextraBeff(dst, m, scn *data.Slice, msat, wc, brms MSlice, ctime, deltah float32, mesh *data.Mesh) {
 
 	N := dst.Size()
-	cfg := make3DConf(N)
 	util.Assert(m.Size() == N)
+	cfg := make3DConf(N)
 	pbc := mesh.PBC_code()
 	c := mesh.CellSize()
 	vol := c[X] * c[Y] * c[Z]

@@ -19,4 +19,5 @@ func SetEffectiveField(dst *data.Slice) {
 		B_therm.AddTo(dst)
 	}
 	AddCustomField(dst)
+	ApplyExtraFieldBeff(dst)
 }
