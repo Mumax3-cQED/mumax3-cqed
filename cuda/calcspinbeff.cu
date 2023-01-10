@@ -57,14 +57,14 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
       }
     }
 
-    float prefactor = (2 / HBAR) * vol * msat_val;
+    float PREFACTOR = (2 / HBAR) * vol * msat_val;
     float dt = delta_time/GAMMA0;
 
     // Second summatory
     sn[i] += sin(wc_val * ctime) * cell_sum * dt;
     cn[i] += cos(wc_val * ctime) * cell_sum * dt;
 
-    float gamma = prefactor * ((cos(wc_val * ctime) * sn[i]) - (sin(wc_val * ctime) * cn[i]));
+    float gamma = PREFACTOR * ((cos(wc_val * ctime) * sn[i]) - (sin(wc_val * ctime) * cn[i]));
 
     float3 brms = {brmsx, brmsy, brmsz};
     float3 bext = brms * gamma;
