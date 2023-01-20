@@ -35,8 +35,8 @@ var (
 
 	Bext_custom float64 = 0.0
 
-	scn           *data.Slice
-	ctime, deltah float32
+	scn, sin_slice, cos_slice, sum_slice *data.Slice
+	ctime, deltah                        float32
 )
 
 func init() {
@@ -58,10 +58,13 @@ func PrintParametersTimeEvolution() {
 	if !DisableTimeEvolutionTorque {
 
 		// Init global variables
+		sin_slice = cuda.NewSlice(M.Buffer().NComp(), M.Buffer().Size())
+		cos_slice = cuda.NewSlice(M.Buffer().NComp(), M.Buffer().Size())
 
 		c, _ := B_rms.Slice()
 		v := Wc.MSlice()
 		m_sat := Msat.MSlice()
+		alpha := Alpha.MSlice()
 
 		fmt.Println("")
 		fmt.Println("------------------------------------------------")
@@ -72,6 +75,7 @@ func PrintParametersTimeEvolution() {
 
 		fmt.Println(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
 		fmt.Println(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
+		fmt.Println(" Alpha:", alpha.Mul(0))
 		fmt.Println(" B_ext custom (T):", Bext_custom)
 
 		if m_sat.Mul(0) != 0.0 {
@@ -93,6 +97,7 @@ func PrintParametersTimeEvolution() {
 
 		defer m_sat.Recycle()
 		defer v.Recycle()
+		defer alpha.Recycle()
 		defer c.Free()
 	}
 }
@@ -101,20 +106,26 @@ func PrintParametersTimeEvolution() {
 func SetTorque(dst *data.Slice) {
 	SetLLTorque(dst)
 	AddSTTorque(dst)
+	// AddLLTimeTorque(dst)
 	FreezeSpins(dst)
-	RemoveCustomFields()
 }
 
 // Sets dst to the current Landau-Lifshitz torque
 func SetLLTorque(dst *data.Slice) {
 
 	SetEffectiveField(dst) // calc and store B_eff
-	// ApplyExtraFieldBeff(dst)
+	//ApplyExtraFieldBeff(dst)
 
 	alpha := Alpha.MSlice()
 	defer alpha.Recycle()
 
 	if Precess {
+		// ApplyExtraFieldBeff(dst)
+
+		// if !DisableTimeEvolutionTorque {
+		// 	AddLLTimeTorque(dst)
+		// }
+
 		cuda.LLTorque(dst, M.Buffer(), dst, alpha)
 	} else {
 		//fmt.Println("LLNoPrecess")
@@ -122,10 +133,19 @@ func SetLLTorque(dst *data.Slice) {
 	}
 }
 
-func getScn() *data.Slice {
+func getSumSlice() *data.Slice {
+
+	if sum_slice == nil {
+		sum_slice = cuda.NewSlice(1, M.Buffer().Size())
+	}
+
+	return sum_slice
+}
+
+func getScnSlice() *data.Slice {
 
 	if scn == nil {
-		scn = cuda.Buffer(2, M.Buffer().Size())
+		scn = cuda.NewSlice(2, M.Buffer().Size())
 	}
 
 	return scn
@@ -144,7 +164,29 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		msat := Msat.MSlice()
 		defer msat.Recycle()
 
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScn(), msat, wc_slice, brms_slice, ctime, deltah, Mesh())
+		// b, _ := B_rms.Slice()
+		// defer b.Free()
+		//
+		// result := cuda.Dot(M.Buffer(), b)
+		// cuda.SubSpinBextraBeff(dst, M.Buffer(), getScn(), msat, wc_slice, brms_slice, ctime, deltah, result, Mesh())
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), getSumSlice(), msat, wc_slice, brms_slice, ctime, deltah, Mesh())
+	}
+}
+
+func AddLLTimeTorque(dst *data.Slice) {
+
+	if !DisableTimeEvolutionTorque {
+
+		wc_slice := Wc.MSlice()
+		defer wc_slice.Recycle()
+
+		brms_slice := B_rms.MSlice()
+		defer brms_slice.Recycle()
+
+		msat := Msat.MSlice()
+		defer msat.Recycle()
+
+		cuda.CalcSpinTorque(dst, M.Buffer(), sin_slice, cos_slice, getSumSlice(), msat, wc_slice, brms_slice, ctime, deltah, Mesh())
 	}
 }
 

@@ -3,7 +3,6 @@ package cuda
 // MODIFIED INMA
 import (
 	"github.com/mumax/3/data"
-	"github.com/mumax/3/util"
 )
 
 // Landau-Lifshitz torque divided by gamma0:
@@ -35,10 +34,10 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 }
 
 // Apply new value Spin Torque to Beff --> Beff - Bcustom
-func SubSpinBextraBeff(dst, m, scn *data.Slice, msat, wc, brms MSlice, ctime, deltah float32, mesh *data.Mesh) {
+func SubSpinBextraBeff(dst, m, scn, cell_sum *data.Slice, msat, wc, brms MSlice, ctime, deltah float32, mesh *data.Mesh) {
 
-	N := dst.Size()
-	util.Assert(m.Size() == N)
+	N := mesh.Size()
+	//util.Assert(m.Size() == N)
 	cfg := make3DConf(N)
 	pbc := mesh.PBC_code()
 	c := mesh.CellSize()
@@ -46,7 +45,7 @@ func SubSpinBextraBeff(dst, m, scn *data.Slice, msat, wc, brms MSlice, ctime, de
 
 	k_calcspinbeff_async(dst.DevPtr(X), dst.DevPtr(Y), dst.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
-		scn.DevPtr(X), scn.DevPtr(Y),
+		scn.DevPtr(X), scn.DevPtr(Y), cell_sum.DevPtr(0),
 		wc.DevPtr(0), wc.Mul(0),
 		msat.DevPtr(0), msat.Mul(0),
 		brms.DevPtr(X), brms.Mul(X),
@@ -55,4 +54,31 @@ func SubSpinBextraBeff(dst, m, scn *data.Slice, msat, wc, brms MSlice, ctime, de
 		deltah, ctime, float32(vol), N[X], N[Y], N[Z], pbc, cfg)
 
 	//fmt.Println(GetElemPos(dst, 1))
+}
+
+func CalcSpinTorque(dst_slice, m, sin_sum, cos_sum, cell_sum *data.Slice, msat, wc, brms MSlice, ctime, deltah float32, mesh *data.Mesh) {
+
+	N := mesh.Size()
+	cfg := make3DConf(N)
+	pbc := mesh.PBC_code()
+	c := mesh.CellSize()
+	vol := c[X] * c[Y] * c[Z]
+
+	k_addspin2beff_async(dst_slice.DevPtr(X), dst_slice.DevPtr(Y), dst_slice.DevPtr(Z),
+		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
+		sin_sum.DevPtr(X), sin_sum.DevPtr(Y), sin_sum.DevPtr(Z),
+		cos_sum.DevPtr(X), cos_sum.DevPtr(Y), cos_sum.DevPtr(Z),
+		cell_sum.DevPtr(0),
+		wc.DevPtr(0), wc.Mul(0),
+		msat.DevPtr(0), msat.Mul(0),
+		brms.DevPtr(X), brms.Mul(X),
+		brms.DevPtr(Y), brms.Mul(Y),
+		brms.DevPtr(Z), brms.Mul(Z),
+		deltah, float32(ctime), float32(vol), N[X], N[Y], N[Z], pbc, cfg)
+
+	//fmt.Println(GetElemPos(wc.arr, 0))
+	//fmt.Println("deltat:", deltah/float32(1.7595e11))
+	//fmt.Println("0:", GetElemPos(dst_slice, 0))
+	//fmt.Println("1:", GetElemPos(dst_slice, 1))
+	//fmt.Println("2:", GetElemPos(dst_slice, 2))
 }

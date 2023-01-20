@@ -10,6 +10,7 @@ extern "C" __global__ void
 calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
           float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
           float* __restrict__ sn, float* __restrict__ cn,
+          float* __restrict__ cell_sum,
           float* __restrict__ wc, float wc_mul,
           float* __restrict__ msat, float msat_mul,
           float* __restrict__ brms_x, float brmsx_mul,
@@ -40,29 +41,37 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     ////////// START IMPLEMENTACION 1
 
     // First summatory
-    float cell_sum = 0.0f;
-    for (int c = blockIdx.z * blockDim.z + threadIdx.z; c < Nz; c += blockDim.z * gridDim.z) {
-      for (int b = blockIdx.y * blockDim.y + threadIdx.y; b < Ny; b += blockDim.y * gridDim.y) {
-         for (int a = blockIdx.x * blockDim.x + threadIdx.x; a < Nx; a += blockDim.x * gridDim.x) {
+    // float cell_sum2 = 0.0f;
+    // for (int c = 0; c < Nz; c++) {
+    //   for (int b = 0; b < Ny; b++) {
+    //      for (int a =0; a < Nx; a++) {
+    // float sum2 = 0.0;
+    // for (int c = blockIdx.z * blockDim.z + threadIdx.z; c < Nz; c += blockDim.z * gridDim.z) {
+    //   for (int b = blockIdx.y * blockDim.y + threadIdx.y; b < Ny; b += blockDim.y * gridDim.y) {
+    //      for (int a = blockIdx.x * blockDim.x + threadIdx.x; a < Nx; a += blockDim.x * gridDim.x) {
 
-           __syncthreads();
-           int ii = idx(a, b, c);
+           // int ii = idx(a, b, c);
 
-           float sum_resx = mx[ii] * brmsx;
-           float sum_resy = my[ii] * brmsy;
-           float sum_resz = mz[ii] * brmsz;
+           float sum_resx = mx[i] * brmsx;
+           float sum_resy = my[i] * brmsy;
+           float sum_resz = mz[i] * brmsz;
 
-           cell_sum += (sum_resx + sum_resy + sum_resz);
-        }
-      }
-    }
+           cell_sum[i] += (sum_resx + sum_resy + sum_resz);
+           // sum2 += (sum_resx + sum_resy + sum_resz);
+
+    //     }
+    //   }
+    // }
 
     float PREFACTOR = (2 / HBAR) * vol * msat_val;
     float dt = delta_time/GAMMA0;
 
     // Second summatory
-    sn[i] += sin(wc_val * ctime) * cell_sum * dt;
-    cn[i] += cos(wc_val * ctime) * cell_sum * dt;
+    sn[i] += sin(wc_val * ctime) * cell_sum[i] * dt;
+    cn[i] += cos(wc_val * ctime) * cell_sum[i] * dt;
+
+    // atomicAdd(&sn[i], sin(wc_val * ctime) * cell_sum2 * dt);
+    // atomicAdd(&cn[i], cos(wc_val * ctime) * cell_sum2 * dt);
 
     float gamma = PREFACTOR * ((cos(wc_val * ctime) * sn[i]) - (sin(wc_val * ctime) * cn[i]));
 

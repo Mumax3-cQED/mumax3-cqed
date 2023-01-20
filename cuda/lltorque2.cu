@@ -15,6 +15,7 @@ lltorque2(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__ 
 
         float3 m = {mx[i], my[i], mz[i]};
         float3 H = {hx[i], hy[i], hz[i]};
+
         float alpha = amul(alpha_, alpha_mul, i);
 
         float3 mxH =  cross(m, H);
