@@ -45,7 +45,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     // for (int c = 0; c < Nz; c++) {
     //   for (int b = 0; b < Ny; b++) {
     //      for (int a =0; a < Nx; a++) {
-    float tmpSum = 0.0;
+    float sum_cells = 0.0;
     for (int c = blockIdx.z * blockDim.z + threadIdx.z; c < Nz; c += blockDim.z * gridDim.z) {
       for (int b = blockIdx.y * blockDim.y + threadIdx.y; b < Ny; b += blockDim.y * gridDim.y) {
          for (int a = blockIdx.x * blockDim.x + threadIdx.x; a < Nx; a += blockDim.x * gridDim.x) {
@@ -56,7 +56,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
            float sum_resy = my[ii] * brmsy;
            float sum_resz = mz[ii] * brmsz;
 
-          tmpSum  += (sum_resx + sum_resy + sum_resz);
+          sum_cells  += (sum_resx + sum_resy + sum_resz);
            // sum2 += (sum_resx + sum_resy + sum_resz);
 
         }
@@ -79,18 +79,18 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     //     }
     // }
     // cell_sum[ROW * N + COL] = tmpSum;
-    cell_sum[i] = tmpSum;
+    //cell_sum[i] = tmpSum;
 
-    float PREFACTOR = (2 / HBAR) * vol * msat_val;
     float dt = delta_time/GAMMA0;
 
     // Second summatory
-    sn[i] += sin(wc_val * ctime) * cell_sum[i] * dt;
-    cn[i] += cos(wc_val * ctime) * cell_sum[i] * dt;
+    sn[i] += sin(wc_val * ctime) * sum_cells * dt;
+    cn[i] += cos(wc_val * ctime) * sum_cells * dt;
 
     // atomicAdd(&sn[i], sin(wc_val * ctime) * cell_sum2 * dt);
     // atomicAdd(&cn[i], cos(wc_val * ctime) * cell_sum2 * dt);
 
+    float PREFACTOR = (2 / HBAR) * vol * msat_val;
     float gamma = PREFACTOR * ((cos(wc_val * ctime) * sn[i]) - (sin(wc_val * ctime) * cn[i]));
 
     float3 brms = {brmsx, brmsy, brmsz};
