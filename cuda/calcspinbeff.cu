@@ -18,18 +18,15 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
           float* __restrict__ brms_z, float brmsz_mul,
           float delta_time, float ctime, float vol, int Nx, int Ny, int Nz, uint8_t PBC) {
 
-       int ix = blockIdx.x * blockDim.x + threadIdx.x;
-       int iy = blockIdx.y * blockDim.y + threadIdx.y;
-       int iz = blockIdx.z * blockDim.z + threadIdx.z;
+    int ix = blockIdx.x * blockDim.x + threadIdx.x;
+    int iy = blockIdx.y * blockDim.y + threadIdx.y;
+    int iz = blockIdx.z * blockDim.z + threadIdx.z;
 
-       if (ix >= Nx || iy >= Ny || iz >= Nz) {
-           return;
-       }
+    if (ix >= Nx || iy >= Ny || iz >= Nz) {
+       return;
+    }
 
-        int i = idx(ix, iy, iz);
-
-    // int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
-    // if (i < N) {
+    int i = idx(ix, iy, iz);
 
     float wc_val = amul(wc, wc_mul, i);
     float msat_val = amul(msat, msat_mul, i);
@@ -38,13 +35,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     float brmsy = amul(brms_y, brmsy_mul, i);
     float brmsz = amul(brms_z, brmsz_mul, i);
 
-    ////////// START IMPLEMENTACION 1
-
     // First summatory
-    // float cell_sum2 = 0.0f;
-    // for (int c = 0; c < Nz; c++) {
-    //   for (int b = 0; b < Ny; b++) {
-    //      for (int a =0; a < Nx; a++) {
     float sum_cells = 0.0;
     for (int c = blockIdx.z * blockDim.z + threadIdx.z; c < Nz; c += blockDim.z * gridDim.z) {
       for (int b = blockIdx.y * blockDim.y + threadIdx.y; b < Ny; b += blockDim.y * gridDim.y) {
@@ -56,39 +47,16 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
            float sum_resy = my[ii] * brmsy;
            float sum_resz = mz[ii] * brmsz;
 
-          sum_cells  += (sum_resx + sum_resy + sum_resz);
-           // sum2 += (sum_resx + sum_resy + sum_resz);
-
+           sum_cells  += (sum_resx + sum_resy + sum_resz);
         }
       }
     }
-
-    // int ROW = blockIdx.y*blockDim.y+threadIdx.y;
-    // int COL = blockIdx.x*blockDim.x+threadIdx.x;
-
-    // float tmpSum = 0;
-    // int N = Nx*Ny*Nz;
-    // // if (ROW < N && COL < N) {
-    //     // each thread computes one element of the block sub-matrix
-    //     for (int ii = 0; ii < N; i++) {
-    //
-    //       float sum_resx = mx[ii] * brmsx;
-    //       float sum_resy = my[ii] * brmsy;
-    //       float sum_resz = mz[ii] * brmsz;
-    //         tmpSum += (sum_resx + sum_resy + sum_resz);//A[ROW * N + i] * B;
-    //     }
-    // }
-    // cell_sum[ROW * N + COL] = tmpSum;
-    //cell_sum[i] = tmpSum;
 
     float dt = delta_time/GAMMA0;
 
     // Second summatory
     sn[i] += sin(wc_val * ctime) * sum_cells * dt;
     cn[i] += cos(wc_val * ctime) * sum_cells * dt;
-
-    // atomicAdd(&sn[i], sin(wc_val * ctime) * cell_sum2 * dt);
-    // atomicAdd(&cn[i], cos(wc_val * ctime) * cell_sum2 * dt);
 
     float PREFACTOR = (2 / HBAR) * vol * msat_val;
     float gamma = PREFACTOR * ((cos(wc_val * ctime) * sn[i]) - (sin(wc_val * ctime) * cn[i]));

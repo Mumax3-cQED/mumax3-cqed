@@ -106,7 +106,6 @@ func PrintParametersTimeEvolution() {
 func SetTorque(dst *data.Slice) {
 	SetLLTorque(dst)
 	AddSTTorque(dst)
-	// AddLLTimeTorque(dst)
 	FreezeSpins(dst)
 }
 
@@ -114,21 +113,13 @@ func SetTorque(dst *data.Slice) {
 func SetLLTorque(dst *data.Slice) {
 
 	SetEffectiveField(dst) // calc and store B_eff
-	//ApplyExtraFieldBeff(dst)
 
 	alpha := Alpha.MSlice()
 	defer alpha.Recycle()
 
 	if Precess {
-		// ApplyExtraFieldBeff(dst)
-
-		// if !DisableTimeEvolutionTorque {
-		// 	AddLLTimeTorque(dst)
-		// }
-
 		cuda.LLTorque(dst, M.Buffer(), dst, alpha)
 	} else {
-		//fmt.Println("LLNoPrecess")
 		cuda.LLNoPrecess(dst, M.Buffer(), dst)
 	}
 }
@@ -164,29 +155,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		msat := Msat.MSlice()
 		defer msat.Recycle()
 
-		// b, _ := B_rms.Slice()
-		// defer b.Free()
-		//
-		// result := cuda.Dot(M.Buffer(), b)
-		// cuda.SubSpinBextraBeff(dst, M.Buffer(), getScn(), msat, wc_slice, brms_slice, ctime, deltah, result, Mesh())
 		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), getSumSlice(), msat, wc_slice, brms_slice, ctime, deltah, Mesh())
-	}
-}
-
-func AddLLTimeTorque(dst *data.Slice) {
-
-	if !DisableTimeEvolutionTorque {
-
-		wc_slice := Wc.MSlice()
-		defer wc_slice.Recycle()
-
-		brms_slice := B_rms.MSlice()
-		defer brms_slice.Recycle()
-
-		msat := Msat.MSlice()
-		defer msat.Recycle()
-
-		cuda.CalcSpinTorque(dst, M.Buffer(), sin_slice, cos_slice, getSumSlice(), msat, wc_slice, brms_slice, ctime, deltah, Mesh())
 	}
 }
 
