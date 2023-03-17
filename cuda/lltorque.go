@@ -62,7 +62,7 @@ func CalcSpinTorque(dst_slice, m, sin_sum, cos_sum, cell_sum *data.Slice, msat, 
 	cfg := make3DConf(N)
 	pbc := mesh.PBC_code()
 	c := mesh.CellSize()
-	vol := c[X] * c[Y] * c[Z]
+	vol := c[X] * c[Y] * c[Z] / (N[X] * N[Y] * N[Z])
 
 	k_addspin2beff_async(dst_slice.DevPtr(X), dst_slice.DevPtr(Y), dst_slice.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
