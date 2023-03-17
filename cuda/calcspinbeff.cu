@@ -16,7 +16,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
           float* __restrict__ brms_x, float brmsx_mul,
           float* __restrict__ brms_y, float brmsy_mul,
           float* __restrict__ brms_z, float brmsz_mul,
-          float delta_time, float ctime, float vol, int Nx, int Ny, int Nz, uint8_t PBC) {
+          float delta_time, float ctime, float delta_vol, int Nx, int Ny, int Nz, uint8_t PBC) {
 
     int ix = blockIdx.x * blockDim.x + threadIdx.x;
     int iy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -58,7 +58,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     sn[i] += sin(wc_val * ctime) * sum_cells * dt;
     cn[i] += cos(wc_val * ctime) * sum_cells * dt;
 
-    float PREFACTOR = (2 / HBAR) * vol * msat_val;
+    float PREFACTOR = (2 / HBAR) * delta_vol * msat_val;
     float gamma = PREFACTOR * ((cos(wc_val * ctime) * sn[i]) - (sin(wc_val * ctime) * cn[i]));
 
     float3 brms = {brmsx, brmsy, brmsz};
