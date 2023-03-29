@@ -61,6 +61,23 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     float brmsy = amul(brms_y, brmsy_mul, idx);
     float brmsz = amul(brms_z, brmsz_mul, idx);
 
+    // Classic loop
+    // First summatory
+    // float sum_cells = 0.0;
+    // for (int c = blockIdx.z * blockDim.z + threadIdx.z; c < Nz; c += blockDim.z * gridDim.z) {
+    //   for (int b = blockIdx.y * blockDim.y + threadIdx.y; b < Ny; b += blockDim.y * gridDim.y) {
+    //      for (int a = blockIdx.x * blockDim.x + threadIdx.x; a < Nx; a += blockDim.x * gridDim.x) {
+    //
+    //        int ii = idx(a, b, c);
+    //
+    //        float sum_resx = mx[ii] * brmsx;
+    //        float sum_resy = my[ii] * brmsy;
+    //        float sum_resz = mz[ii] * brmsz;
+    //
+    //        sum_cells += (sum_resx + sum_resy + sum_resz);
+    //     }
+    //   }
+    // }
     float sum_cells = loop_cells(mx, my, mz, brmsx, brmsy, brmsz, idx);
     float dt = delta_time/GAMMA0;
 

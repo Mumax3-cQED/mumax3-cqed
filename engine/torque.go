@@ -35,8 +35,8 @@ var (
 
 	Bext_custom float64 = 0.0
 
-	scn, sin_slice, cos_slice, sum_slice *data.Slice
-	ctime, deltah                        float32
+	scn, sin_slice, cos_slice *data.Slice
+	ctime, deltah             float32
 )
 
 func init() {
@@ -124,15 +124,6 @@ func SetLLTorque(dst *data.Slice) {
 	}
 }
 
-func getSumSlice() *data.Slice {
-
-	if sum_slice == nil {
-		sum_slice = cuda.NewSlice(1, M.Buffer().Size())
-	}
-
-	return sum_slice
-}
-
 func getScnSlice() *data.Slice {
 
 	if scn == nil {
@@ -155,7 +146,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		msat := Msat.MSlice()
 		defer msat.Recycle()
 
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), getSumSlice(), msat, wc_slice, brms_slice, ctime, deltah, Mesh())
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), msat, wc_slice, brms_slice, ctime, deltah, Mesh())
 	}
 }
 
