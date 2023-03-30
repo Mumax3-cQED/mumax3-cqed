@@ -20,7 +20,7 @@ __inline__ __device__ float warpReduce(float val) {
     return val;
 }
 
-__inline__ __device__ float loop_cells(float* mx, float* my, float* mz, float brmsx, float brmsy, float brmsz, int idx) {
+__inline__ __device__ float loopcells(float* mx, float* my, float* mz, float brmsx, float brmsy, float brmsz, int idx) {
 
     float sum_resx = mx[idx] * brmsx;
     float sum_resy = my[idx] * brmsy;
@@ -80,7 +80,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     //     }
     //   }
     // }
-    float sum_cells = loop_cells(mx, my, mz, brmsx, brmsy, brmsz, idx);
+    float sum_cells = loopcells(mx, my, mz, brmsx, brmsy, brmsz, idx);
     float dt = delta_time/GAMMA0;
 
     // Second summatory
