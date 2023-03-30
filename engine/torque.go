@@ -35,8 +35,8 @@ var (
 
 	Bext_custom float64 = 0.0
 
-	scn, sin_slice, cos_slice *data.Slice
-	ctime, deltah             float32
+	scn           *data.Slice
+	ctime, deltah float32
 )
 
 func init() {
@@ -56,10 +56,6 @@ func init() {
 func PrintParametersTimeEvolution() {
 
 	if !DisableTimeEvolutionTorque {
-
-		// Init global variables
-		sin_slice = cuda.NewSlice(M.Buffer().NComp(), M.Buffer().Size())
-		cos_slice = cuda.NewSlice(M.Buffer().NComp(), M.Buffer().Size())
 
 		c, _ := B_rms.Slice()
 		v := Wc.MSlice()
