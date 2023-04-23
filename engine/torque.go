@@ -28,6 +28,7 @@ var (
 	DisableZhangLiTorque               = false
 	DisableSlonczewskiTorque           = false
 	DisableTimeEvolutionTorque         = true
+	DisableBeffContributions           = false
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
 	B_rms = NewExcitation("B_rms", "T", "Brms extra parameter for LLG time evolution")
@@ -47,6 +48,7 @@ func init() {
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
 	DeclVar("DisableTimeEvolutionTorque", &DisableTimeEvolutionTorque, "Disables Time evolution torque (default=true)")
+	DeclVar("DisableBeffContributions", &DisableBeffContributions, "Disables Beff default contributions (default=false)")
 	DeclVar("DoPrecess", &Precess, "Enables LL precession (default=true)")
 	DeclLValue("FixedLayerPosition", &flposition{}, "Position of the fixed layer: FIXEDLAYER_TOP, FIXEDLAYER_BOTTOM (default=FIXEDLAYER_TOP)")
 	DeclROnly("FIXEDLAYER_TOP", FIXEDLAYER_TOP, "FixedLayerPosition = FIXEDLAYER_TOP instructs mumax3 that fixed layer is on top of the free layer")
@@ -65,6 +67,12 @@ func PrintParametersTimeEvolution() {
 		fmt.Println("")
 		fmt.Println("------------------------------------------------")
 		fmt.Println(" Time evolution factor in LLG equation: Enabled")
+
+		if DisableBeffContributions {
+			fmt.Println(" Beff default contributions: Disabled")
+		} else {
+			fmt.Println(" Beff default contributions: Enabled")
+		}
 
 		cell_size := Mesh().CellSize()
 		num_cells := Mesh().Size()
