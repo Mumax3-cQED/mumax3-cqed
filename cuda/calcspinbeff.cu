@@ -97,4 +97,9 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     tx[idx] -= bext.x;
     ty[idx] -= bext.y;
     tz[idx] -= bext.z;
+
+    // Beff + Bcustom
+    // tx[idx] += bext.x;
+    // ty[idx] += bext.y;
+    // tz[idx] += bext.z;
 }

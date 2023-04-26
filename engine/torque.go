@@ -74,6 +74,12 @@ func PrintParametersTimeEvolution() {
 			fmt.Println(" Beff default contributions: Enabled")
 		}
 
+		if EnableDemag {
+			fmt.Println(" B_demag: Enabled")
+		} else {
+			fmt.Println(" B_demag: Disabled")
+		}
+
 		cell_size := Mesh().CellSize()
 		num_cells := Mesh().Size()
 
