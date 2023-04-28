@@ -5,7 +5,7 @@
 #include "constants.h"
 #include "stencil.h"
 
-#define idx3d(ix,iy,iz) ( ix + iy*Nx + iz*Nx*Ny )
+//#define idx3d(ix,iy,iz) ( ix + iy*Nx + iz*Nx*Ny )
 
 // Note that warpReduce is a custom function that sums the input across threads in a warp using warp-synchronous programming
 // This function uses the shuffle operation (__shfl_down_sync) to perform a pairwise reduction of the input value across threads in a warp
@@ -54,14 +54,14 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
        return;
     }
 
-    int idx = idx3d(ix, iy, iz);
+    int i = idx(ix, iy, iz);
 
-    float wc_val = amul(wc, wc_mul, idx);
-    float msat_val = amul(msat, msat_mul, idx);
+    float wc_val = amul(wc, wc_mul, i);
+    float msat_val = amul(msat, msat_mul, i);
 
-    float brmsx = amul(brms_x, brmsx_mul, idx);
-    float brmsy = amul(brms_y, brmsy_mul, idx);
-    float brmsz = amul(brms_z, brmsz_mul, idx);
+    float brmsx = amul(brms_x, brmsx_mul, i);
+    float brmsy = amul(brms_y, brmsy_mul, i);
+    float brmsz = amul(brms_z, brmsz_mul, i);
 
     // Classic loop
     // First summatory
@@ -80,26 +80,26 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     //     }
     //   }
     // }
-    float sum_cells = loopcells(mx, my, mz, brmsx, brmsy, brmsz, idx);
+    float sum_cells = loopcells(mx, my, mz, brmsx, brmsy, brmsz, i);
     float dt = delta_time/GAMMA0;
 
     // Second summatory
-    sn[idx] += sin(wc_val * ctime) * sum_cells * dt;
-    cn[idx] += cos(wc_val * ctime) * sum_cells * dt;
+    sn[i] += sin(wc_val * ctime) * sum_cells * dt;
+    cn[i] += cos(wc_val * ctime) * sum_cells * dt;
 
     float PREFACTOR = (2 / HBAR) * delta_vol * msat_val;
-    float gamma = PREFACTOR * ((cos(wc_val * ctime) * sn[idx]) - (sin(wc_val * ctime) * cn[idx]));
+    float gamma = PREFACTOR * ((cos(wc_val * ctime) * sn[i]) - (sin(wc_val * ctime) * cn[i]));
 
     float3 brms = {brmsx, brmsy, brmsz};
     float3 bext = brms * gamma;
 
     // Beff - Bcustom
-    tx[idx] -= bext.x;
-    ty[idx] -= bext.y;
-    tz[idx] -= bext.z;
+    tx[i] -= bext.x;
+    ty[i] -= bext.y;
+    tz[i] -= bext.z;
 
     // Beff + Bcustom
-    // tx[idx] += bext.x;
-    // ty[idx] += bext.y;
-    // tz[idx] += bext.z;
+    // tx[i] += bext.x;
+    // ty[i] += bext.y;
+    // tz[i] += bext.z;
 }

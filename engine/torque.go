@@ -60,6 +60,7 @@ func PrintParametersTimeEvolution() {
 	if !DisableTimeEvolutionTorque {
 
 		c, _ := B_rms.Slice()
+		be, _ := B_ext.Slice()
 		v := Wc.MSlice()
 		m_sat := Msat.MSlice()
 		alpha := Alpha.MSlice()
@@ -80,6 +81,18 @@ func PrintParametersTimeEvolution() {
 			fmt.Println(" B_demag: Disabled")
 		}
 
+		if DisableZhangLiTorque {
+			fmt.Println(" Zhang-Li Torque: Disabled")
+		} else {
+			fmt.Println(" Zhang-Li Torque: Enabled")
+		}
+
+		if DisableSlonczewskiTorque {
+			fmt.Println(" Slonczewski Torque: Disabled")
+		} else {
+			fmt.Println(" Slonczewski Torque: Enabled")
+		}
+
 		cell_size := Mesh().CellSize()
 		num_cells := Mesh().Size()
 
@@ -97,6 +110,7 @@ func PrintParametersTimeEvolution() {
 		fmt.Println(" GammaLL (rad/Ts):", GammaLL)
 		fmt.Println(" Wc (rad/s):", v.Mul(0))
 		fmt.Println(" Brms vector (T): [", cuda.GetElemPos(c, X), cuda.GetElemPos(c, Y), cuda.GetElemPos(c, Z), "]")
+		fmt.Println(" B_ext vector (T): [", cuda.GetElemPos(be, X), cuda.GetElemPos(be, Y), cuda.GetElemPos(be, Z), "]")
 
 		if FixDt != 0 {
 			fmt.Println(" FixDt (s):", FixDt)

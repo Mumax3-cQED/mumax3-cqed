@@ -52,4 +52,5 @@ func SubSpinBextraBeff(dst, m, scn *data.Slice, msat, wc, brms MSlice, ctime, de
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
 		deltah, ctime, float32(vol), N[X], N[Y], N[Z], pbc, cfg)
+
 }
