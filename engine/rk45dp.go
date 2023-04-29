@@ -92,7 +92,7 @@ func (rk *RK45DP) Step() {
 
 	// stage 4
 	Time = t0 + (4./5.)*Dt_si
-	madd4(m, m0, rk.k1, k2, k3, 1, (44./45.)*h, (-56./15.)*h, (32./9.)*h)
+	cuda.Madd4(m, m0, rk.k1, k2, k3, 1, (44./45.)*h, (-56./15.)*h, (32./9.)*h)
 
 	M.normalize()
 
@@ -104,7 +104,7 @@ func (rk *RK45DP) Step() {
 
 	// stage 5
 	Time = t0 + (8./9.)*Dt_si
-	madd5(m, m0, rk.k1, k2, k3, k4, 1, (19372./6561.)*h, (-25360./2187.)*h, (64448./6561.)*h, (-212./729.)*h)
+	cuda.Madd5(m, m0, rk.k1, k2, k3, k4, 1, (19372./6561.)*h, (-25360./2187.)*h, (64448./6561.)*h, (-212./729.)*h)
 
 	M.normalize()
 
@@ -116,7 +116,7 @@ func (rk *RK45DP) Step() {
 
 	// stage 6
 	Time = t0 + (1.)*Dt_si
-	madd6(m, m0, rk.k1, k2, k3, k4, k5, 1, (9017./3168.)*h, (-355./33.)*h, (46732./5247.)*h, (49./176.)*h, (-5103./18656.)*h)
+	cuda.Madd6(m, m0, rk.k1, k2, k3, k4, k5, 1, (9017./3168.)*h, (-355./33.)*h, (46732./5247.)*h, (49./176.)*h, (-5103./18656.)*h)
 
 	M.normalize()
 
@@ -129,7 +129,7 @@ func (rk *RK45DP) Step() {
 	// stage 7: 5th order solution
 	Time = t0 + (1.)*Dt_si
 	// no k2
-	madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
+	cuda.Madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
 
 	M.normalize()
 
@@ -144,7 +144,7 @@ func (rk *RK45DP) Step() {
 	// error estimate
 	Err := cuda.Buffer(3, size) //k3 // re-use k3 as error estimate
 	defer cuda.Recycle(Err)
-	madd6(Err, rk.k1, k3, k4, k5, k6, k7, (35./384.)-(5179./57600.), (500./1113.)-(7571./16695.), (125./192.)-(393./640.), (-2187./6784.)-(-92097./339200.), (11./84.)-(187./2100.), (0.)-(1./40.))
+	cuda.Madd6(Err, rk.k1, k3, k4, k5, k6, k7, (35./384.)-(5179./57600.), (500./1113.)-(7571./16695.), (125./192.)-(393./640.), (-2187./6784.)-(-92097./339200.), (11./84.)-(187./2100.), (0.)-(1./40.))
 
 	// determine error
 	err := cuda.MaxVecNorm(Err) * float64(h)
@@ -173,13 +173,13 @@ func (rk *RK45DP) Free() {
 	rk.k1 = nil
 }
 
-// TODO: into cuda
-func madd5(dst, src1, src2, src3, src4, src5 *data.Slice, w1, w2, w3, w4, w5 float32) {
-	cuda.Madd3(dst, src1, src2, src3, w1, w2, w3)
-	cuda.Madd3(dst, dst, src4, src5, 1, w4, w5)
-}
-
-func madd6(dst, src1, src2, src3, src4, src5, src6 *data.Slice, w1, w2, w3, w4, w5, w6 float32) {
-	madd5(dst, src1, src2, src3, src4, src5, w1, w2, w3, w4, w5)
-	cuda.Madd2(dst, dst, src6, 1, w6)
-}
+// // TODO: into cuda
+// func madd5(dst, src1, src2, src3, src4, src5 *data.Slice, w1, w2, w3, w4, w5 float32) {
+// 	cuda.Madd3(dst, src1, src2, src3, w1, w2, w3)
+// 	cuda.Madd3(dst, dst, src4, src5, 1, w4, w5)
+// }
+//
+// func madd6(dst, src1, src2, src3, src4, src5, src6 *data.Slice, w1, w2, w3, w4, w5, w6 float32) {
+// 	madd5(dst, src1, src2, src3, src4, src5, w1, w2, w3, w4, w5)
+// 	cuda.Madd2(dst, dst, src6, 1, w6)
+// }

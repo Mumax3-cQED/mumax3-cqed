@@ -21,6 +21,7 @@ var (
 	Torque                             = NewVectorField("torque", "T", "Total torque/γ0", SetTorque)
 	LLTorque                           = NewVectorField("LLtorque", "T", "Landau-Lifshitz torque/γ0", SetLLTorque)
 	STTorque                           = NewVectorField("STTorque", "T", "Spin-transfer torque/γ0", AddSTTorque)
+	FreeLayerThickness                 = NewScalarParam("FreeLayerThickness", "m", "Slonczewski free layer thickness (if set to zero (default), then the thickness will be deduced from the mesh size)")
 	J                                  = NewExcitation("J", "A/m2", "Electrical current density")
 	MaxTorque                          = NewScalarValue("maxTorque", "T", "Motion term for LLG equation", GetMaxTorque)
 	GammaLL                    float64 = 1.7595e11 // Gyromagnetic ratio of spins, in rad/Ts
@@ -216,8 +217,11 @@ func AddSTTorque(dst *data.Slice) {
 		defer lambda.Recycle()
 		epsPrime := EpsilonPrime.MSlice()
 		defer epsPrime.Recycle()
+		thickness := FreeLayerThickness.MSlice()
+		defer thickness.Recycle()
 		cuda.AddSlonczewskiTorque2(dst, M.Buffer(),
 			msat, j, fixedP, alpha, pol, lambda, epsPrime,
+			thickness,
 			CurrentSignFromFixedLayerPosition[fixedLayerPosition],
 			Mesh())
 	}

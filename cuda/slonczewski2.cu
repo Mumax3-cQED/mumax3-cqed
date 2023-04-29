@@ -18,7 +18,9 @@ addslonczewskitorque2(float* __restrict__ tx, float* __restrict__ ty, float* __r
                       float* __restrict__ pol_,     float  pol_mul,
                       float* __restrict__ lambda_,  float  lambda_mul,
                       float* __restrict__ epsPrime_,float  epsPrime_mul,
-                      float* __restrict__ flt_,     float  flt_mul,
+                      float* __restrict__ thickness_, float thickness_mul,
+                      float meshThickness,
+                      float freeLayerPosition,
                       int N) {
 
     int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
@@ -29,16 +31,21 @@ addslonczewskitorque2(float* __restrict__ tx, float* __restrict__ ty, float* __r
         float3 p = normalized(vmul(px_, py_, pz_, px_mul, py_mul, pz_mul, i));
         float  Ms           = amul(Ms_, Ms_mul, i);
         float  alpha        = amul(alpha_, alpha_mul, i);
-        float  flt          = amul(flt_, flt_mul, i);
         float  pol          = amul(pol_, pol_mul, i);
         float  lambda       = amul(lambda_, lambda_mul, i);
         float  epsilonPrime = amul(epsPrime_, epsPrime_mul, i);
+
+        float thickness = amul(thickness_, thickness_mul, i);
+        if (thickness == 0.0) { // if thickness is not set, use the thickness of the mesh instead
+            thickness = meshThickness;
+        }
+        thickness *= freeLayerPosition; // switch sign if fixedlayer is at the bottom
 
         if (J == 0.0f || Ms == 0.0f) {
             return;
         }
 
-        float beta    = (HBAR / QE) * (J / (flt*Ms) );
+        float beta    = (HBAR / QE) * (J / (thickness*Ms) );
         float lambda2 = lambda * lambda;
         float epsilon = pol * lambda2 / ((lambda2 + 1.0f) + (lambda2 - 1.0f) * dot(p, m));
 
@@ -57,4 +64,3 @@ addslonczewskitorque2(float* __restrict__ tx, float* __restrict__ ty, float* __r
         tz[i] += mxpxmFac * mxpxm.z + pxmFac * pxm.z;
     }
 }
-

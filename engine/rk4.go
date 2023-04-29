@@ -1,10 +1,11 @@
 package engine
 
 import (
+	"math"
+
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
 	"github.com/mumax/3/util"
-	"math"
 )
 
 // Classical 4th order RK solver.
@@ -60,7 +61,7 @@ func (rk *RK4) Step() {
 	if err < MaxErr || Dt_si <= MinDt || FixDt != 0 { // mindt check to avoid infinite loop
 		// step OK
 		// 4th order solution
-		madd5(m, m0, k1, k2, k3, k4, 1, (1./6.)*h, (1./3.)*h, (1./3.)*h, (1./6.)*h)
+		cuda.Madd5(m, m0, k1, k2, k3, k4, 1, (1./6.)*h, (1./3.)*h, (1./3.)*h, (1./6.)*h)
 		M.normalize()
 		NSteps++
 		adaptDt(math.Pow(MaxErr/err, 1./4.))

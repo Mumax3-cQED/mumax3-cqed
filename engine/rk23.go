@@ -1,10 +1,11 @@
 package engine
 
 import (
+	"math"
+
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
 	"github.com/mumax/3/util"
-	"math"
 )
 
 // Bogacki-Shampine solver. 3rd order, 3 evaluations per step, adaptive step.
@@ -72,7 +73,7 @@ func (rk *RK23) Step() {
 	torqueFn(k3)
 
 	// 3rd order solution
-	madd4(m, m0, rk.k1, k2, k3, 1, (2./9.)*h, (1./3.)*h, (4./9.)*h)
+	cuda.Madd4(m, m0, rk.k1, k2, k3, 1, (2./9.)*h, (1./3.)*h, (4./9.)*h)
 	M.normalize()
 
 	// error estimate
@@ -80,7 +81,7 @@ func (rk *RK23) Step() {
 	torqueFn(k4)
 	Err := k2 // re-use k2 as error
 	// difference of 3rd and 2nd order torque without explicitly storing them first
-	madd4(Err, rk.k1, k2, k3, k4, (7./24.)-(2./9.), (1./4.)-(1./3.), (1./3.)-(4./9.), (1. / 8.))
+	cuda.Madd4(Err, rk.k1, k2, k3, k4, (7./24.)-(2./9.), (1./4.)-(1./3.), (1./3.)-(4./9.), (1. / 8.))
 
 	// determine error
 	err := cuda.MaxVecNorm(Err) * float64(h)
