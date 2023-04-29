@@ -27,12 +27,14 @@ func (rk *RK45DP) Step() {
 		rk.Free()
 	}
 
+	h := float32(Dt_si * GammaLL) // internal time step = Dt * gammaLL
+
 	// first step ever: one-time k1 init and eval
 	if rk.k1 == nil {
 		rk.k1 = cuda.NewSlice(3, size)
 
 		if !DisableTimeEvolutionTorque {
-			SetTempValues(Time, 0)
+			SetTempValues(Time, h)
 		}
 
 		torqueFn(rk.k1)
@@ -42,7 +44,7 @@ func (rk *RK45DP) Step() {
 	if !Temp.isZero() {
 
 		if !DisableTimeEvolutionTorque {
-			SetTempValues(Time, 0)
+			SetTempValues(Time, h)
 		}
 
 		torqueFn(rk.k1)
@@ -62,7 +64,7 @@ func (rk *RK45DP) Step() {
 	defer cuda.Recycle(k6)
 	// k2 will be re-used as k7
 
-	h := float32(Dt_si * GammaLL) // internal time step = Dt * gammaLL
+	//h := float32(Dt_si * GammaLL) // internal time step = Dt * gammaLL
 
 	// there is no explicit stage 1: k1 from previous step
 
