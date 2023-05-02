@@ -5,7 +5,7 @@
 #include "constants.h"
 #include "stencil.h"
 
-//#define idx3d(ix,iy,iz) ( ix + iy*Nx + iz*Nx*Ny )
+#define idx3d(ix,iy,iz) ( ix + iy*Nx + iz*Nx*Ny )
 
 // Note that warpReduce is a custom function that sums the input across threads in a warp using warp-synchronous programming
 // This function uses the shuffle operation (__shfl_down_sync) to perform a pairwise reduction of the input value across threads in a warp
@@ -44,7 +44,8 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
           float* __restrict__ brms_x, float brmsx_mul,
           float* __restrict__ brms_y, float brmsy_mul,
           float* __restrict__ brms_z, float brmsz_mul,
-          float delta_time, float ctime, float delta_vol, int Nx, int Ny, int Nz, uint8_t PBC) {
+         float delta_time, float ctime, float delta_vol, int Nx, int Ny, int Nz) {
+        // float delta_time, float ctime, float delta_vol, int Nx, int Ny, int Nz, uint8_t PBC) {
 
     int ix = blockIdx.x * blockDim.x + threadIdx.x;
     int iy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -54,7 +55,8 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
        return;
     }
 
-    int i = idx(ix, iy, iz);
+    // int i = idx(ix, iy, iz);
+    int i = idx3d(ix, iy, iz);
 
     float wc_val = amul(wc, wc_mul, i);
     float msat_val = amul(msat, msat_mul, i);

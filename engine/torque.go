@@ -37,8 +37,9 @@ var (
 
 	Bext_custom float64 = 0.0
 
-	scn           *data.Slice
-	ctime, deltah float32
+	scn    *data.Slice
+	deltah float32 = 0.0
+	ctime  float32 = 0.0
 )
 
 func init() {
@@ -83,15 +84,15 @@ func PrintParametersTimeEvolution() {
 		}
 
 		if DisableZhangLiTorque {
-			fmt.Println(" Zhang-Li Torque: Disabled")
+			fmt.Println(" Zhang-Li Spin-Transfer Torque: Disabled")
 		} else {
-			fmt.Println(" Zhang-Li Torque: Enabled")
+			fmt.Println(" Zhang-Li Spin-Transfer Torque: Enabled")
 		}
 
 		if DisableSlonczewskiTorque {
-			fmt.Println(" Slonczewski Torque: Disabled")
+			fmt.Println(" Slonczewski Spin-Transfer Torque: Disabled")
 		} else {
-			fmt.Println(" Slonczewski Torque: Enabled")
+			fmt.Println(" Slonczewski Spin-Transfer Torque: Enabled")
 		}
 
 		cell_size := Mesh().CellSize()
