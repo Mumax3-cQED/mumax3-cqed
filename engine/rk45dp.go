@@ -33,19 +33,11 @@ func (rk *RK45DP) Step() {
 	if rk.k1 == nil {
 		rk.k1 = cuda.NewSlice(3, size)
 
-		if !DisableTimeEvolutionTorque {
-			SetTempValues(Time, 0)
-		}
-
 		torqueFn(rk.k1)
 	}
 
 	// FSAL cannot be used with finite temperature
 	if !Temp.isZero() {
-
-		if !DisableTimeEvolutionTorque {
-			SetTempValues(Time, 0)
-		}
 
 		torqueFn(rk.k1)
 	}
@@ -74,10 +66,6 @@ func (rk *RK45DP) Step() {
 
 	M.normalize()
 
-	if !DisableTimeEvolutionTorque {
-		SetTempValues(Time, h)
-	}
-
 	torqueFn(k2)
 
 	// stage 3
@@ -85,10 +73,6 @@ func (rk *RK45DP) Step() {
 	cuda.Madd3(m, m0, rk.k1, k2, 1, (3./40.)*h, (9./40.)*h)
 
 	M.normalize()
-
-	if !DisableTimeEvolutionTorque {
-		SetTempValues(Time, h)
-	}
 
 	torqueFn(k3)
 
@@ -98,10 +82,6 @@ func (rk *RK45DP) Step() {
 
 	M.normalize()
 
-	if !DisableTimeEvolutionTorque {
-		SetTempValues(Time, h)
-	}
-
 	torqueFn(k4)
 
 	// stage 5
@@ -110,10 +90,6 @@ func (rk *RK45DP) Step() {
 
 	M.normalize()
 
-	if !DisableTimeEvolutionTorque {
-		SetTempValues(Time, h)
-	}
-
 	torqueFn(k5)
 
 	// stage 6
@@ -121,10 +97,6 @@ func (rk *RK45DP) Step() {
 	cuda.Madd6(m, m0, rk.k1, k2, k3, k4, k5, 1, (9017./3168.)*h, (-355./33.)*h, (46732./5247.)*h, (49./176.)*h, (-5103./18656.)*h)
 
 	M.normalize()
-
-	if !DisableTimeEvolutionTorque {
-		SetTempValues(Time, h)
-	}
 
 	torqueFn(k6)
 
@@ -136,10 +108,6 @@ func (rk *RK45DP) Step() {
 	M.normalize()
 
 	k7 := k2 // re-use k2
-
-	if !DisableTimeEvolutionTorque {
-		SetTempValues(Time, h)
-	}
 
 	torqueFn(k7) // next torque if OK
 

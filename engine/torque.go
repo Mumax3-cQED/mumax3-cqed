@@ -138,6 +138,10 @@ func SetTorque(dst *data.Slice) {
 // Sets dst to the current Landau-Lifshitz torque
 func SetLLTorque(dst *data.Slice) {
 
+	if !DisableTimeEvolutionTorque {
+		SetTempValues(Time, float32(Dt_si*GammaLL))
+	}
+
 	SetEffectiveField(dst) // calc and store B_eff
 
 	alpha := Alpha.MSlice()
