@@ -2,7 +2,6 @@ package engine
 
 // MODIFIED INMA
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/mumax/3/cuda"
@@ -67,64 +66,65 @@ func PrintParametersTimeEvolution() {
 		m_sat := Msat.MSlice()
 		alpha := Alpha.MSlice()
 
-		fmt.Println("")
-		fmt.Println("------------------------------------------------")
-		fmt.Println(" Time evolution factor in LLG equation: Enabled")
+		LogIn("")
+		LogIn("------------------------------------------------")
+		LogIn(" Time evolution factor in LLG equation: Enabled")
 
 		if DisableBeffContributions {
-			fmt.Println(" Beff default contributions: Disabled")
+			LogIn(" Beff default contributions: Disabled")
 		} else {
-			fmt.Println(" Beff default contributions: Enabled")
+			LogIn(" Beff default contributions: Enabled")
 		}
 
 		if EnableDemag {
-			fmt.Println(" B_demag: Enabled")
+			LogIn(" B_demag: Enabled")
 		} else {
-			fmt.Println(" B_demag: Disabled")
+			LogIn(" B_demag: Disabled")
 		}
 
 		if DisableZhangLiTorque {
-			fmt.Println(" Zhang-Li Spin-Transfer Torque: Disabled")
+			LogIn(" Zhang-Li Spin-Transfer Torque: Disabled")
 		} else {
-			fmt.Println(" Zhang-Li Spin-Transfer Torque: Enabled")
+			LogIn(" Zhang-Li Spin-Transfer Torque: Enabled")
 		}
 
 		if DisableSlonczewskiTorque {
-			fmt.Println(" Slonczewski Spin-Transfer Torque: Disabled")
+			LogIn(" Slonczewski Spin-Transfer Torque: Disabled")
 		} else {
-			fmt.Println(" Slonczewski Spin-Transfer Torque: Enabled")
+			LogIn(" Slonczewski Spin-Transfer Torque: Enabled")
 		}
 
 		cell_size := Mesh().CellSize()
 		num_cells := Mesh().Size()
 
-		fmt.Println(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
-		fmt.Println(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
-		fmt.Println(" Alpha:", alpha.Mul(0))
-		fmt.Println(" B_ext custom (T):", Bext_custom)
+		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
+		LogIn(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
+		LogIn(" Alpha:", alpha.Mul(0))
+		LogIn(" B_ext custom (T):", Bext_custom)
 
 		if m_sat.Mul(0) != 0.0 {
-			fmt.Println(" Msat (A/m):", m_sat.Mul(0))
+			LogIn(" Msat (A/m):", m_sat.Mul(0))
 		} else {
-			fmt.Println(" Msat (A/m): 0.0")
+			LogIn(" Msat (A/m): 0.0")
 		}
 
-		fmt.Println(" GammaLL (rad/Ts):", GammaLL)
-		fmt.Println(" Wc (rad/s):", v.Mul(0))
-		fmt.Println(" Brms vector (T): [", cuda.GetElemPos(c, X), cuda.GetElemPos(c, Y), cuda.GetElemPos(c, Z), "]")
-		fmt.Println(" B_ext vector (T): [", cuda.GetElemPos(be, X), cuda.GetElemPos(be, Y), cuda.GetElemPos(be, Z), "]")
+		LogIn(" GammaLL (rad/Ts):", GammaLL)
+		LogIn(" Wc (rad/s):", v.Mul(0))
+		LogIn(" Brms vector (T): [", cuda.GetElemPos(c, X), cuda.GetElemPos(c, Y), cuda.GetElemPos(c, Z), "]")
+		LogIn(" B_ext vector (T): [", cuda.GetElemPos(be, X), cuda.GetElemPos(be, Y), cuda.GetElemPos(be, Z), "]")
 
 		if FixDt != 0 {
-			fmt.Println(" FixDt (s):", FixDt)
+			LogIn(" FixDt (s):", FixDt)
 		}
 
-		fmt.Println("------------------------------------------------")
-		fmt.Println("")
+		LogIn("------------------------------------------------")
+		LogIn("")
 
-		defer m_sat.Recycle()
-		defer v.Recycle()
-		defer alpha.Recycle()
 		defer c.Free()
+		defer be.Free()
+		defer v.Recycle()
+		defer m_sat.Recycle()
+		defer alpha.Recycle()
 	}
 }
 
