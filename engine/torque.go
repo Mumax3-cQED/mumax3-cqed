@@ -176,7 +176,8 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		msat := Msat.MSlice()
 		defer msat.Recycle()
 
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), msat, wc_slice, brms_slice, ctime, deltah, Mesh())
+		dth := deltah / float32(GammaLL)
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), msat, wc_slice, brms_slice, ctime, dth, Mesh())
 	}
 }
 
