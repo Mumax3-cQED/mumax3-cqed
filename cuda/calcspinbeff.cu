@@ -84,14 +84,14 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     // }
     
     float sum_cells = loopcells(mx, my, mz, brmsx, brmsy, brmsz, i);
-    //float dt = delta_time/GAMMA0;
+    //float dt = delta_time/GAMMA0; 
     float dt = delta_time;
 
     // Second summatory
-    sn[i] += sin(wc_val * ctime) * sum_cells * dt;
+    sn[i] += sin(wc_val * ctime) * sum_cells * dt; // dt está mal, hay que usar la fracción de dt correspondiente a cada micropaso de rk45
     cn[i] += cos(wc_val * ctime) * sum_cells * dt;
 
-    float PREFACTOR = (2 / HBAR) * delta_vol * msat_val;
+    float PREFACTOR = (2 / HBAR) * delta_vol * msat_val; // PREFACTOR = gammaLL * N
     float gamma = PREFACTOR * ((cos(wc_val * ctime) * sn[i]) - (sin(wc_val * ctime) * cn[i]));
 
     float3 brms = {brmsx, brmsy, brmsz};
