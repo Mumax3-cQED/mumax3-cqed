@@ -37,10 +37,10 @@ var (
 
 	Bext_custom float64 = 0.0
 
-	scn      *data.Slice
-	deltah   float64 = 0.0
-	ctime    float64 = 0.0
-	rkfactor float64 = 0.0
+	scn    *data.Slice
+	deltah float64 = 0.0
+	ctime  float64 = 0.0
+	dtw    float64 = 0.0
 )
 
 func init() {
@@ -144,7 +144,7 @@ func SetTorque(dst *data.Slice) {
 func SetLLTorque(dst *data.Slice) {
 
 	if !DisableTimeEvolutionTorque {
-		SetTempValues(Time, Dt_si, RKfactor)
+		SetTempValues(Time, Dt_si, Dt_Weighted)
 	}
 
 	SetEffectiveField(dst) // calc and store B_eff
@@ -178,17 +178,12 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		brms_slice := B_rms.MSlice()
 		defer brms_slice.Recycle()
 
-		msat := Msat.MSlice()
-		defer msat.Recycle()
-
 		nspins := NSpins.MSlice()
 		defer nspins.Recycle()
 
-		dth := rkfactor * deltah
-		//fmt.Println(rkfactor)
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), msat, wc_slice, brms_slice, nspins, ctime, dth, Mesh())
-		RKfactor = 0.0
-		rkfactor = RKfactor
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), wc_slice, brms_slice, nspins, ctime, dtw, Mesh())
+		dtw = 0.0
+		Dt_Weighted = 0.0
 	}
 }
 
@@ -251,10 +246,10 @@ func FreezeSpins(dst *data.Slice) {
 }
 
 // New function for LLG formula time evolution
-func SetTempValues(time, delta, rkfact float64) {
+func SetTempValues(time, delta, dtweight float64) {
 	ctime = time
 	deltah = delta
-	rkfactor = rkfact
+	dtw = dtweight
 }
 
 func GetMaxTorque() float64 {

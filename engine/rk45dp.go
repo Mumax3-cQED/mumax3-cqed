@@ -62,7 +62,10 @@ func (rk *RK45DP) Step() {
 
 	// stage 2
 	Time = t0 + (1./5.)*Dt_si
-	RKfactor = 1. / 5.
+
+	if !DisableTimeEvolutionTorque {
+		Dt_Weighted = (1. / 5.) * Dt_si
+	}
 	cuda.Madd2(m, m, rk.k1, 1, (1./5.)*h) // m = m*1 + k1*h/5
 
 	M.normalize()
@@ -71,7 +74,9 @@ func (rk *RK45DP) Step() {
 
 	// stage 3
 	Time = t0 + (3./10.)*Dt_si
-	RKfactor = 3. / 10.
+	if !DisableTimeEvolutionTorque {
+		Dt_Weighted = (3. / 10.) * Dt_si
+	}
 	cuda.Madd3(m, m0, rk.k1, k2, 1, (3./40.)*h, (9./40.)*h)
 
 	M.normalize()
@@ -80,7 +85,9 @@ func (rk *RK45DP) Step() {
 
 	// stage 4
 	Time = t0 + (4./5.)*Dt_si
-	RKfactor = 4. / 5.
+	if !DisableTimeEvolutionTorque {
+		Dt_Weighted = (4. / 5.) * Dt_si
+	}
 	cuda.Madd4(m, m0, rk.k1, k2, k3, 1, (44./45.)*h, (-56./15.)*h, (32./9.)*h)
 
 	M.normalize()
@@ -89,7 +96,9 @@ func (rk *RK45DP) Step() {
 
 	// stage 5
 	Time = t0 + (8./9.)*Dt_si
-	RKfactor = 8. / 9.
+	if !DisableTimeEvolutionTorque {
+		Dt_Weighted = (8. / 9.) * Dt_si
+	}
 	cuda.Madd5(m, m0, rk.k1, k2, k3, k4, 1, (19372./6561.)*h, (-25360./2187.)*h, (64448./6561.)*h, (-212./729.)*h)
 
 	M.normalize()
@@ -98,7 +107,9 @@ func (rk *RK45DP) Step() {
 
 	// stage 6
 	Time = t0 + (1.)*Dt_si
-	RKfactor = 1.
+	if !DisableTimeEvolutionTorque {
+		Dt_Weighted = (1.) * Dt_si
+	}
 	cuda.Madd6(m, m0, rk.k1, k2, k3, k4, k5, 1, (9017./3168.)*h, (-355./33.)*h, (46732./5247.)*h, (49./176.)*h, (-5103./18656.)*h)
 
 	M.normalize()
@@ -107,7 +118,9 @@ func (rk *RK45DP) Step() {
 
 	// stage 7: 5th order solution
 	Time = t0 + (1.)*Dt_si
-	RKfactor = 1.
+	if !DisableTimeEvolutionTorque {
+		Dt_Weighted = (1.) * Dt_si
+	}
 	// no k2
 	cuda.Madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
 
