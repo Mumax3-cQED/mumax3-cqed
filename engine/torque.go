@@ -31,14 +31,16 @@ var (
 	DisableBeffContributions           = false
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
-	B_rms = NewExcitation("B_rms", "T", "Brms extra parameter for LLG time evolution")
-	Wc    = NewScalarParam("Wc", "rad/s", "Wc extra parameter for LLG time evolution")
+	B_rms  = NewExcitation("B_rms", "T", "Brms extra parameter for LLG time evolution")
+	Wc     = NewScalarParam("Wc", "rad/s", "Wc extra parameter for LLG time evolution")
+	NSpins = NewScalarParam("NSpins", "", "Number of spins")
 
 	Bext_custom float64 = 0.0
 
-	scn    *data.Slice
-	deltah float32 = 0.0
-	ctime  float32 = 0.0
+	scn      *data.Slice
+	deltah   float64 = 0.0
+	ctime    float64 = 0.0
+	rkfactor float64 = 0.0
 )
 
 func init() {
@@ -63,6 +65,7 @@ func PrintParametersTimeEvolution() {
 		c, _ := B_rms.Slice()
 		be, _ := B_ext.Slice()
 		v := Wc.MSlice()
+		ns := NSpins.MSlice()
 		m_sat := Msat.MSlice()
 		alpha := Alpha.MSlice()
 
@@ -101,6 +104,7 @@ func PrintParametersTimeEvolution() {
 		LogIn(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
 		LogIn(" Alpha:", alpha.Mul(0))
 		LogIn(" B_ext custom (T):", Bext_custom)
+		LogIn(" Num. spins:", ns.Mul(0))
 
 		if m_sat.Mul(0) != 0.0 {
 			LogIn(" Msat (A/m):", m_sat.Mul(0))
@@ -121,6 +125,7 @@ func PrintParametersTimeEvolution() {
 		LogIn("")
 
 		defer c.Free()
+		defer ns.Recycle()
 		defer be.Free()
 		defer v.Recycle()
 		defer m_sat.Recycle()
@@ -139,7 +144,7 @@ func SetTorque(dst *data.Slice) {
 func SetLLTorque(dst *data.Slice) {
 
 	if !DisableTimeEvolutionTorque {
-		SetTempValues(Time, float32(Dt_si*GammaLL))
+		SetTempValues(Time, Dt_si, RKfactor)
 	}
 
 	SetEffectiveField(dst) // calc and store B_eff
@@ -176,8 +181,14 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		msat := Msat.MSlice()
 		defer msat.Recycle()
 
-		dth := deltah / float32(GammaLL)
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), msat, wc_slice, brms_slice, ctime, dth, Mesh())
+		nspins := NSpins.MSlice()
+		defer nspins.Recycle()
+
+		dth := rkfactor * deltah
+		//fmt.Println(rkfactor)
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), msat, wc_slice, brms_slice, nspins, ctime, dth, Mesh())
+		RKfactor = 0.0
+		rkfactor = RKfactor
 	}
 }
 
@@ -240,9 +251,10 @@ func FreezeSpins(dst *data.Slice) {
 }
 
 // New function for LLG formula time evolution
-func SetTempValues(time float64, delta float32) {
-	ctime = float32(time)
+func SetTempValues(time, delta, rkfact float64) {
+	ctime = time
 	deltah = delta
+	rkfactor = rkfact
 }
 
 func GetMaxTorque() float64 {

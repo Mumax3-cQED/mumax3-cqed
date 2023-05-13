@@ -40,6 +40,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
           float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
           float* __restrict__ sn, float* __restrict__ cn,
           float* __restrict__ wc, float wc_mul,
+          float* __restrict__ nspins, float nspins_mul,
           float* __restrict__ msat, float msat_mul,
           float* __restrict__ brms_x, float brmsx_mul,
           float* __restrict__ brms_y, float brmsy_mul,
@@ -59,6 +60,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     // int i = idx3d(ix, iy, iz);
 
     float wc_val = amul(wc, wc_mul, i);
+    float nspins_val = amul(nspins, nspins_mul, i);
     float msat_val = amul(msat, msat_mul, i);
 
     float brmsx = amul(brms_x, brmsx_mul, i);
@@ -82,28 +84,22 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     //     }
     //   }
     // }
-    
+
     float sum_cells = loopcells(mx, my, mz, brmsx, brmsy, brmsz, i);
-    //float dt = delta_time/GAMMA0; 
     float dt = delta_time;
 
     // Second summatory
     sn[i] += sin(wc_val * ctime) * sum_cells * dt; // dt está mal, hay que usar la fracción de dt correspondiente a cada micropaso de rk45
     cn[i] += cos(wc_val * ctime) * sum_cells * dt;
 
-    float PREFACTOR = (2 / HBAR) * delta_vol * msat_val; // PREFACTOR = gammaLL * N
+    float PREFACTOR = GAMMA0 * nspins_val; // PREFACTOR = gammaLL * N
     float gamma = PREFACTOR * ((cos(wc_val * ctime) * sn[i]) - (sin(wc_val * ctime) * cn[i]));
 
     float3 brms = {brmsx, brmsy, brmsz};
-    float3 bext = brms * gamma;
+    float3 new_term = brms * gamma;
 
-    // Beff - Bcustom
-    tx[i] -= bext.x;
-    ty[i] -= bext.y;
-    tz[i] -= bext.z;
-
-    // Beff + Bcustom
-    // tx[i] += bext.x;
-    // ty[i] += bext.y;
-    // tz[i] += bext.z;
+    // Beff - new_term
+    tx[i] -= new_term.x;
+    ty[i] -= new_term.y;
+    tz[i] -= new_term.z;
 }
