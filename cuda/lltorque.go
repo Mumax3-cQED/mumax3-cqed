@@ -34,24 +34,26 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 }
 
 // Apply new value Spin Torque to Beff --> Beff - Bcustom
-func SubSpinBextraBeff(dst, m, scn *data.Slice, wc, brms, nspins MSlice, ctime, deltah float64, mesh *data.Mesh) {
-
+func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc, nspins MSlice, ctime, deltah, gammaLL float64, mesh *data.Mesh) {
+	//N := dst.Len()
 	N := mesh.Size()
 	// util.Assert(m.Size() == N)
 	cfg := make3DConf(N)
 	// pbc := mesh.PBC_code()
-	c := mesh.CellSize()
-	vol := float32(c[X]*c[Y]*c[Z]) / float32(N[X]*N[Y]*N[Z])
-
+	//c := mesh.CellSize()
+	//vol := float32(c[X]*c[Y]*c[Z]) / float32(N[X]*N[Y]*N[Z])
+	// fmt.Println("aqui")
 	k_calcspinbeff_async(dst.DevPtr(X), dst.DevPtr(Y), dst.DevPtr(Z),
-		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
+		m.DevPtr(X),
+		m.DevPtr(Y),
+		m.DevPtr(Z),
 		scn.DevPtr(X), scn.DevPtr(Y),
 		wc.DevPtr(0), wc.Mul(0),
 		nspins.DevPtr(0), nspins.Mul(0),
 		brms.DevPtr(X), brms.Mul(X),
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
-		float32(deltah), float32(ctime), float32(vol), N[X], N[Y], N[Z], cfg)
+		float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], cfg)
 	// deltah, ctime, float32(vol), N[X], N[Y], N[Z], pbc, cfg)
 
 }

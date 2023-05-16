@@ -2,6 +2,7 @@ package engine
 
 // MODIFIED INMA
 import (
+	"math"
 	"reflect"
 
 	"github.com/mumax/3/cuda"
@@ -37,10 +38,10 @@ var (
 
 	Bext_custom float64 = 0.0
 
-	scn    *data.Slice
-	deltah float64 = 0.0
-	ctime  float64 = 0.0
-	dtw    float64 = 0.0
+	scn       *data.Slice
+	dth       float64 = 0.0
+	ctime     float64 = 0.0
+	rk_factor float64 = 1.0
 )
 
 func init() {
@@ -143,9 +144,9 @@ func SetTorque(dst *data.Slice) {
 // Sets dst to the current Landau-Lifshitz torque
 func SetLLTorque(dst *data.Slice) {
 
-	if !DisableTimeEvolutionTorque {
-		SetTempValues(Time, Dt_si, Dt_Weighted)
-	}
+	// if !DisableTimeEvolutionTorque {
+	// 	SetTempValues(Time, Dt_Weighted)
+	// }
 
 	SetEffectiveField(dst) // calc and store B_eff
 
@@ -168,22 +169,53 @@ func getScnSlice() *data.Slice {
 	return scn
 }
 
+func RoundFloat(number float64, decimalPlace int) float64 {
+	// Calculate the 10 to the power of decimal place
+	temp := math.Pow(10, float64(decimalPlace))
+	// Multiply floating-point number with 10**decimalPlace and round it
+	// Divide the rounded number with 10**decimalPlace to get decimal place rounding
+	return math.Ceil(number*temp) / temp
+}
+
 func ApplyExtraFieldBeff(dst *data.Slice) {
 
 	if !DisableTimeEvolutionTorque {
 
-		wc_slice := Wc.MSlice()
-		defer wc_slice.Recycle()
+		if CurrentStage > STAGE0 {
+			/*
+				switch CurrentStage {
+				default:
+					rk_factor = (1 / 5)
+				case STAGE2:
+					rk_factor = (1 / 5)
+				case STAGE3:
+					rk_factor = (3. / 10.)
+				case STAGE4:
+					rk_factor = (4. / 5.)
+				case STAGE5:
+					rk_factor = (8. / 9.)
+				case STAGE6:
+					rk_factor = (1.)
+				case STAGE7:
+					rk_factor = (1.)
+				}
+			*/
 
-		brms_slice := B_rms.MSlice()
-		defer brms_slice.Recycle()
+			wc_slice := Wc.MSlice()
+			defer wc_slice.Recycle()
 
-		nspins := NSpins.MSlice()
-		defer nspins.Recycle()
+			brms_slice := B_rms.MSlice()
+			defer brms_slice.Recycle()
 
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), wc_slice, brms_slice, nspins, ctime, dtw, Mesh())
-		dtw = 0.0
-		Dt_Weighted = 0.0
+			nspins := NSpins.MSlice()
+			defer nspins.Recycle()
+			//fmt.Println(ctime*1e9, math.Mod(ctime, Dt_si)/Dt_si)
+			//fmt.Println(ctime*1e9, Dt_si/Dt_Weighted)
+			//fmt.Println(ctime)
+			f := RoundFloat(math.Mod(Time, Dt_si)/Dt_si, 8)
+			//f := math.Mod(Time, Dt_si) / Dt_si
+			cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), brms_slice, wc_slice, nspins, Time, f*Dt_si, GammaLL, Mesh())
+		}
 	}
 }
 
@@ -246,10 +278,9 @@ func FreezeSpins(dst *data.Slice) {
 }
 
 // New function for LLG formula time evolution
-func SetTempValues(time, delta, dtweight float64) {
+func SetTempValues(time, dthrk float64) {
 	ctime = time
-	deltah = delta
-	dtw = dtweight
+	dth = dthrk
 }
 
 func GetMaxTorque() float64 {

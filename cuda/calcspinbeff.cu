@@ -22,9 +22,9 @@ __inline__ __device__ float warpReduce(float val) {
 
 __inline__ __device__ float loopcells(float* mx, float* my, float* mz, float brmsx, float brmsy, float brmsz, int idx) {
 
-    float sum_resx = mx[idx] * brmsx;
-    float sum_resy = my[idx] * brmsy;
-    float sum_resz = mz[idx] * brmsz;
+    float sum_resx = amul(mx, brmsx, idx);
+    float sum_resy = amul(my, brmsy, idx);
+    float sum_resz = amul(mz, brmsz, idx);
 
     // Use warp-synchronous programming to sum results across threads
     sum_resx = warpReduce(sum_resx);
