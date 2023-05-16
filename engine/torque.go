@@ -217,11 +217,8 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		wc_slice := Wc.MSlice()
 		defer wc_slice.Recycle()
 
-		brms_slice, rec := B_rms.Slice()
-
-		if rec {
-			defer cuda.Recycle(brms_slice)
-		}
+		brms_slice := B_rms.MSlice()
+		defer brms_slice.Recycle()
 
 		nspins := NSpins.MSlice()
 		defer nspins.Recycle()
@@ -232,7 +229,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 
 		// first step ever: one-time k1 init and eval
 		if s.scn == nil {
-			s.scn = cuda.NewSlice(2, M.Buffer().Size())
+			s.scn = cuda.NewSlice(2, Mesh().Size())
 		}
 
 		//fmt.Println(ctime*1e9, math.Mod(ctime, Dt_si)/Dt_si)
@@ -242,7 +239,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		//f := math.Mod(Time, Dt_si) / Dt_si // se obtiene el factor de RK al vuelo
 		// stemp := cuda.Buffer(3, M.Buffer().Size())
 		// defer cuda.Recycle(stemp)
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, ctime, Dt_Weighted, GammaLL, Mesh())
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, Time, Dt_si, GammaLL, Mesh())
 		// }
 	}
 }
