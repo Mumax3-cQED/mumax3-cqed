@@ -40,10 +40,16 @@ var (
 
 	dth   float64 = 0.0
 	ctime float64 = 0.0
-	scn   *data.Slice
+	// scn   *data.Slice
+	s *MEMORY_TERM
 )
 
+type MEMORY_TERM struct {
+	scn *data.Slice // torque at end of step is kept for beginning of next step
+}
+
 func init() {
+	s = new(MEMORY_TERM)
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
@@ -62,12 +68,27 @@ func PrintParametersTimeEvolution() {
 
 	if !DisableTimeEvolutionTorque {
 
-		c, _ := B_rms.Slice()
-		be, _ := B_ext.Slice()
+		c, r1 := B_rms.Slice()
+		if r1 {
+			defer cuda.Recycle(c)
+		}
+
+		be, r2 := B_ext.Slice()
+		if r2 {
+			defer cuda.Recycle(be)
+		}
+
 		v := Wc.MSlice()
+		defer v.Recycle()
+
 		ns := NSpins.MSlice()
+		defer ns.Recycle()
+
 		m_sat := Msat.MSlice()
+		defer m_sat.Recycle()
+
 		alpha := Alpha.MSlice()
+		defer alpha.Recycle()
 
 		LogIn("")
 		LogIn("------------------------------------------------")
@@ -123,13 +144,6 @@ func PrintParametersTimeEvolution() {
 
 		LogIn("------------------------------------------------")
 		LogIn("")
-
-		defer c.Free()
-		defer ns.Recycle()
-		defer be.Free()
-		defer v.Recycle()
-		defer m_sat.Recycle()
-		defer alpha.Recycle()
 	}
 }
 
@@ -203,22 +217,32 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		wc_slice := Wc.MSlice()
 		defer wc_slice.Recycle()
 
-		brms_slice := B_rms.MSlice()
-		defer brms_slice.Recycle()
+		brms_slice, rec := B_rms.Slice()
+
+		if rec {
+			defer cuda.Recycle(brms_slice)
+		}
 
 		nspins := NSpins.MSlice()
 		defer nspins.Recycle()
 
-		if scn == nil {
-			scn = cuda.NewSlice(2, Mesh().Size())
+		if s.scn.Size() != M.Buffer().Size() {
+			s.scn.Free()
+		}
+
+		// first step ever: one-time k1 init and eval
+		if s.scn == nil {
+			s.scn = cuda.NewSlice(2, M.Buffer().Size())
 		}
 
 		//fmt.Println(ctime*1e9, math.Mod(ctime, Dt_si)/Dt_si)
 		//fmt.Println(ctime*1e9, Dt_si/Dt_Weighted)
 		//fmt.Println(ctime)
 		//f := RoundFloat(math.Mod(Time, Dt_si)/Dt_si, 8) // redondear el factor de RK45
-		f := math.Mod(Time, Dt_si) / Dt_si // se obtiene el factor de RK al vuelo
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), scn, brms_slice, wc_slice, nspins, ctime, f*Dt_si, GammaLL, Mesh())
+		//f := math.Mod(Time, Dt_si) / Dt_si // se obtiene el factor de RK al vuelo
+		// stemp := cuda.Buffer(3, M.Buffer().Size())
+		// defer cuda.Recycle(stemp)
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, ctime, Dt_Weighted, GammaLL, Mesh())
 		// }
 	}
 }

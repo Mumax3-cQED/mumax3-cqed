@@ -23,11 +23,13 @@ __inline__ __device__ float warpReduce(float val) {
     return val;
 }
 
-__inline__ __device__ float loopcells(float* mx, float* my, float* mz, float brmsx, float brmsy, float brmsz, int idx) {
+__inline__ __device__ float loopcells(float* mx, float* my, float* mz, float* brmsx, float* brmsy, float* brmsz, int idx) {
 
   float3 mm = {mx[idx], my[idx], mz[idx]};
-      float3 bbrms = {brmsx, brmsy, brmsz};
+      float3 bbrms = {brmsx[idx], brmsy[idx], brmsz[idx]};
       float sum_res = dot(mm, bbrms);
+
+       sum_res = warpReduce(sum_res);
       return sum_res;
     // float sum_resx = amul(mx, brmsx, idx);
     // float sum_resy = amul(my, brmsy, idx);
@@ -48,9 +50,9 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
           float* __restrict__ sn, float* __restrict__ cn,
           float* __restrict__ wc, float wc_mul,
           float* __restrict__ nspins, float nspins_mul,
-          float* __restrict__ brms_x, float brmsx_mul,
-          float* __restrict__ brms_y, float brmsy_mul,
-          float* __restrict__ brms_z, float brmsz_mul,
+          float* __restrict__ brms_x, //float brmsx_mul,
+          float* __restrict__ brms_y, //float brmsy_mul,
+          float* __restrict__ brms_z, //float brmsz_mul,
           float delta_time, float ctime, float gammaLL, int Nx, int Ny, int Nz) {
         //float delta_time, float ctime, float delta_vol, int Nx, int Ny, int Nz, uint8_t PBC) {
 
@@ -68,9 +70,9 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     float wc_val = amul(wc, wc_mul, i);
     float nspins_val = amul(nspins, nspins_mul, i);
 
-    float brmsx = amul(brms_x, brmsx_mul, i);
-    float brmsy = amul(brms_y, brmsy_mul, i);
-    float brmsz = amul(brms_z, brmsz_mul, i);
+    // float brmsx = amul(brms_x, brmsx_mul, i);
+    // float brmsy = amul(brms_y, brmsy_mul, i);
+    // float brmsz = amul(brms_z, brmsz_mul, i);
 
     // Classic loop
     // First summatory
@@ -90,7 +92,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     //   }
     // }
 
-    float sum_cells = loopcells(mx, my, mz, brmsx, brmsy, brmsz, i);
+    float sum_cells = loopcells(mx, my, mz, brms_x, brms_y, brms_z, i);
     float dt = delta_time;
 
     // Second summatory
@@ -98,10 +100,10 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     cn[i] += cos(wc_val * ctime) * sum_cells * dt;
 
     float PREFACTOR = gammaLL * nspins_val; // PREFACTOR = gammaLL * N
-    float gamma = PREFACTOR * ((cos(wc_val * ctime) * sn[i]) - (sin(wc_val * ctime) * cn[i]));
+    float G = PREFACTOR * ((cos(wc_val * ctime) * sn[i]) - (sin(wc_val * ctime) * cn[i]));
 
-    float3 brms = {brmsx, brmsy, brmsz};
-    float3 new_term = brms * gamma;
+    float3 brms = {brms_x[i], brms_y[i], brms_z[i]};
+    float3 new_term = brms * G;
 
     // Beff - new_term
     tx[i] -= new_term.x;
