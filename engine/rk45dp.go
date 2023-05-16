@@ -31,13 +31,13 @@ func (rk *RK45DP) Step() {
 	if rk.k1 == nil {
 		rk.k1 = cuda.NewSlice(3, size)
 
-		torqueFnStage(rk.k1, STAGE0)
+		torqueFn(rk.k1)
 	}
 
 	// FSAL cannot be used with finite temperature
 	if !Temp.isZero() {
 
-		torqueFnStage(rk.k1, STAGE0)
+		torqueFn(rk.k1)
 	}
 
 	t0 := Time
@@ -67,7 +67,7 @@ func (rk *RK45DP) Step() {
 	// if !DisableTimeEvolutionTorque {
 	// 	Dt_Weighted = (1. / 5.) * Dt_si
 	// }
-	torqueFnStage(k2, STAGE2)
+	torqueFn(k2)
 
 	// stage 3
 	Time = t0 + (3./10.)*Dt_si
@@ -78,7 +78,7 @@ func (rk *RK45DP) Step() {
 	// if !DisableTimeEvolutionTorque {
 	// 	Dt_Weighted = (3. / 10.) * Dt_si
 	// }
-	torqueFnStage(k3, STAGE3)
+	torqueFn(k3)
 
 	// stage 4
 	Time = t0 + (4./5.)*Dt_si
@@ -89,7 +89,7 @@ func (rk *RK45DP) Step() {
 	// if !DisableTimeEvolutionTorque {
 	// 	Dt_Weighted = (4. / 5.) * Dt_si
 	// }
-	torqueFnStage(k4, STAGE4)
+	torqueFn(k4)
 
 	// stage 5
 	Time = t0 + (8./9.)*Dt_si
@@ -100,7 +100,7 @@ func (rk *RK45DP) Step() {
 	// if !DisableTimeEvolutionTorque {
 	// 	Dt_Weighted = (8. / 9.) * Dt_si
 	// }
-	torqueFnStage(k5, STAGE5)
+	torqueFn(k5)
 
 	// stage 6
 	Time = t0 + (1.)*Dt_si
@@ -111,7 +111,7 @@ func (rk *RK45DP) Step() {
 	// if !DisableTimeEvolutionTorque {
 	// 	Dt_Weighted = (1.) * Dt_si
 	// }
-	torqueFnStage(k6, STAGE6)
+	torqueFn(k6)
 
 	// stage 7: 5th order solution
 	Time = t0 + (1.)*Dt_si
@@ -125,7 +125,7 @@ func (rk *RK45DP) Step() {
 	// if !DisableTimeEvolutionTorque {
 	// 	Dt_Weighted = (1.) * Dt_si
 	// }
-	torqueFnStage(k7, STAGE7) // next torque if OK
+	torqueFn(k7) // next torque if OK
 
 	// error estimate
 	Err := cuda.Buffer(3, size) //k3 // re-use k3 as error estimate

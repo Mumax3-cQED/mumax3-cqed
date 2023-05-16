@@ -28,8 +28,8 @@ var (
 	FixDt                   float64                      // fixed time step?
 	stepper                 Stepper                      // generic step, can be EulerStep, HeunStep, etc
 	solvertype              int
-	// Dt_Weighted             float64 = 0.0 // Weighted Dt value for Dt_si in RK45
-	CurrentStage int = 1
+	Dt_Weighted             float64 = 0.0 // Weighted Dt value for Dt_si in RK45
+
 )
 
 func init() {
@@ -71,16 +71,6 @@ const (
 	FEHLBERG       = 6
 )
 
-const (
-	STAGE0 = 0
-	STAGE2 = 2
-	STAGE3 = 3
-	STAGE4 = 4
-	STAGE5 = 5
-	STAGE6 = 6
-	STAGE7 = 7
-)
-
 func SetSolver(typ int) {
 	// free previous solver, if any
 	if stepper != nil {
@@ -105,11 +95,6 @@ func SetSolver(typ int) {
 		stepper = new(RK56)
 	}
 	solvertype = typ
-}
-
-func torqueFnStage(dst *data.Slice, stage int) {
-	CurrentStage = stage
-	torqueFn(dst)
 }
 
 // write torque to dst and increment NEvals

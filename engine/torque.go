@@ -38,10 +38,10 @@ var (
 
 	Bext_custom float64 = 0.0
 
-	scn       *data.Slice
-	dth       float64 = 0.0
-	ctime     float64 = 0.0
-	rk_factor float64 = 1.0
+	scn   *data.Slice
+	dth   float64 = 0.0
+	ctime float64 = 0.0
+	// rk_factor float64 = 1.0
 )
 
 func init() {
@@ -181,41 +181,41 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 
 	if !DisableTimeEvolutionTorque {
 
-		if CurrentStage > STAGE0 {
-			/*
-				switch CurrentStage {
-				default:
-					rk_factor = (1 / 5)
-				case STAGE2:
-					rk_factor = (1 / 5)
-				case STAGE3:
-					rk_factor = (3. / 10.)
-				case STAGE4:
-					rk_factor = (4. / 5.)
-				case STAGE5:
-					rk_factor = (8. / 9.)
-				case STAGE6:
-					rk_factor = (1.)
-				case STAGE7:
-					rk_factor = (1.)
-				}
-			*/
+		// if CurrentStage > STAGE0 {
+		/*
+			switch CurrentStage {
+			default:
+				rk_factor = (1 / 5)
+			case STAGE2:
+				rk_factor = (1 / 5)
+			case STAGE3:
+				rk_factor = (3. / 10.)
+			case STAGE4:
+				rk_factor = (4. / 5.)
+			case STAGE5:
+				rk_factor = (8. / 9.)
+			case STAGE6:
+				rk_factor = (1.)
+			case STAGE7:
+				rk_factor = (1.)
+			}
+		*/
 
-			wc_slice := Wc.MSlice()
-			defer wc_slice.Recycle()
+		wc_slice := Wc.MSlice()
+		defer wc_slice.Recycle()
 
-			brms_slice := B_rms.MSlice()
-			defer brms_slice.Recycle()
+		brms_slice := B_rms.MSlice()
+		defer brms_slice.Recycle()
 
-			nspins := NSpins.MSlice()
-			defer nspins.Recycle()
-			//fmt.Println(ctime*1e9, math.Mod(ctime, Dt_si)/Dt_si)
-			//fmt.Println(ctime*1e9, Dt_si/Dt_Weighted)
-			//fmt.Println(ctime)
-			f := RoundFloat(math.Mod(Time, Dt_si)/Dt_si, 8)
-			//f := math.Mod(Time, Dt_si) / Dt_si
-			cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), brms_slice, wc_slice, nspins, Time, f*Dt_si, GammaLL, Mesh())
-		}
+		nspins := NSpins.MSlice()
+		defer nspins.Recycle()
+		//fmt.Println(ctime*1e9, math.Mod(ctime, Dt_si)/Dt_si)
+		//fmt.Println(ctime*1e9, Dt_si/Dt_Weighted)
+		//fmt.Println(ctime)
+		f := RoundFloat(math.Mod(Time, Dt_si)/Dt_si, 8) // redondear el factor de RK45
+		//f := math.Mod(Time, Dt_si) / Dt_si // se obtiene el factor de RK al vuelo
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), brms_slice, wc_slice, nspins, Time, f*Dt_si, GammaLL, Mesh())
+		// }
 	}
 }
 
