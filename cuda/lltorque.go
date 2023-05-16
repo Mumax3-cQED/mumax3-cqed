@@ -39,7 +39,7 @@ func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc, nspins MSlice, ctime, 
 	N := mesh.Size()
 	// util.Assert(m.Size() == N)
 	cfg := make3DConf(N)
-	// pbc := mesh.PBC_code()
+	pbc := mesh.PBC_code()
 	//c := mesh.CellSize()
 	//vol := float32(c[X]*c[Y]*c[Z]) / float32(N[X]*N[Y]*N[Z])
 	// fmt.Println("aqui")
@@ -53,7 +53,7 @@ func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc, nspins MSlice, ctime, 
 		brms.DevPtr(X), brms.Mul(X),
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
-		float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], cfg)
+		float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], pbc, cfg)
 	// deltah, ctime, float32(vol), N[X], N[Y], N[Z], pbc, cfg)
 
 }
