@@ -104,7 +104,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     float new_term_y = brmsy * G;
     float new_term_z = brmsz * G;
 
-    // Beff - new_term
+    // Beff = Beff - new_term
     tx[i] -= new_term_x;
     ty[i] -= new_term_y;
     tz[i] -= new_term_z;
