@@ -61,8 +61,8 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
        return;
     }
 
-    //int i = idx(ix, iy, iz);
-    int i = idx3d(ix, iy, iz);
+    int i = idx(ix, iy, iz);
+    //int i = idx3d(ix, iy, iz);
 
     float wc_val = amul(wc, wc_mul, i);
     float nspins_val = amul(nspins, nspins_mul, i);

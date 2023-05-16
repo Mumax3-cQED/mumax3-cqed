@@ -223,7 +223,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		nspins := NSpins.MSlice()
 		defer nspins.Recycle()
 
-		if s.scn.Size() != M.Buffer().Size() {
+		if s.scn.Size() != Mesh().Size() {
 			s.scn.Free()
 		}
 
