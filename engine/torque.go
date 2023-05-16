@@ -38,10 +38,9 @@ var (
 
 	Bext_custom float64 = 0.0
 
-	scn   *data.Slice
 	dth   float64 = 0.0
 	ctime float64 = 0.0
-	// rk_factor float64 = 1.0
+	scn   *data.Slice
 )
 
 func init() {
@@ -144,9 +143,9 @@ func SetTorque(dst *data.Slice) {
 // Sets dst to the current Landau-Lifshitz torque
 func SetLLTorque(dst *data.Slice) {
 
-	// if !DisableTimeEvolutionTorque {
-	// 	SetTempValues(Time, Dt_Weighted)
-	// }
+	if !DisableTimeEvolutionTorque {
+		SetTempValues(Time, Dt_Weighted)
+	}
 
 	SetEffectiveField(dst) // calc and store B_eff
 
@@ -160,14 +159,14 @@ func SetLLTorque(dst *data.Slice) {
 	}
 }
 
-func getScnSlice() *data.Slice {
-
-	if scn == nil {
-		scn = cuda.NewSlice(2, M.Buffer().Size())
-	}
-
-	return scn
-}
+// func getScnSlice() *data.Slice {
+//
+// 	if scn == nil {
+// 		scn = cuda.NewSlice(3, M.Buffer().Size())
+// 	}
+//
+// 	return scn
+// }
 
 func RoundFloat(number float64, decimalPlace int) float64 {
 	// Calculate the 10 to the power of decimal place
@@ -209,12 +208,17 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 
 		nspins := NSpins.MSlice()
 		defer nspins.Recycle()
+
+		if scn == nil {
+			scn = cuda.NewSlice(2, Mesh().Size())
+		}
+
 		//fmt.Println(ctime*1e9, math.Mod(ctime, Dt_si)/Dt_si)
 		//fmt.Println(ctime*1e9, Dt_si/Dt_Weighted)
 		//fmt.Println(ctime)
-		f := RoundFloat(math.Mod(Time, Dt_si)/Dt_si, 8) // redondear el factor de RK45
-		//f := math.Mod(Time, Dt_si) / Dt_si // se obtiene el factor de RK al vuelo
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), getScnSlice(), brms_slice, wc_slice, nspins, Time, f*Dt_si, GammaLL, Mesh())
+		//f := RoundFloat(math.Mod(Time, Dt_si)/Dt_si, 8) // redondear el factor de RK45
+		f := math.Mod(Time, Dt_si) / Dt_si // se obtiene el factor de RK al vuelo
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), scn, brms_slice, wc_slice, nspins, ctime, f*Dt_si, GammaLL, Mesh())
 		// }
 	}
 }
