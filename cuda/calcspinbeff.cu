@@ -97,7 +97,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     cn[i] += cos(wc_val * ctime) * sum_cells * dt;
 
     float PREFACTOR = (gammaLL * nspins_val) / (2 * PI); // PREFACTOR = gammaLL * N
-    float G = PREFACTOR * (amul(sn, cos(wc_val * ctime), i) - (amul(cn, sin(wc_val * ctime), i)));
+    float G = PREFACTOR * (amul(sn, cos(wc_val * ctime), i) - amul(cn, sin(wc_val * ctime), i));
 
     //float3 brms = {brms_x[i], brms_y[i], brms_z[i]};
     float new_term_x = brmsx * G;
