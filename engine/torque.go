@@ -2,7 +2,6 @@ package engine
 
 // MODIFIED INMA
 import (
-	"math"
 	"reflect"
 
 	"github.com/mumax/3/cuda"
@@ -38,8 +37,8 @@ var (
 
 	Bext_custom float64 = 0.0
 
-	dth   float64 = 0.0
-	ctime float64 = 0.0
+	// dth   float64 = 0.0
+	// ctime float64 = 0.0
 	// scn   *data.Slice
 	s *MEMORY_TERM
 )
@@ -157,9 +156,9 @@ func SetTorque(dst *data.Slice) {
 // Sets dst to the current Landau-Lifshitz torque
 func SetLLTorque(dst *data.Slice) {
 
-	if !DisableTimeEvolutionTorque {
-		SetTempValues(Time, Dt_Weighted)
-	}
+	// if !DisableTimeEvolutionTorque {
+	// 	SetTempValues(Time, Dt_Weighted)
+	// }
 
 	SetEffectiveField(dst) // calc and store B_eff
 
@@ -182,13 +181,13 @@ func SetLLTorque(dst *data.Slice) {
 // 	return scn
 // }
 
-func RoundFloat(number float64, decimalPlace int) float64 {
-	// Calculate the 10 to the power of decimal place
-	temp := math.Pow(10, float64(decimalPlace))
-	// Multiply floating-point number with 10**decimalPlace and round it
-	// Divide the rounded number with 10**decimalPlace to get decimal place rounding
-	return math.Ceil(number*temp) / temp
-}
+// func RoundFloat(number float64, decimalPlace int) float64 {
+// 	// Calculate the 10 to the power of decimal place
+// 	temp := math.Pow(10, float64(decimalPlace))
+// 	// Multiply floating-point number with 10**decimalPlace and round it
+// 	// Divide the rounded number with 10**decimalPlace to get decimal place rounding
+// 	return math.Ceil(number*temp) / temp
+// }
 
 func ApplyExtraFieldBeff(dst *data.Slice) {
 
@@ -303,10 +302,10 @@ func FreezeSpins(dst *data.Slice) {
 }
 
 // New function for LLG formula time evolution
-func SetTempValues(time, dthrk float64) {
-	ctime = time
-	dth = dthrk
-}
+// func SetTempValues(time, dthrk float64) {
+// 	ctime = time
+// 	dth = dthrk
+// }
 
 func GetMaxTorque() float64 {
 	torque := ValueOf(Torque)
