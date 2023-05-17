@@ -37,7 +37,7 @@ __inline__ __device__ float loopcells(float* mx, float* my, float* mz, float brm
     sum_resy = warpReduce(sum_resy);
     sum_resz = warpReduce(sum_resz);
 
-    return sum_resx + sum_resy + sum_resz;
+    return (sum_resx + sum_resy + sum_resz);
 }
 
 // Bcustom amount calculation.
@@ -60,10 +60,11 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     if (ix >= Nx || iy >= Ny || iz >= Nz) {
        return;
     }
-
+    //
     int i = idx(ix, iy, iz);
     //int i = idx3d(ix, iy, iz);
-
+    // int i =  ( blockIdx.y*gridDim.x + blockIdx.x ) * blockDim.x + threadIdx.x;
+    // if (i < N) {
     float wc_val = amul(wc, wc_mul, i);
     float nspins_val = amul(nspins, nspins_mul, i);
 
@@ -89,6 +90,11 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     //   }
     // }
 
+            // float sum_resx = mx[i] * brmsx;
+            // float sum_resy = my[i] * brmsy;
+            // float sum_resz = mz[i] * brmsz;
+            //
+            // float sum_cells = (sum_resx + sum_resy + sum_resz);
     float sum_cells = loopcells(mx, my, mz, brmsx, brmsy, brmsz, i);
     float dt = delta_time;
 
@@ -98,6 +104,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
 
     float PREFACTOR = (gammaLL * nspins_val) / (2 * PI); // PREFACTOR = gammaLL * N
     float G = PREFACTOR * (amul(sn, cos(wc_val * ctime), i) - amul(cn, sin(wc_val * ctime), i));
+    //float G = PREFACTOR * (sn[i]* cos(wc_val * ctime) - cn[i]* sin(wc_val * ctime));
 
     //float3 brms = {brms_x[i], brms_y[i], brms_z[i]};
     float new_term_x = brmsx * G;
@@ -108,4 +115,5 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     tx[i] -= new_term_x;
     ty[i] -= new_term_y;
     tz[i] -= new_term_z;
+
 }
