@@ -41,7 +41,7 @@ func (rk *RK45DP) Step() {
 	}
 
 	t0 := Time
-	T0 = t0
+
 	// backup magnetization
 	m0 := cuda.Buffer(3, size)
 	defer cuda.Recycle(m0)
@@ -64,9 +64,6 @@ func (rk *RK45DP) Step() {
 	cuda.Madd2(m, m, rk.k1, 1, (1./5.)*h) // m = m*1 + k1*h/5
 
 	M.normalize()
-	if !DisableTimeEvolutionTorque {
-		Dt_Weighted = (1. / 5.) //* Dt_si
-	}
 
 	torqueFn(k2)
 	// stage 3
@@ -75,9 +72,6 @@ func (rk *RK45DP) Step() {
 	cuda.Madd3(m, m0, rk.k1, k2, 1, (3./40.)*h, (9./40.)*h)
 
 	M.normalize()
-	if !DisableTimeEvolutionTorque {
-		Dt_Weighted = (3. / 10.) //* Dt_si
-	}
 
 	torqueFn(k3)
 	// stage 4
@@ -86,9 +80,6 @@ func (rk *RK45DP) Step() {
 	cuda.Madd4(m, m0, rk.k1, k2, k3, 1, (44./45.)*h, (-56./15.)*h, (32./9.)*h)
 
 	M.normalize()
-	if !DisableTimeEvolutionTorque {
-		Dt_Weighted = (4. / 5.) //* Dt_si
-	}
 
 	torqueFn(k4)
 	// stage 5
@@ -97,9 +88,6 @@ func (rk *RK45DP) Step() {
 	cuda.Madd5(m, m0, rk.k1, k2, k3, k4, 1, (19372./6561.)*h, (-25360./2187.)*h, (64448./6561.)*h, (-212./729.)*h)
 
 	M.normalize()
-	if !DisableTimeEvolutionTorque {
-		Dt_Weighted = (8. / 9.) //* Dt_si
-	}
 
 	torqueFn(k5)
 
@@ -109,9 +97,6 @@ func (rk *RK45DP) Step() {
 	cuda.Madd6(m, m0, rk.k1, k2, k3, k4, k5, 1, (9017./3168.)*h, (-355./33.)*h, (46732./5247.)*h, (49./176.)*h, (-5103./18656.)*h)
 
 	M.normalize()
-	if !DisableTimeEvolutionTorque {
-		Dt_Weighted = (1.) //* Dt_si
-	}
 
 	torqueFn(k6)
 
@@ -124,9 +109,6 @@ func (rk *RK45DP) Step() {
 	M.normalize()
 
 	k7 := k2 // re-use k2
-	if !DisableTimeEvolutionTorque {
-		Dt_Weighted = (1.) //* Dt_si
-	}
 
 	torqueFn(k7) // next torque if OK
 

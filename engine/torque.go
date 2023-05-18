@@ -37,15 +37,15 @@ var (
 
 	Bext_custom float64 = 0.0
 
-	// dth   float64 = 0.0
-	// ctime float64 = 0.0
-	// scn *data.Slice
 	s *MEMORY_TERM
 )
 
+const MEMORY_TERMS = 6
+
+// Memory term computation
 type MEMORY_TERM struct {
 	scn       *data.Slice
-	last_time *data.Slice
+	last_time float64
 }
 
 func init() {
@@ -157,10 +157,6 @@ func SetTorque(dst *data.Slice) {
 // Sets dst to the current Landau-Lifshitz torque
 func SetLLTorque(dst *data.Slice) {
 
-	// if !DisableTimeEvolutionTorque {
-	// 	SetTempValues(Time, Dt_Weighted)
-	// }
-
 	SetEffectiveField(dst) // calc and store B_eff
 
 	alpha := Alpha.MSlice()
@@ -173,56 +169,16 @@ func SetLLTorque(dst *data.Slice) {
 	}
 }
 
-// func getScnSlice() *data.Slice {
-//
-// 	if scn == nil {
-// 		scn = cuda.NewSlice(3, M.Buffer().Size())
-// 	}
-//
-// 	return scn
-// }
-
-// func RoundFloat(number float64, decimalPlace int) float64 {
-// 	// Calculate the 10 to the power of decimal place
-// 	temp := math.Pow(10, float64(decimalPlace))
-// 	// Multiply floating-point number with 10**decimalPlace and round it
-// 	// Divide the rounded number with 10**decimalPlace to get decimal place rounding
-// 	return math.Ceil(number*temp) / temp
-// }
-
 func ApplyExtraFieldBeff(dst *data.Slice) {
 
 	if !DisableTimeEvolutionTorque {
 
-		// if CurrentStage > STAGE0 {
-		/*
-			switch CurrentStage {
-			default:
-				rk_factor = (1 / 5)
-			case STAGE2:
-				rk_factor = (1 / 5)
-			case STAGE3:
-				rk_factor = (3. / 10.)
-			case STAGE4:
-				rk_factor = (4. / 5.)
-			case STAGE5:
-				rk_factor = (8. / 9.)
-			case STAGE6:
-				rk_factor = (1.)
-			case STAGE7:
-				rk_factor = (1.)
-			}
-		*/
-
 		if s.scn.Size() != Mesh().Size() {
 			s.Free()
-			// fmt.Println("libera")
 		}
 
 		if s.scn == nil {
-			s.scn = cuda.NewSlice(6, Mesh().Size())
-			s.last_time = cuda.NewSlice(1, Mesh().Size())
-			// fmt.Println("inicializa")
+			s.scn = cuda.NewSlice(MEMORY_TERMS, Mesh().Size())
 		}
 
 		wc_slice := Wc.MSlice()
@@ -234,48 +190,11 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		nspins := NSpins.MSlice()
 		defer nspins.Recycle()
 
-		// d := cuda.NewSlice(1, Mesh().Size())
-		// defer cuda.Recycle(d)
-		//
-		// brms, r1 := B_rms.Slice()
-		// if r1 {
-		// 	defer cuda.Recycle(brms)
-		// }
-		//
-		// cuda.Mul(d, M.Buffer(), brms)
-		//fmt.Println(ctime*1e9, math.Mod(ctime, Dt_si)/Dt_si)
-		//fmt.Println(ctime*1e9, Dt_si/Dt_Weighted)
-		//fmt.Println(ctime)
-		//f := RoundFloat(math.Mod(Time, Dt_si)/Dt_si, 8) // redondear el factor de RK45
-		//f := math.Mod(Time, Dt_si) / Dt_si // se obtiene el factor de RK al vuelo
-		// stemp := cuda.Buffer(3, M.Buffer().Size())
-		// defer cuda.Recycle(stemp)
-		// s.time_now = Time
-		// start := time.Now()
+		dt_time := Time - s.last_time
 
-		dt_time := Dt_si * 1.05 ////Time - s.last_time
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, dt_time, Time, GammaLL, Mesh())
 
-		// var start, stop cuda.Event
-		// C.cudaEventCreate(&start)
-		// C.cudaEventCreate(&stop)
-		//
-		// C.cudaEventRecord(start, 0)
-
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, s.last_time, brms_slice, wc_slice, nspins, dt_time, Time, GammaLL, Mesh())
-
-		// C.cudaEventRecord(stop, 0)
-		// C.cudaEventSynchronize(stop)
-
-		// Calculate the elapsed time between events
-		// var elapsedTime float32
-		// C.cudaEventElapsedTime(&elapsedTime, start, stop)
-
-		//fmt.Printf("Elapsed time: %f ms\n", elapsedTime)
-		// s.last_time = Time + float64(elapsedTime)
-
-		// duration := time.Since(start)
-		//fmt.Println(elapsedTime)
-		// }
+		s.last_time = float64(Time)
 	}
 }
 
@@ -336,12 +255,6 @@ func FreezeSpins(dst *data.Slice) {
 		cuda.ZeroMask(dst, FrozenSpins.gpuLUT1(), regions.Gpu())
 	}
 }
-
-// New function for LLG formula time evolution
-// func SetTempValues(time, dthrk float64) {
-// 	ctime = time
-// 	dth = dthrk
-// }
 
 func (rk *MEMORY_TERM) Free() {
 	rk.scn.Free()

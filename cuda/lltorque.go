@@ -5,8 +5,6 @@ import (
 	"github.com/mumax/3/data"
 )
 
-import "C"
-
 // Landau-Lifshitz torque divided by gamma0:
 // 	- 1/(1+α²) [ m x B +  α m x (m x B) ]
 // 	torque in Tesla
@@ -36,25 +34,18 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 }
 
 // Apply new value Spin Torque to Beff --> Beff - Bcustom
-func SubSpinBextraBeff(dst, m, scn, last_t *data.Slice, brms, wc, nspins MSlice, deltah, ctime, gammaLL float64, mesh *data.Mesh) {
-	// N := dst.Len()
+func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc, nspins MSlice, deltah, ctime, gammaLL float64, mesh *data.Mesh) {
+
 	N := mesh.Size()
-	// util.Assert(m.Size() == N)
 	cfg := make3DConf(N)
-	// pbc := mesh.PBC_code()
-	//c := mesh.CellSize()
-	//vol := float32(c[X]*c[Y]*c[Z]) / float32(N[X]*N[Y]*N[Z])
-	// fmt.Println("aqui")
 
 	k_calcspinbeff_async(dst.DevPtr(X), dst.DevPtr(Y), dst.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		scn.DevPtr(0), scn.DevPtr(1), scn.DevPtr(2), scn.DevPtr(3), scn.DevPtr(4), scn.DevPtr(5),
-		last_t.DevPtr(0),
 		wc.DevPtr(0), wc.Mul(0),
 		nspins.DevPtr(0), nspins.Mul(0),
 		brms.DevPtr(X), brms.Mul(X),
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
 		float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], cfg)
-	// deltah, ctime, float32(vol), N[X], N[Y], N[Z], pbc, cfg)
 }

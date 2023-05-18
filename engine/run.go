@@ -28,8 +28,6 @@ var (
 	FixDt                   float64                      // fixed time step?
 	stepper                 Stepper                      // generic step, can be EulerStep, HeunStep, etc
 	solvertype              int
-	Dt_Weighted             float64 = 0.0 // Weighted Dt value for Dt_si in RK45
-	T0                      float64
 )
 
 func init() {
