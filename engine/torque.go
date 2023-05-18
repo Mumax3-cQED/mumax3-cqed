@@ -194,7 +194,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 
 		cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, dt_time, Time, GammaLL, Mesh())
 
-		s.last_time = float64(Time)
+		s.last_time = Time
 	}
 }
 

@@ -21,7 +21,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
             float* __restrict__ brms_x, float brmsx_mul,
             float* __restrict__ brms_y, float brmsy_mul,
             float* __restrict__ brms_z, float brmsz_mul,
-            float delta_time, float ctime, float gammaLL, int Nx, int Ny, int Nz){ //, uint8_t PBC) {
+            float delta_time, float ctime, float gammaLL, int Nx, int Ny, int Nz) {
 
     int ix = blockIdx.x * blockDim.x + threadIdx.x;
     int iy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -43,21 +43,17 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     float dt = delta_time;
 
     // Summatory
-    snx[i] += sin(wc_val * ctime) *  amul(mx, brmsx, i) * dt;
-    sny[i] += sin(wc_val * ctime) *  amul(my, brmsy, i) * dt;
-    snz[i] += sin(wc_val * ctime) *  amul(mz, brmsz, i) * dt;
+    snx[i] += sin(wc_val * ctime) * amul(mx, brmsx, i) * dt;
+    sny[i] += sin(wc_val * ctime) * amul(my, brmsy, i) * dt;
+    snz[i] += sin(wc_val * ctime) * amul(mz, brmsz, i) * dt;
 
-    cnx[i] += cos(wc_val * ctime) *  amul(mx, brmsx, i) * dt;
-    cny[i] += cos(wc_val * ctime) *  amul(my, brmsy, i) * dt;
-    cnz[i] += cos(wc_val * ctime) *  amul(mz, brmsz, i) * dt;
+    cnx[i] += cos(wc_val * ctime) * amul(mx, brmsx, i) * dt;
+    cny[i] += cos(wc_val * ctime) * amul(my, brmsy, i) * dt;
+    cnz[i] += cos(wc_val * ctime) * amul(mz, brmsz, i) * dt;
 
     // Summatory
-    float3 ss = make_float3(snx[i], sny[i], snz[i]);
-    float3 of = make_float3(1, 1, 1);
-    float r1 = dot(ss, of);
-
-    float3 cc = make_float3(cnx[i], cny[i], cnz[i]);
-    float r2 = dot(cc, of);
+    float r1 = snx[i] + sny[i] + snz[i];
+    float r2 = cnx[i] + cny[i] + cnz[i];
 
     float PREFACTOR = (gammaLL * nspins_val);
     float G = PREFACTOR * (r1 * cos(wc_val * ctime) - r2 * sin(wc_val * ctime));
