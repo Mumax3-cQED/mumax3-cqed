@@ -40,7 +40,7 @@ var (
 	s *MEMORY_TERM
 )
 
-const MEMORY_TERMS = 6
+const MEMORY_COMP = 6
 
 // Memory term computation
 type MEMORY_TERM struct {
@@ -178,7 +178,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		}
 
 		if s.scn == nil {
-			s.scn = cuda.NewSlice(MEMORY_TERMS, Mesh().Size())
+			s.scn = cuda.NewSlice(MEMORY_COMP, Mesh().Size())
 		}
 
 		wc_slice := Wc.MSlice()
