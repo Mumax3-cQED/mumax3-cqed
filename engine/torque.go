@@ -46,7 +46,6 @@ var (
 type MEMORY_TERM struct {
 	scn       *data.Slice
 	last_time *data.Slice
-	time_now  float64
 }
 
 func init() {
@@ -253,9 +252,29 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		// defer cuda.Recycle(stemp)
 		// s.time_now = Time
 		// start := time.Now()
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, Dt_si*1.05, Time, GammaLL, Mesh())
+
+		dt_time := Dt_si * 1.05 ////Time - s.last_time
+
+		// var start, stop cuda.Event
+		// C.cudaEventCreate(&start)
+		// C.cudaEventCreate(&stop)
+		//
+		// C.cudaEventRecord(start, 0)
+
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, s.last_time, brms_slice, wc_slice, nspins, dt_time, Time, GammaLL, Mesh())
+
+		// C.cudaEventRecord(stop, 0)
+		// C.cudaEventSynchronize(stop)
+
+		// Calculate the elapsed time between events
+		// var elapsedTime float32
+		// C.cudaEventElapsedTime(&elapsedTime, start, stop)
+
+		//fmt.Printf("Elapsed time: %f ms\n", elapsedTime)
+		// s.last_time = Time + float64(elapsedTime)
+
 		// duration := time.Since(start)
-		// fmt.Println(duration)
+		//fmt.Println(elapsedTime)
 		// }
 	}
 }

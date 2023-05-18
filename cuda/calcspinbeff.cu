@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "constants.h"
 #include "stencil.h"
+#include <time.h>
 
 //#define idx3d(ix,iy,iz) ( ix + iy*Nx + iz*Nx*Ny )
 
@@ -65,6 +66,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
             float* __restrict__ cnx,
             float* __restrict__ cny,
             float* __restrict__ cnz,
+            float* __restrict__ last_t,
             float* __restrict__ wc, float wc_mul,
             float* __restrict__ nspins, float nspins_mul,
             float* __restrict__ brms_x, float brmsx_mul,
@@ -72,6 +74,8 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
             float* __restrict__ brms_z, float brmsz_mul,
             float delta_time, float ctime, float gammaLL, int Nx, int Ny, int Nz){ //, uint8_t PBC) {
         //float delta_time, float ctime, float delta_vol, int Nx, int Ny, int Nz, uint8_t PBC) {
+
+  clock_t start_time = clock();
 
     int ix = blockIdx.x * blockDim.x + threadIdx.x;
     int iy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -92,7 +96,8 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     float brmsy = amul(brms_y, brmsy_mul, i);
     float brmsz = amul(brms_z, brmsz_mul, i);
 
-    float dt = delta_time;
+    double dt = delta_time;
+  //  double dt = last_t[i];
 
     // Second summatory
     snx[i] += sin(wc_val * ctime) *  amul(mx, brmsx, i) * dt;
@@ -196,4 +201,7 @@ float G = PREFACTOR * (r1* cos(wc_val * ctime) - r2 * sin(wc_val * ctime));
     ty[i] -= new_term_y;
     tz[i] -= new_term_z;
 
+clock_t stop_time = clock();
+double elapsed_time = ((double)(stop_time - start_time)) / CLOCKS_PER_SEC;
+last_t[i] =  elapsed_time;
 }
