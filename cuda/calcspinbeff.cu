@@ -40,7 +40,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     float brmsy = amul(brms_y, brmsy_mul, i);
     float brmsz = amul(brms_z, brmsz_mul, i);
 
-    double dt = delta_time;
+    float dt = delta_time;
 
     // Summatory
     snx[i] += sin(wc_val * ctime) *  amul(mx, brmsx, i) * dt;
