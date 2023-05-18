@@ -62,7 +62,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     float PREFACTOR = (gammaLL * nspins_val);
     float G = PREFACTOR * (r1 * cos(wc_val * ctime) - r2 * sin(wc_val * ctime));
 
-    // this is the new term to Beff
+    // This is the new term to Beff
     float new_term_x = brmsx * G;
     float new_term_y = brmsy * G;
     float new_term_z = brmsz * G;
