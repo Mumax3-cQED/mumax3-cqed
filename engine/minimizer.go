@@ -57,6 +57,10 @@ type Minimizer struct {
 func (mini *Minimizer) Step() {
 	m := M.Buffer()
 	size := m.Size()
+	if mini.k == nil {
+		mini.k = cuda.Buffer(3, size)
+		torqueFn(mini.k)
+	}
 	k := mini.k
 	h := mini.h
 
@@ -110,7 +114,8 @@ func (mini *Minimizer) Step() {
 }
 
 func (mini *Minimizer) Free() {
-	cuda.Recycle(mini.k)
+	// cuda.Recycle(mini.k)
+	mini.k.Free()
 }
 
 func Minimize() {
@@ -141,15 +146,15 @@ func Minimize() {
 	}
 
 	// set stepper to the minimizer
-	size := M.Buffer().Size()
+	// size := M.Buffer().Size()
 	mini := Minimizer{
 		h:      1e-4,
-		k:      cuda.Buffer(3, size),
+		k:      nil, //cuda.Buffer(3, size),
 		lastDm: FifoRing(DmSamples)}
 	stepper = &mini
 
 	// calculate initial torque
-	torqueFn(mini.k)
+	// torqueFn(mini.k)
 
 	cond := func() bool {
 		return (mini.lastDm.count < DmSamples || mini.lastDm.Max() > StopMaxDm)

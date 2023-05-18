@@ -39,12 +39,12 @@ var (
 
 	// dth   float64 = 0.0
 	// ctime float64 = 0.0
-	// scn   *data.Slice
+	// scn *data.Slice
 	s *MEMORY_TERM
 )
 
 type MEMORY_TERM struct {
-	scn *data.Slice // torque at end of step is kept for beginning of next step
+	scn *data.Slice
 }
 
 func init() {
@@ -213,6 +213,16 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 			}
 		*/
 
+		if s.scn.Size() != Mesh().Size() {
+			s.Free()
+			// fmt.Println("libera")
+		}
+
+		if s.scn == nil {
+			s.scn = cuda.NewSlice(6, Mesh().Size())
+			// fmt.Println("inicializa")
+		}
+
 		wc_slice := Wc.MSlice()
 		defer wc_slice.Recycle()
 
@@ -222,15 +232,15 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		nspins := NSpins.MSlice()
 		defer nspins.Recycle()
 
-		if s.scn.Size() != Mesh().Size() {
-			s.scn.Free()
-		}
-
-		// first step ever: one-time k1 init and eval
-		if s.scn == nil {
-			s.scn = cuda.NewSlice(2, Mesh().Size())
-		}
-
+		// d := cuda.NewSlice(1, Mesh().Size())
+		// defer cuda.Recycle(d)
+		//
+		// brms, r1 := B_rms.Slice()
+		// if r1 {
+		// 	defer cuda.Recycle(brms)
+		// }
+		//
+		// cuda.Mul(d, M.Buffer(), brms)
 		//fmt.Println(ctime*1e9, math.Mod(ctime, Dt_si)/Dt_si)
 		//fmt.Println(ctime*1e9, Dt_si/Dt_Weighted)
 		//fmt.Println(ctime)
@@ -238,7 +248,10 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		//f := math.Mod(Time, Dt_si) / Dt_si // se obtiene el factor de RK al vuelo
 		// stemp := cuda.Buffer(3, M.Buffer().Size())
 		// defer cuda.Recycle(stemp)
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, Time, Dt_si, GammaLL, Mesh())
+
+		cuda.MemoryCalculation(s.scn, M.Buffer(), brms_slice, wc_slice, Time, Dt_si*1.05, Mesh())
+
+		cuda.SubSpinBextraBeff(dst, s.scn, brms_slice, wc_slice, nspins, Time, GammaLL, Mesh())
 		// }
 	}
 }
@@ -306,6 +319,11 @@ func FreezeSpins(dst *data.Slice) {
 // 	ctime = time
 // 	dth = dthrk
 // }
+
+func (rk *MEMORY_TERM) Free() {
+	rk.scn.Free()
+	rk.scn = nil
+}
 
 func GetMaxTorque() float64 {
 	torque := ValueOf(Torque)

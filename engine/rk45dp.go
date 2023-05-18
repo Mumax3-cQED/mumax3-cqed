@@ -41,7 +41,7 @@ func (rk *RK45DP) Step() {
 	}
 
 	t0 := Time
-
+	T0 = t0
 	// backup magnetization
 	m0 := cuda.Buffer(3, size)
 	defer cuda.Recycle(m0)
@@ -65,7 +65,7 @@ func (rk *RK45DP) Step() {
 
 	M.normalize()
 	if !DisableTimeEvolutionTorque {
-		Dt_Weighted = (1. / 5.) * Dt_si
+		Dt_Weighted = (1. / 5.) //* Dt_si
 	}
 
 	torqueFn(k2)
@@ -76,7 +76,7 @@ func (rk *RK45DP) Step() {
 
 	M.normalize()
 	if !DisableTimeEvolutionTorque {
-		Dt_Weighted = (3. / 10.) * Dt_si
+		Dt_Weighted = (3. / 10.) //* Dt_si
 	}
 
 	torqueFn(k3)
@@ -87,18 +87,18 @@ func (rk *RK45DP) Step() {
 
 	M.normalize()
 	if !DisableTimeEvolutionTorque {
-		Dt_Weighted = (4. / 5.) * Dt_si
+		Dt_Weighted = (4. / 5.) //* Dt_si
 	}
 
 	torqueFn(k4)
 	// stage 5
 	Time = t0 + (8./9.)*Dt_si
 
-	madd5(m, m0, rk.k1, k2, k3, k4, 1, (19372./6561.)*h, (-25360./2187.)*h, (64448./6561.)*h, (-212./729.)*h)
+	cuda.Madd5(m, m0, rk.k1, k2, k3, k4, 1, (19372./6561.)*h, (-25360./2187.)*h, (64448./6561.)*h, (-212./729.)*h)
 
 	M.normalize()
 	if !DisableTimeEvolutionTorque {
-		Dt_Weighted = (8. / 9.) * Dt_si
+		Dt_Weighted = (8. / 9.) //* Dt_si
 	}
 
 	torqueFn(k5)
@@ -106,11 +106,11 @@ func (rk *RK45DP) Step() {
 	// stage 6
 	Time = t0 + (1.)*Dt_si
 
-	madd6(m, m0, rk.k1, k2, k3, k4, k5, 1, (9017./3168.)*h, (-355./33.)*h, (46732./5247.)*h, (49./176.)*h, (-5103./18656.)*h)
+	cuda.Madd6(m, m0, rk.k1, k2, k3, k4, k5, 1, (9017./3168.)*h, (-355./33.)*h, (46732./5247.)*h, (49./176.)*h, (-5103./18656.)*h)
 
 	M.normalize()
 	if !DisableTimeEvolutionTorque {
-		Dt_Weighted = (1.) * Dt_si
+		Dt_Weighted = (1.) //* Dt_si
 	}
 
 	torqueFn(k6)
@@ -119,13 +119,13 @@ func (rk *RK45DP) Step() {
 	Time = t0 + (1.)*Dt_si
 
 	// no k2
-	madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
+	cuda.Madd6(m, m0, rk.k1, k3, k4, k5, k6, 1, (35./384.)*h, (500./1113.)*h, (125./192.)*h, (-2187./6784.)*h, (11./84.)*h) // 5th
 
 	M.normalize()
 
 	k7 := k2 // re-use k2
 	if !DisableTimeEvolutionTorque {
-		Dt_Weighted = (1.) * Dt_si
+		Dt_Weighted = (1.) //* Dt_si
 	}
 
 	torqueFn(k7) // next torque if OK
