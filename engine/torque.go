@@ -44,7 +44,9 @@ var (
 )
 
 type MEMORY_TERM struct {
-	scn *data.Slice
+	scn       *data.Slice
+	last_time *data.Slice
+	time_now  float64
 }
 
 func init() {
@@ -220,6 +222,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 
 		if s.scn == nil {
 			s.scn = cuda.NewSlice(6, Mesh().Size())
+			s.last_time = cuda.NewSlice(1, Mesh().Size())
 			// fmt.Println("inicializa")
 		}
 
@@ -248,10 +251,11 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		//f := math.Mod(Time, Dt_si) / Dt_si // se obtiene el factor de RK al vuelo
 		// stemp := cuda.Buffer(3, M.Buffer().Size())
 		// defer cuda.Recycle(stemp)
-
-		cuda.MemoryCalculation(s.scn, M.Buffer(), brms_slice, wc_slice, Time, Dt_si*1.05, Mesh())
-
-		cuda.SubSpinBextraBeff(dst, s.scn, brms_slice, wc_slice, nspins, Time, GammaLL, Mesh())
+		// s.time_now = Time
+		// start := time.Now()
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, Dt_si*1.05, Time, GammaLL, Mesh())
+		// duration := time.Since(start)
+		// fmt.Println(duration)
 		// }
 	}
 }
