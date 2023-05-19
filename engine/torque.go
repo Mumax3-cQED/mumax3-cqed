@@ -29,10 +29,12 @@ var (
 	DisableSlonczewskiTorque           = false
 	DisableTimeEvolutionTorque         = true
 	DisableBeffContributions           = false
+	EnableCavityDissipation            = false
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
-	B_rms  = NewExcitation("B_rms", "T", "Brms extra parameter for LLG time evolution")
-	Wc     = NewScalarParam("Wc", "rad/s", "Wc extra parameter for LLG time evolution")
+	B_rms  = NewExcitation("B_rms", "T", "Brms extra parameter")
+	Wc     = NewScalarParam("Wc", "rad/s", "Wc extra parameter")
+	Kappa  = NewScalarParam("Kappa", "rad/s", "Kappa cavity dissipation")
 	NSpins = NewScalarParam("NSpins", "", "Number of spins")
 
 	Bext_custom float64 = 0.0
@@ -58,6 +60,7 @@ func init() {
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
 	DeclVar("DisableTimeEvolutionTorque", &DisableTimeEvolutionTorque, "Disables Time evolution torque (default=true)")
 	DeclVar("DisableBeffContributions", &DisableBeffContributions, "Disables Beff default contributions (default=false)")
+	DeclVar("EnableCavityDissipation", &EnableCavityDissipation, "Enable/Disable Cavity Dissipation (default=false)")
 	DeclVar("DoPrecess", &Precess, "Enables LL precession (default=true)")
 	DeclLValue("FixedLayerPosition", &flposition{}, "Position of the fixed layer: FIXEDLAYER_TOP, FIXEDLAYER_BOTTOM (default=FIXEDLAYER_TOP)")
 	DeclROnly("FIXEDLAYER_TOP", FIXEDLAYER_TOP, "FixedLayerPosition = FIXEDLAYER_TOP instructs mumax3 that fixed layer is on top of the free layer")
@@ -116,6 +119,17 @@ func PrintParametersTimeEvolution() {
 			LogIn(" Slonczewski Spin-Transfer Torque: Disabled")
 		} else {
 			LogIn(" Slonczewski Spin-Transfer Torque: Enabled")
+		}
+
+		if EnableCavityDissipation {
+			LogIn(" Cavity Dissipation: Enabled")
+
+			kappa := Kappa.MSlice()
+			defer kappa.Recycle()
+
+			LogIn(" Kappa (rad/s):", kappa.Mul(0))
+		} else {
+			LogIn(" Cavity Dissipation: Disabled")
 		}
 
 		cell_size := Mesh().CellSize()
@@ -192,7 +206,15 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 
 		dt_time := Time - s.last_time
 
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, dt_time, Time, GammaLL, Mesh())
+		if !EnableCavityDissipation {
+			cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, dt_time, Time, GammaLL, Mesh())
+		} else {
+
+			kappa := Kappa.MSlice()
+			defer kappa.Recycle()
+
+			cuda.SubSpinBextraBeffDissipation(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, kappa, dt_time, Time, GammaLL, Mesh())
+		}
 
 		s.last_time = Time
 	}
