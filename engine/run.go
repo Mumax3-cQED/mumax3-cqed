@@ -1,6 +1,5 @@
 package engine
 
-// MODIFIED INMA
 import (
 	"fmt"
 	"math"
