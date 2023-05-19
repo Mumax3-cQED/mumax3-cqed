@@ -8,12 +8,8 @@
 extern "C" __global__ void
 calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
             float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
-            float* __restrict__ snx,
-            float* __restrict__ sny,
-            float* __restrict__ snz,
-            float* __restrict__ cnx,
-            float* __restrict__ cny,
-            float* __restrict__ cnz,
+            float* __restrict__ snx,   float* __restrict__ sny, float* __restrict__ snz,
+            float* __restrict__ cnx, float* __restrict__ cny, float* __restrict__ cnz,
             float* __restrict__ wc, float wc_mul,
             float* __restrict__ nspins, float nspins_mul,
             float* __restrict__ brms_x, float brmsx_mul,
@@ -53,7 +49,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     float r1 = snx[i] + sny[i] + snz[i];
     float r2 = cnx[i] + cny[i] + cnz[i];
 
-    float PREFACTOR = (gammaLL * nspins_val);
+    float PREFACTOR = gammaLL * nspins_val;
     float G = PREFACTOR * (r1 * cos(wc_val * ctime) - r2 * sin(wc_val * ctime));
 
     // This is the new term to Beff
