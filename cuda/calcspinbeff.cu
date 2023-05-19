@@ -2,9 +2,7 @@
 #include "amul.h"
 #include "float3.h"
 #include <stdint.h>
-#include "constants.h"
 #include "stencil.h"
-#include <time.h>
 
 //Calculations for extra term in Beff
 extern "C" __global__ void
