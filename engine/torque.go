@@ -157,7 +157,7 @@ func SetTorque(dst *data.Slice) {
 // Sets dst to the current Landau-Lifshitz torque
 func SetLLTorque(dst *data.Slice) {
 
-	SetEffectiveField(dst) // calc and store B_eff
+	SetEffectiveField(dst) // calculate and store B_eff
 
 	alpha := Alpha.MSlice()
 	defer alpha.Recycle()
