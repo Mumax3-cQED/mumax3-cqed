@@ -135,7 +135,7 @@ func PrintParametersTimeEvolution() {
 		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
 		LogIn(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
 		LogIn(" Alpha:", alpha.Mul(0))
-		LogIn(" B_ext custom (T):", cuda.GetElemPos(be, Z))
+		LogIn(" B field ext. custom (T):", cuda.GetElemPos(be, Z))
 		LogIn(" Num. spins:", ns.Mul(0))
 
 		if m_sat.Mul(0) != 0.0 {
