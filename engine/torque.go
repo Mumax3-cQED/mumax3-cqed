@@ -37,8 +37,6 @@ var (
 	Kappa  = NewScalarParam("Kappa", "rad/s", "Kappa cavity dissipation")
 	NSpins = NewScalarParam("NSpins", "", "Number of spins")
 
-	Bext_custom float64 = 0.0
-
 	s *MEMORY_TERM
 )
 
@@ -55,7 +53,6 @@ func init() {
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
-	DeclVar("Bext_custom", &Bext_custom, "B external field custom in T")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
 	DeclVar("DisableTimeEvolutionTorque", &DisableTimeEvolutionTorque, "Disables Time evolution torque (default=true)")
@@ -138,7 +135,7 @@ func PrintParametersTimeEvolution() {
 		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
 		LogIn(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
 		LogIn(" Alpha:", alpha.Mul(0))
-		LogIn(" B_ext custom (T):", Bext_custom)
+		LogIn(" B_ext custom (T):", cuda.GetElemPos(be, Z))
 		LogIn(" Num. spins:", ns.Mul(0))
 
 		if m_sat.Mul(0) != 0.0 {
