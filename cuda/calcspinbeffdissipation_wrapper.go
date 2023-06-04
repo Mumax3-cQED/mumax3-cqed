@@ -41,7 +41,7 @@ type calcspinbeffdissipation_args_t struct{
 	 arg_brmsy_mul float32
 	 arg_brms_z unsafe.Pointer
 	 arg_brmsz_mul float32
-	 arg_delta_time float32
+	 arg_dt float32
 	 arg_ctime float32
 	 arg_gammaLL float32
 	 arg_Nx int
@@ -80,7 +80,7 @@ func init(){
 	 calcspinbeffdissipation_args.argptr[21] = unsafe.Pointer(&calcspinbeffdissipation_args.arg_brmsy_mul)
 	 calcspinbeffdissipation_args.argptr[22] = unsafe.Pointer(&calcspinbeffdissipation_args.arg_brms_z)
 	 calcspinbeffdissipation_args.argptr[23] = unsafe.Pointer(&calcspinbeffdissipation_args.arg_brmsz_mul)
-	 calcspinbeffdissipation_args.argptr[24] = unsafe.Pointer(&calcspinbeffdissipation_args.arg_delta_time)
+	 calcspinbeffdissipation_args.argptr[24] = unsafe.Pointer(&calcspinbeffdissipation_args.arg_dt)
 	 calcspinbeffdissipation_args.argptr[25] = unsafe.Pointer(&calcspinbeffdissipation_args.arg_ctime)
 	 calcspinbeffdissipation_args.argptr[26] = unsafe.Pointer(&calcspinbeffdissipation_args.arg_gammaLL)
 	 calcspinbeffdissipation_args.argptr[27] = unsafe.Pointer(&calcspinbeffdissipation_args.arg_Nx)
@@ -89,7 +89,7 @@ func init(){
 	 }
 
 // Wrapper for calcspinbeffdissipation CUDA kernel, asynchronous.
-func k_calcspinbeffdissipation_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, snx unsafe.Pointer, sny unsafe.Pointer, snz unsafe.Pointer, cnx unsafe.Pointer, cny unsafe.Pointer, cnz unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, nspins unsafe.Pointer, nspins_mul float32, kappa unsafe.Pointer, kappa_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, delta_time float32, ctime float32, gammaLL float32, Nx int, Ny int, Nz int,  cfg *config) {
+func k_calcspinbeffdissipation_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, snx unsafe.Pointer, sny unsafe.Pointer, snz unsafe.Pointer, cnx unsafe.Pointer, cny unsafe.Pointer, cnz unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, nspins unsafe.Pointer, nspins_mul float32, kappa unsafe.Pointer, kappa_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, dt float32, ctime float32, gammaLL float32, Nx int, Ny int, Nz int,  cfg *config) {
 	if Synchronous{ // debug
 		Sync()
 		timer.Start("calcspinbeffdissipation")
@@ -126,7 +126,7 @@ func k_calcspinbeffdissipation_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz 
 	 calcspinbeffdissipation_args.arg_brmsy_mul = brmsy_mul
 	 calcspinbeffdissipation_args.arg_brms_z = brms_z
 	 calcspinbeffdissipation_args.arg_brmsz_mul = brmsz_mul
-	 calcspinbeffdissipation_args.arg_delta_time = delta_time
+	 calcspinbeffdissipation_args.arg_dt = dt
 	 calcspinbeffdissipation_args.arg_ctime = ctime
 	 calcspinbeffdissipation_args.arg_gammaLL = gammaLL
 	 calcspinbeffdissipation_args.arg_Nx = Nx

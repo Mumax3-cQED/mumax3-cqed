@@ -39,7 +39,7 @@ type calcspinbeff_args_t struct{
 	 arg_brmsy_mul float32
 	 arg_brms_z unsafe.Pointer
 	 arg_brmsz_mul float32
-	 arg_delta_time float32
+	 arg_dt float32
 	 arg_ctime float32
 	 arg_gammaLL float32
 	 arg_Nx int
@@ -76,7 +76,7 @@ func init(){
 	 calcspinbeff_args.argptr[19] = unsafe.Pointer(&calcspinbeff_args.arg_brmsy_mul)
 	 calcspinbeff_args.argptr[20] = unsafe.Pointer(&calcspinbeff_args.arg_brms_z)
 	 calcspinbeff_args.argptr[21] = unsafe.Pointer(&calcspinbeff_args.arg_brmsz_mul)
-	 calcspinbeff_args.argptr[22] = unsafe.Pointer(&calcspinbeff_args.arg_delta_time)
+	 calcspinbeff_args.argptr[22] = unsafe.Pointer(&calcspinbeff_args.arg_dt)
 	 calcspinbeff_args.argptr[23] = unsafe.Pointer(&calcspinbeff_args.arg_ctime)
 	 calcspinbeff_args.argptr[24] = unsafe.Pointer(&calcspinbeff_args.arg_gammaLL)
 	 calcspinbeff_args.argptr[25] = unsafe.Pointer(&calcspinbeff_args.arg_Nx)
@@ -85,7 +85,7 @@ func init(){
 	 }
 
 // Wrapper for calcspinbeff CUDA kernel, asynchronous.
-func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, snx unsafe.Pointer, sny unsafe.Pointer, snz unsafe.Pointer, cnx unsafe.Pointer, cny unsafe.Pointer, cnz unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, nspins unsafe.Pointer, nspins_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, delta_time float32, ctime float32, gammaLL float32, Nx int, Ny int, Nz int,  cfg *config) {
+func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, snx unsafe.Pointer, sny unsafe.Pointer, snz unsafe.Pointer, cnx unsafe.Pointer, cny unsafe.Pointer, cnz unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, nspins unsafe.Pointer, nspins_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, dt float32, ctime float32, gammaLL float32, Nx int, Ny int, Nz int,  cfg *config) {
 	if Synchronous{ // debug
 		Sync()
 		timer.Start("calcspinbeff")
@@ -120,7 +120,7 @@ func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Poin
 	 calcspinbeff_args.arg_brmsy_mul = brmsy_mul
 	 calcspinbeff_args.arg_brms_z = brms_z
 	 calcspinbeff_args.arg_brmsz_mul = brmsz_mul
-	 calcspinbeff_args.arg_delta_time = delta_time
+	 calcspinbeff_args.arg_dt = dt
 	 calcspinbeff_args.arg_ctime = ctime
 	 calcspinbeff_args.arg_gammaLL = gammaLL
 	 calcspinbeff_args.arg_Nx = Nx

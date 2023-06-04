@@ -16,7 +16,7 @@ calcspinbeffdissipation(float* __restrict__  tx, float* __restrict__  ty, float*
             float* __restrict__ brms_x, float brmsx_mul,
             float* __restrict__ brms_y, float brmsy_mul,
             float* __restrict__ brms_z, float brmsz_mul,
-            float delta_time, float ctime, float gammaLL, int Nx, int Ny, int Nz) {
+            float dt, float ctime, float gammaLL, int Nx, int Ny, int Nz) {
 
     int ix = blockIdx.x * blockDim.x + threadIdx.x;
     int iy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -35,8 +35,6 @@ calcspinbeffdissipation(float* __restrict__  tx, float* __restrict__  ty, float*
     float brmsx = amul(brms_x, brmsx_mul, i);
     float brmsy = amul(brms_y, brmsy_mul, i);
     float brmsz = amul(brms_z, brmsz_mul, i);
-
-    float dt = delta_time;
 
     // Summatory
     snx[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * amul(mx, brmsx, i) * dt;
