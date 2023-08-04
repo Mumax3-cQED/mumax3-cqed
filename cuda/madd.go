@@ -34,12 +34,6 @@ func Add(dst, src1, src2 *data.Slice) {
 	Madd2(dst, src1, src2, 1, 1)
 }
 
-// Added INMA
-// Sub: dst = src1 - src2.
-func Sub(dst, src1, src2 *data.Slice) {
-	Msub2(dst, src1, src2, 1, 1)
-}
-
 // multiply-add: dst[i] = src1[i] * factor1 + src2[i] * factor2
 func Madd2(dst, src1, src2 *data.Slice, factor1, factor2 float32) {
 	N := dst.Len()
@@ -51,25 +45,6 @@ func Madd2(dst, src1, src2 *data.Slice, factor1, factor2 float32) {
 		k_madd2_async(dst.DevPtr(c), src1.DevPtr(c), factor1,
 			src2.DevPtr(c), factor2, N, cfg)
 	}
-}
-
-// Added INMA
-// multiply-sub: dst[i] = src1[i] * factor1 - src2[i] * factor2
-func Msub2(dst, src1, src2 *data.Slice, factor1, factor2 float32) {
-	N := dst.Len()
-	nComp := dst.NComp()
-	util.Assert(src1.Len() == N && src2.Len() == N)
-	util.Assert(src1.NComp() == nComp && src2.NComp() == nComp)
-	cfg := make1DConf(N)
-	for c := 0; c < nComp; c++ {
-		k_msub2_async(dst.DevPtr(c), src1.DevPtr(c), factor1,
-			src2.DevPtr(c), factor2, N, cfg)
-	}
-}
-
-// Added INMA
-func Msub21(dst, src1, src2 *data.Slice) {
-	Msub2(dst, src1, src2, 1, 1)
 }
 
 // multiply-add: dst[i] = src1[i] * factor1 + src2[i] * factor2 + src3 * factor3

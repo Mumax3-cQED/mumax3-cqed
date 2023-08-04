@@ -1,6 +1,7 @@
 // mumax3 main command
 package main
 
+// MODIFIED INMA
 import (
 	"flag"
 	"fmt"
