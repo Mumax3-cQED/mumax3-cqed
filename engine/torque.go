@@ -204,9 +204,11 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		dt_time := Time - s.last_time
 
 		if !EnableCavityDissipation {
+			// calculations without cavity dissipation
 			cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, dt_time, Time, GammaLL, Mesh())
 		} else {
 
+			// calculations with cavity dissipation
 			kappa := Kappa.MSlice()
 			defer kappa.Recycle()
 
