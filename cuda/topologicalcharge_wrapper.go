@@ -5,50 +5,50 @@ package cuda
  EDITING IS FUTILE.
 */
 
-import (
+import(
+	"unsafe"
 	"github.com/mumax/3/cuda/cu"
 	"github.com/mumax/3/timer"
 	"sync"
-	"unsafe"
 )
 
 // CUDA handle for settopologicalcharge kernel
 var settopologicalcharge_code cu.Function
 
 // Stores the arguments for settopologicalcharge kernel invocation
-type settopologicalcharge_args_t struct {
-	arg_s     unsafe.Pointer
-	arg_mx    unsafe.Pointer
-	arg_my    unsafe.Pointer
-	arg_mz    unsafe.Pointer
-	arg_icxcy float32
-	arg_Nx    int
-	arg_Ny    int
-	arg_Nz    int
-	arg_PBC   byte
-	argptr    [9]unsafe.Pointer
+type settopologicalcharge_args_t struct{
+	 arg_s unsafe.Pointer
+	 arg_mx unsafe.Pointer
+	 arg_my unsafe.Pointer
+	 arg_mz unsafe.Pointer
+	 arg_icxcy float32
+	 arg_Nx int
+	 arg_Ny int
+	 arg_Nz int
+	 arg_PBC byte
+	 argptr [9]unsafe.Pointer
 	sync.Mutex
 }
 
 // Stores the arguments for settopologicalcharge kernel invocation
 var settopologicalcharge_args settopologicalcharge_args_t
 
-func init() {
+func init(){
 	// CUDA driver kernel call wants pointers to arguments, set them up once.
-	settopologicalcharge_args.argptr[0] = unsafe.Pointer(&settopologicalcharge_args.arg_s)
-	settopologicalcharge_args.argptr[1] = unsafe.Pointer(&settopologicalcharge_args.arg_mx)
-	settopologicalcharge_args.argptr[2] = unsafe.Pointer(&settopologicalcharge_args.arg_my)
-	settopologicalcharge_args.argptr[3] = unsafe.Pointer(&settopologicalcharge_args.arg_mz)
-	settopologicalcharge_args.argptr[4] = unsafe.Pointer(&settopologicalcharge_args.arg_icxcy)
-	settopologicalcharge_args.argptr[5] = unsafe.Pointer(&settopologicalcharge_args.arg_Nx)
-	settopologicalcharge_args.argptr[6] = unsafe.Pointer(&settopologicalcharge_args.arg_Ny)
-	settopologicalcharge_args.argptr[7] = unsafe.Pointer(&settopologicalcharge_args.arg_Nz)
-	settopologicalcharge_args.argptr[8] = unsafe.Pointer(&settopologicalcharge_args.arg_PBC)
-}
+	 settopologicalcharge_args.argptr[0] = unsafe.Pointer(&settopologicalcharge_args.arg_s)
+	 settopologicalcharge_args.argptr[1] = unsafe.Pointer(&settopologicalcharge_args.arg_mx)
+	 settopologicalcharge_args.argptr[2] = unsafe.Pointer(&settopologicalcharge_args.arg_my)
+	 settopologicalcharge_args.argptr[3] = unsafe.Pointer(&settopologicalcharge_args.arg_mz)
+	 settopologicalcharge_args.argptr[4] = unsafe.Pointer(&settopologicalcharge_args.arg_icxcy)
+	 settopologicalcharge_args.argptr[5] = unsafe.Pointer(&settopologicalcharge_args.arg_Nx)
+	 settopologicalcharge_args.argptr[6] = unsafe.Pointer(&settopologicalcharge_args.arg_Ny)
+	 settopologicalcharge_args.argptr[7] = unsafe.Pointer(&settopologicalcharge_args.arg_Nz)
+	 settopologicalcharge_args.argptr[8] = unsafe.Pointer(&settopologicalcharge_args.arg_PBC)
+	 }
 
 // Wrapper for settopologicalcharge CUDA kernel, asynchronous.
-func k_settopologicalcharge_async(s unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, icxcy float32, Nx int, Ny int, Nz int, PBC byte, cfg *config) {
-	if Synchronous { // debug
+func k_settopologicalcharge_async ( s unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, icxcy float32, Nx int, Ny int, Nz int, PBC byte,  cfg *config) {
+	if Synchronous{ // debug
 		Sync()
 		timer.Start("settopologicalcharge")
 	}
@@ -56,46 +56,47 @@ func k_settopologicalcharge_async(s unsafe.Pointer, mx unsafe.Pointer, my unsafe
 	settopologicalcharge_args.Lock()
 	defer settopologicalcharge_args.Unlock()
 
-	if settopologicalcharge_code == 0 {
+	if settopologicalcharge_code == 0{
 		settopologicalcharge_code = fatbinLoad(settopologicalcharge_map, "settopologicalcharge")
 	}
 
-	settopologicalcharge_args.arg_s = s
-	settopologicalcharge_args.arg_mx = mx
-	settopologicalcharge_args.arg_my = my
-	settopologicalcharge_args.arg_mz = mz
-	settopologicalcharge_args.arg_icxcy = icxcy
-	settopologicalcharge_args.arg_Nx = Nx
-	settopologicalcharge_args.arg_Ny = Ny
-	settopologicalcharge_args.arg_Nz = Nz
-	settopologicalcharge_args.arg_PBC = PBC
+	 settopologicalcharge_args.arg_s = s
+	 settopologicalcharge_args.arg_mx = mx
+	 settopologicalcharge_args.arg_my = my
+	 settopologicalcharge_args.arg_mz = mz
+	 settopologicalcharge_args.arg_icxcy = icxcy
+	 settopologicalcharge_args.arg_Nx = Nx
+	 settopologicalcharge_args.arg_Ny = Ny
+	 settopologicalcharge_args.arg_Nz = Nz
+	 settopologicalcharge_args.arg_PBC = PBC
+	
 
 	args := settopologicalcharge_args.argptr[:]
 	cu.LaunchKernel(settopologicalcharge_code, cfg.Grid.X, cfg.Grid.Y, cfg.Grid.Z, cfg.Block.X, cfg.Block.Y, cfg.Block.Z, 0, stream0, args)
 
-	if Synchronous { // debug
+	if Synchronous{ // debug
 		Sync()
 		timer.Stop("settopologicalcharge")
 	}
 }
 
 // maps compute capability on PTX code for settopologicalcharge kernel.
-var settopologicalcharge_map = map[int]string{0: "",
-	30: settopologicalcharge_ptx_30,
-	35: settopologicalcharge_ptx_35,
-	37: settopologicalcharge_ptx_37,
-	50: settopologicalcharge_ptx_50,
-	52: settopologicalcharge_ptx_52,
-	53: settopologicalcharge_ptx_53,
-	60: settopologicalcharge_ptx_60,
-	61: settopologicalcharge_ptx_61,
-	70: settopologicalcharge_ptx_70,
-	75: settopologicalcharge_ptx_75}
+var settopologicalcharge_map = map[int]string{ 0: "" ,
+30: settopologicalcharge_ptx_30 ,
+35: settopologicalcharge_ptx_35 ,
+37: settopologicalcharge_ptx_37 ,
+50: settopologicalcharge_ptx_50 ,
+52: settopologicalcharge_ptx_52 ,
+53: settopologicalcharge_ptx_53 ,
+60: settopologicalcharge_ptx_60 ,
+61: settopologicalcharge_ptx_61 ,
+70: settopologicalcharge_ptx_70 ,
+75: settopologicalcharge_ptx_75  }
 
 // settopologicalcharge PTX code for various compute capabilities.
-const (
-	settopologicalcharge_ptx_30 = `
-.version 6.3
+const(
+  settopologicalcharge_ptx_30 = `
+.version 6.4
 .target sm_30
 .address_size 64
 
@@ -317,17 +318,16 @@ BB0_24:
 	mul.f32 	%f126, %f8, %f8;
 	fma.rn.f32 	%f127, %f7, %f7, %f126;
 	fma.rn.f32 	%f29, %f9, %f9, %f127;
-	setp.eq.f32	%p27, %f29, 0f00000000;
+	setp.neu.f32	%p27, %f29, 0f00000000;
 	mul.f32 	%f128, %f26, %f26;
 	fma.rn.f32 	%f129, %f25, %f25, %f128;
 	fma.rn.f32 	%f30, %f27, %f27, %f129;
-	setp.eq.f32	%p28, %f30, 0f00000000;
-	or.pred  	%p29, %p27, %p28;
-	and.pred  	%p31, %p29, %p25;
-	@!%p31 bra 	BB0_26;
-	bra.uni 	BB0_25;
+	setp.neu.f32	%p28, %f30, 0f00000000;
+	and.pred  	%p29, %p27, %p28;
+	setp.eq.f32	%p30, %f28, 0f00000000;
+	or.pred  	%p31, %p29, %p30;
+	@%p31 bra 	BB0_26;
 
-BB0_25:
 	mul.f32 	%f130, %f14, %f14;
 	fma.rn.f32 	%f131, %f13, %f13, %f130;
 	fma.rn.f32 	%f132, %f15, %f15, %f131;
@@ -345,8 +345,7 @@ BB0_35:
 	bra.uni 	BB0_36;
 
 BB0_26:
-	setp.neu.f32	%p33, %f29, 0f00000000;
-	or.pred  	%p34, %p25, %p33;
+	or.pred  	%p34, %p25, %p27;
 	@%p34 bra 	BB0_28;
 	bra.uni 	BB0_27;
 
@@ -355,18 +354,19 @@ BB0_28:
 	fma.rn.f32 	%f134, %f13, %f13, %f133;
 	fma.rn.f32 	%f34, %f15, %f15, %f134;
 	setp.neu.f32	%p35, %f34, 0f00000000;
-	setp.neu.f32	%p36, %f30, 0f00000000;
-	or.pred  	%p37, %p35, %p36;
+	or.pred  	%p37, %p35, %p28;
 	@%p37 bra 	BB0_30;
 	bra.uni 	BB0_29;
 
 BB0_30:
-	or.pred  	%p39, %p27, %p25;
+	setp.eq.f32	%p38, %f29, 0f00000000;
+	or.pred  	%p39, %p38, %p25;
 	@%p39 bra 	BB0_32;
 	bra.uni 	BB0_31;
 
 BB0_32:
-	or.pred  	%p42, %p28, %p35;
+	setp.eq.f32	%p41, %f30, 0f00000000;
+	or.pred  	%p42, %p41, %p35;
 	@%p42 bra 	BB0_34;
 	bra.uni 	BB0_33;
 
@@ -571,17 +571,16 @@ BB0_58:
 	mul.f32 	%f184, %f58, %f58;
 	fma.rn.f32 	%f185, %f57, %f57, %f184;
 	fma.rn.f32 	%f78, %f56, %f56, %f185;
-	setp.eq.f32	%p61, %f78, 0f00000000;
+	setp.neu.f32	%p61, %f78, 0f00000000;
 	mul.f32 	%f186, %f76, %f76;
 	fma.rn.f32 	%f187, %f75, %f75, %f186;
 	fma.rn.f32 	%f79, %f74, %f74, %f187;
-	setp.eq.f32	%p62, %f79, 0f00000000;
-	or.pred  	%p63, %p61, %p62;
-	and.pred  	%p65, %p63, %p59;
-	@!%p65 bra 	BB0_60;
-	bra.uni 	BB0_59;
+	setp.neu.f32	%p62, %f79, 0f00000000;
+	and.pred  	%p63, %p61, %p62;
+	setp.eq.f32	%p64, %f77, 0f00000000;
+	or.pred  	%p65, %p63, %p64;
+	@%p65 bra 	BB0_60;
 
-BB0_59:
 	mul.f32 	%f188, %f64, %f64;
 	fma.rn.f32 	%f189, %f63, %f63, %f188;
 	fma.rn.f32 	%f190, %f62, %f62, %f189;
@@ -599,8 +598,7 @@ BB0_69:
 	bra.uni 	BB0_70;
 
 BB0_60:
-	setp.neu.f32	%p67, %f78, 0f00000000;
-	or.pred  	%p68, %p59, %p67;
+	or.pred  	%p68, %p59, %p61;
 	@%p68 bra 	BB0_62;
 	bra.uni 	BB0_61;
 
@@ -609,18 +607,19 @@ BB0_62:
 	fma.rn.f32 	%f192, %f63, %f63, %f191;
 	fma.rn.f32 	%f83, %f62, %f62, %f192;
 	setp.neu.f32	%p69, %f83, 0f00000000;
-	setp.neu.f32	%p70, %f79, 0f00000000;
-	or.pred  	%p71, %p69, %p70;
+	or.pred  	%p71, %p69, %p62;
 	@%p71 bra 	BB0_64;
 	bra.uni 	BB0_63;
 
 BB0_64:
-	or.pred  	%p73, %p61, %p59;
+	setp.eq.f32	%p72, %f78, 0f00000000;
+	or.pred  	%p73, %p72, %p59;
 	@%p73 bra 	BB0_66;
 	bra.uni 	BB0_65;
 
 BB0_66:
-	or.pred  	%p76, %p62, %p69;
+	setp.eq.f32	%p75, %f79, 0f00000000;
+	or.pred  	%p76, %p75, %p69;
 	@%p76 bra 	BB0_68;
 	bra.uni 	BB0_67;
 
@@ -704,8 +703,8 @@ BB0_72:
 
 
 `
-	settopologicalcharge_ptx_35 = `
-.version 6.3
+   settopologicalcharge_ptx_35 = `
+.version 6.4
 .target sm_35
 .address_size 64
 
@@ -928,17 +927,16 @@ BB0_24:
 	mul.f32 	%f126, %f8, %f8;
 	fma.rn.f32 	%f127, %f7, %f7, %f126;
 	fma.rn.f32 	%f29, %f9, %f9, %f127;
-	setp.eq.f32	%p27, %f29, 0f00000000;
+	setp.neu.f32	%p27, %f29, 0f00000000;
 	mul.f32 	%f128, %f26, %f26;
 	fma.rn.f32 	%f129, %f25, %f25, %f128;
 	fma.rn.f32 	%f30, %f27, %f27, %f129;
-	setp.eq.f32	%p28, %f30, 0f00000000;
-	or.pred  	%p29, %p27, %p28;
-	and.pred  	%p31, %p29, %p25;
-	@!%p31 bra 	BB0_26;
-	bra.uni 	BB0_25;
+	setp.neu.f32	%p28, %f30, 0f00000000;
+	and.pred  	%p29, %p27, %p28;
+	setp.eq.f32	%p30, %f28, 0f00000000;
+	or.pred  	%p31, %p29, %p30;
+	@%p31 bra 	BB0_26;
 
-BB0_25:
 	mul.f32 	%f130, %f14, %f14;
 	fma.rn.f32 	%f131, %f13, %f13, %f130;
 	fma.rn.f32 	%f132, %f15, %f15, %f131;
@@ -956,8 +954,7 @@ BB0_35:
 	bra.uni 	BB0_36;
 
 BB0_26:
-	setp.neu.f32	%p33, %f29, 0f00000000;
-	or.pred  	%p34, %p25, %p33;
+	or.pred  	%p34, %p25, %p27;
 	@%p34 bra 	BB0_28;
 	bra.uni 	BB0_27;
 
@@ -966,18 +963,19 @@ BB0_28:
 	fma.rn.f32 	%f134, %f13, %f13, %f133;
 	fma.rn.f32 	%f34, %f15, %f15, %f134;
 	setp.neu.f32	%p35, %f34, 0f00000000;
-	setp.neu.f32	%p36, %f30, 0f00000000;
-	or.pred  	%p37, %p35, %p36;
+	or.pred  	%p37, %p35, %p28;
 	@%p37 bra 	BB0_30;
 	bra.uni 	BB0_29;
 
 BB0_30:
-	or.pred  	%p39, %p27, %p25;
+	setp.eq.f32	%p38, %f29, 0f00000000;
+	or.pred  	%p39, %p38, %p25;
 	@%p39 bra 	BB0_32;
 	bra.uni 	BB0_31;
 
 BB0_32:
-	or.pred  	%p42, %p28, %p35;
+	setp.eq.f32	%p41, %f30, 0f00000000;
+	or.pred  	%p42, %p41, %p35;
 	@%p42 bra 	BB0_34;
 	bra.uni 	BB0_33;
 
@@ -1182,17 +1180,16 @@ BB0_58:
 	mul.f32 	%f184, %f58, %f58;
 	fma.rn.f32 	%f185, %f57, %f57, %f184;
 	fma.rn.f32 	%f78, %f56, %f56, %f185;
-	setp.eq.f32	%p61, %f78, 0f00000000;
+	setp.neu.f32	%p61, %f78, 0f00000000;
 	mul.f32 	%f186, %f76, %f76;
 	fma.rn.f32 	%f187, %f75, %f75, %f186;
 	fma.rn.f32 	%f79, %f74, %f74, %f187;
-	setp.eq.f32	%p62, %f79, 0f00000000;
-	or.pred  	%p63, %p61, %p62;
-	and.pred  	%p65, %p63, %p59;
-	@!%p65 bra 	BB0_60;
-	bra.uni 	BB0_59;
+	setp.neu.f32	%p62, %f79, 0f00000000;
+	and.pred  	%p63, %p61, %p62;
+	setp.eq.f32	%p64, %f77, 0f00000000;
+	or.pred  	%p65, %p63, %p64;
+	@%p65 bra 	BB0_60;
 
-BB0_59:
 	mul.f32 	%f188, %f64, %f64;
 	fma.rn.f32 	%f189, %f63, %f63, %f188;
 	fma.rn.f32 	%f190, %f62, %f62, %f189;
@@ -1210,8 +1207,7 @@ BB0_69:
 	bra.uni 	BB0_70;
 
 BB0_60:
-	setp.neu.f32	%p67, %f78, 0f00000000;
-	or.pred  	%p68, %p59, %p67;
+	or.pred  	%p68, %p59, %p61;
 	@%p68 bra 	BB0_62;
 	bra.uni 	BB0_61;
 
@@ -1220,18 +1216,19 @@ BB0_62:
 	fma.rn.f32 	%f192, %f63, %f63, %f191;
 	fma.rn.f32 	%f83, %f62, %f62, %f192;
 	setp.neu.f32	%p69, %f83, 0f00000000;
-	setp.neu.f32	%p70, %f79, 0f00000000;
-	or.pred  	%p71, %p69, %p70;
+	or.pred  	%p71, %p69, %p62;
 	@%p71 bra 	BB0_64;
 	bra.uni 	BB0_63;
 
 BB0_64:
-	or.pred  	%p73, %p61, %p59;
+	setp.eq.f32	%p72, %f78, 0f00000000;
+	or.pred  	%p73, %p72, %p59;
 	@%p73 bra 	BB0_66;
 	bra.uni 	BB0_65;
 
 BB0_66:
-	or.pred  	%p76, %p62, %p69;
+	setp.eq.f32	%p75, %f79, 0f00000000;
+	or.pred  	%p76, %p75, %p69;
 	@%p76 bra 	BB0_68;
 	bra.uni 	BB0_67;
 
@@ -1312,8 +1309,8 @@ BB0_72:
 
 
 `
-	settopologicalcharge_ptx_37 = `
-.version 6.3
+   settopologicalcharge_ptx_37 = `
+.version 6.4
 .target sm_37
 .address_size 64
 
@@ -1536,17 +1533,16 @@ BB0_24:
 	mul.f32 	%f126, %f8, %f8;
 	fma.rn.f32 	%f127, %f7, %f7, %f126;
 	fma.rn.f32 	%f29, %f9, %f9, %f127;
-	setp.eq.f32	%p27, %f29, 0f00000000;
+	setp.neu.f32	%p27, %f29, 0f00000000;
 	mul.f32 	%f128, %f26, %f26;
 	fma.rn.f32 	%f129, %f25, %f25, %f128;
 	fma.rn.f32 	%f30, %f27, %f27, %f129;
-	setp.eq.f32	%p28, %f30, 0f00000000;
-	or.pred  	%p29, %p27, %p28;
-	and.pred  	%p31, %p29, %p25;
-	@!%p31 bra 	BB0_26;
-	bra.uni 	BB0_25;
+	setp.neu.f32	%p28, %f30, 0f00000000;
+	and.pred  	%p29, %p27, %p28;
+	setp.eq.f32	%p30, %f28, 0f00000000;
+	or.pred  	%p31, %p29, %p30;
+	@%p31 bra 	BB0_26;
 
-BB0_25:
 	mul.f32 	%f130, %f14, %f14;
 	fma.rn.f32 	%f131, %f13, %f13, %f130;
 	fma.rn.f32 	%f132, %f15, %f15, %f131;
@@ -1564,8 +1560,7 @@ BB0_35:
 	bra.uni 	BB0_36;
 
 BB0_26:
-	setp.neu.f32	%p33, %f29, 0f00000000;
-	or.pred  	%p34, %p25, %p33;
+	or.pred  	%p34, %p25, %p27;
 	@%p34 bra 	BB0_28;
 	bra.uni 	BB0_27;
 
@@ -1574,18 +1569,19 @@ BB0_28:
 	fma.rn.f32 	%f134, %f13, %f13, %f133;
 	fma.rn.f32 	%f34, %f15, %f15, %f134;
 	setp.neu.f32	%p35, %f34, 0f00000000;
-	setp.neu.f32	%p36, %f30, 0f00000000;
-	or.pred  	%p37, %p35, %p36;
+	or.pred  	%p37, %p35, %p28;
 	@%p37 bra 	BB0_30;
 	bra.uni 	BB0_29;
 
 BB0_30:
-	or.pred  	%p39, %p27, %p25;
+	setp.eq.f32	%p38, %f29, 0f00000000;
+	or.pred  	%p39, %p38, %p25;
 	@%p39 bra 	BB0_32;
 	bra.uni 	BB0_31;
 
 BB0_32:
-	or.pred  	%p42, %p28, %p35;
+	setp.eq.f32	%p41, %f30, 0f00000000;
+	or.pred  	%p42, %p41, %p35;
 	@%p42 bra 	BB0_34;
 	bra.uni 	BB0_33;
 
@@ -1790,17 +1786,16 @@ BB0_58:
 	mul.f32 	%f184, %f58, %f58;
 	fma.rn.f32 	%f185, %f57, %f57, %f184;
 	fma.rn.f32 	%f78, %f56, %f56, %f185;
-	setp.eq.f32	%p61, %f78, 0f00000000;
+	setp.neu.f32	%p61, %f78, 0f00000000;
 	mul.f32 	%f186, %f76, %f76;
 	fma.rn.f32 	%f187, %f75, %f75, %f186;
 	fma.rn.f32 	%f79, %f74, %f74, %f187;
-	setp.eq.f32	%p62, %f79, 0f00000000;
-	or.pred  	%p63, %p61, %p62;
-	and.pred  	%p65, %p63, %p59;
-	@!%p65 bra 	BB0_60;
-	bra.uni 	BB0_59;
+	setp.neu.f32	%p62, %f79, 0f00000000;
+	and.pred  	%p63, %p61, %p62;
+	setp.eq.f32	%p64, %f77, 0f00000000;
+	or.pred  	%p65, %p63, %p64;
+	@%p65 bra 	BB0_60;
 
-BB0_59:
 	mul.f32 	%f188, %f64, %f64;
 	fma.rn.f32 	%f189, %f63, %f63, %f188;
 	fma.rn.f32 	%f190, %f62, %f62, %f189;
@@ -1818,8 +1813,7 @@ BB0_69:
 	bra.uni 	BB0_70;
 
 BB0_60:
-	setp.neu.f32	%p67, %f78, 0f00000000;
-	or.pred  	%p68, %p59, %p67;
+	or.pred  	%p68, %p59, %p61;
 	@%p68 bra 	BB0_62;
 	bra.uni 	BB0_61;
 
@@ -1828,18 +1822,19 @@ BB0_62:
 	fma.rn.f32 	%f192, %f63, %f63, %f191;
 	fma.rn.f32 	%f83, %f62, %f62, %f192;
 	setp.neu.f32	%p69, %f83, 0f00000000;
-	setp.neu.f32	%p70, %f79, 0f00000000;
-	or.pred  	%p71, %p69, %p70;
+	or.pred  	%p71, %p69, %p62;
 	@%p71 bra 	BB0_64;
 	bra.uni 	BB0_63;
 
 BB0_64:
-	or.pred  	%p73, %p61, %p59;
+	setp.eq.f32	%p72, %f78, 0f00000000;
+	or.pred  	%p73, %p72, %p59;
 	@%p73 bra 	BB0_66;
 	bra.uni 	BB0_65;
 
 BB0_66:
-	or.pred  	%p76, %p62, %p69;
+	setp.eq.f32	%p75, %f79, 0f00000000;
+	or.pred  	%p76, %p75, %p69;
 	@%p76 bra 	BB0_68;
 	bra.uni 	BB0_67;
 
@@ -1920,8 +1915,8 @@ BB0_72:
 
 
 `
-	settopologicalcharge_ptx_50 = `
-.version 6.3
+   settopologicalcharge_ptx_50 = `
+.version 6.4
 .target sm_50
 .address_size 64
 
@@ -2144,17 +2139,16 @@ BB0_24:
 	mul.f32 	%f126, %f8, %f8;
 	fma.rn.f32 	%f127, %f7, %f7, %f126;
 	fma.rn.f32 	%f29, %f9, %f9, %f127;
-	setp.eq.f32	%p27, %f29, 0f00000000;
+	setp.neu.f32	%p27, %f29, 0f00000000;
 	mul.f32 	%f128, %f26, %f26;
 	fma.rn.f32 	%f129, %f25, %f25, %f128;
 	fma.rn.f32 	%f30, %f27, %f27, %f129;
-	setp.eq.f32	%p28, %f30, 0f00000000;
-	or.pred  	%p29, %p27, %p28;
-	and.pred  	%p31, %p29, %p25;
-	@!%p31 bra 	BB0_26;
-	bra.uni 	BB0_25;
+	setp.neu.f32	%p28, %f30, 0f00000000;
+	and.pred  	%p29, %p27, %p28;
+	setp.eq.f32	%p30, %f28, 0f00000000;
+	or.pred  	%p31, %p29, %p30;
+	@%p31 bra 	BB0_26;
 
-BB0_25:
 	mul.f32 	%f130, %f14, %f14;
 	fma.rn.f32 	%f131, %f13, %f13, %f130;
 	fma.rn.f32 	%f132, %f15, %f15, %f131;
@@ -2172,8 +2166,7 @@ BB0_35:
 	bra.uni 	BB0_36;
 
 BB0_26:
-	setp.neu.f32	%p33, %f29, 0f00000000;
-	or.pred  	%p34, %p25, %p33;
+	or.pred  	%p34, %p25, %p27;
 	@%p34 bra 	BB0_28;
 	bra.uni 	BB0_27;
 
@@ -2182,18 +2175,19 @@ BB0_28:
 	fma.rn.f32 	%f134, %f13, %f13, %f133;
 	fma.rn.f32 	%f34, %f15, %f15, %f134;
 	setp.neu.f32	%p35, %f34, 0f00000000;
-	setp.neu.f32	%p36, %f30, 0f00000000;
-	or.pred  	%p37, %p35, %p36;
+	or.pred  	%p37, %p35, %p28;
 	@%p37 bra 	BB0_30;
 	bra.uni 	BB0_29;
 
 BB0_30:
-	or.pred  	%p39, %p27, %p25;
+	setp.eq.f32	%p38, %f29, 0f00000000;
+	or.pred  	%p39, %p38, %p25;
 	@%p39 bra 	BB0_32;
 	bra.uni 	BB0_31;
 
 BB0_32:
-	or.pred  	%p42, %p28, %p35;
+	setp.eq.f32	%p41, %f30, 0f00000000;
+	or.pred  	%p42, %p41, %p35;
 	@%p42 bra 	BB0_34;
 	bra.uni 	BB0_33;
 
@@ -2398,17 +2392,16 @@ BB0_58:
 	mul.f32 	%f184, %f58, %f58;
 	fma.rn.f32 	%f185, %f57, %f57, %f184;
 	fma.rn.f32 	%f78, %f56, %f56, %f185;
-	setp.eq.f32	%p61, %f78, 0f00000000;
+	setp.neu.f32	%p61, %f78, 0f00000000;
 	mul.f32 	%f186, %f76, %f76;
 	fma.rn.f32 	%f187, %f75, %f75, %f186;
 	fma.rn.f32 	%f79, %f74, %f74, %f187;
-	setp.eq.f32	%p62, %f79, 0f00000000;
-	or.pred  	%p63, %p61, %p62;
-	and.pred  	%p65, %p63, %p59;
-	@!%p65 bra 	BB0_60;
-	bra.uni 	BB0_59;
+	setp.neu.f32	%p62, %f79, 0f00000000;
+	and.pred  	%p63, %p61, %p62;
+	setp.eq.f32	%p64, %f77, 0f00000000;
+	or.pred  	%p65, %p63, %p64;
+	@%p65 bra 	BB0_60;
 
-BB0_59:
 	mul.f32 	%f188, %f64, %f64;
 	fma.rn.f32 	%f189, %f63, %f63, %f188;
 	fma.rn.f32 	%f190, %f62, %f62, %f189;
@@ -2426,8 +2419,7 @@ BB0_69:
 	bra.uni 	BB0_70;
 
 BB0_60:
-	setp.neu.f32	%p67, %f78, 0f00000000;
-	or.pred  	%p68, %p59, %p67;
+	or.pred  	%p68, %p59, %p61;
 	@%p68 bra 	BB0_62;
 	bra.uni 	BB0_61;
 
@@ -2436,18 +2428,19 @@ BB0_62:
 	fma.rn.f32 	%f192, %f63, %f63, %f191;
 	fma.rn.f32 	%f83, %f62, %f62, %f192;
 	setp.neu.f32	%p69, %f83, 0f00000000;
-	setp.neu.f32	%p70, %f79, 0f00000000;
-	or.pred  	%p71, %p69, %p70;
+	or.pred  	%p71, %p69, %p62;
 	@%p71 bra 	BB0_64;
 	bra.uni 	BB0_63;
 
 BB0_64:
-	or.pred  	%p73, %p61, %p59;
+	setp.eq.f32	%p72, %f78, 0f00000000;
+	or.pred  	%p73, %p72, %p59;
 	@%p73 bra 	BB0_66;
 	bra.uni 	BB0_65;
 
 BB0_66:
-	or.pred  	%p76, %p62, %p69;
+	setp.eq.f32	%p75, %f79, 0f00000000;
+	or.pred  	%p76, %p75, %p69;
 	@%p76 bra 	BB0_68;
 	bra.uni 	BB0_67;
 
@@ -2528,8 +2521,8 @@ BB0_72:
 
 
 `
-	settopologicalcharge_ptx_52 = `
-.version 6.3
+   settopologicalcharge_ptx_52 = `
+.version 6.4
 .target sm_52
 .address_size 64
 
@@ -2752,17 +2745,16 @@ BB0_24:
 	mul.f32 	%f126, %f8, %f8;
 	fma.rn.f32 	%f127, %f7, %f7, %f126;
 	fma.rn.f32 	%f29, %f9, %f9, %f127;
-	setp.eq.f32	%p27, %f29, 0f00000000;
+	setp.neu.f32	%p27, %f29, 0f00000000;
 	mul.f32 	%f128, %f26, %f26;
 	fma.rn.f32 	%f129, %f25, %f25, %f128;
 	fma.rn.f32 	%f30, %f27, %f27, %f129;
-	setp.eq.f32	%p28, %f30, 0f00000000;
-	or.pred  	%p29, %p27, %p28;
-	and.pred  	%p31, %p29, %p25;
-	@!%p31 bra 	BB0_26;
-	bra.uni 	BB0_25;
+	setp.neu.f32	%p28, %f30, 0f00000000;
+	and.pred  	%p29, %p27, %p28;
+	setp.eq.f32	%p30, %f28, 0f00000000;
+	or.pred  	%p31, %p29, %p30;
+	@%p31 bra 	BB0_26;
 
-BB0_25:
 	mul.f32 	%f130, %f14, %f14;
 	fma.rn.f32 	%f131, %f13, %f13, %f130;
 	fma.rn.f32 	%f132, %f15, %f15, %f131;
@@ -2780,8 +2772,7 @@ BB0_35:
 	bra.uni 	BB0_36;
 
 BB0_26:
-	setp.neu.f32	%p33, %f29, 0f00000000;
-	or.pred  	%p34, %p25, %p33;
+	or.pred  	%p34, %p25, %p27;
 	@%p34 bra 	BB0_28;
 	bra.uni 	BB0_27;
 
@@ -2790,18 +2781,19 @@ BB0_28:
 	fma.rn.f32 	%f134, %f13, %f13, %f133;
 	fma.rn.f32 	%f34, %f15, %f15, %f134;
 	setp.neu.f32	%p35, %f34, 0f00000000;
-	setp.neu.f32	%p36, %f30, 0f00000000;
-	or.pred  	%p37, %p35, %p36;
+	or.pred  	%p37, %p35, %p28;
 	@%p37 bra 	BB0_30;
 	bra.uni 	BB0_29;
 
 BB0_30:
-	or.pred  	%p39, %p27, %p25;
+	setp.eq.f32	%p38, %f29, 0f00000000;
+	or.pred  	%p39, %p38, %p25;
 	@%p39 bra 	BB0_32;
 	bra.uni 	BB0_31;
 
 BB0_32:
-	or.pred  	%p42, %p28, %p35;
+	setp.eq.f32	%p41, %f30, 0f00000000;
+	or.pred  	%p42, %p41, %p35;
 	@%p42 bra 	BB0_34;
 	bra.uni 	BB0_33;
 
@@ -3006,17 +2998,16 @@ BB0_58:
 	mul.f32 	%f184, %f58, %f58;
 	fma.rn.f32 	%f185, %f57, %f57, %f184;
 	fma.rn.f32 	%f78, %f56, %f56, %f185;
-	setp.eq.f32	%p61, %f78, 0f00000000;
+	setp.neu.f32	%p61, %f78, 0f00000000;
 	mul.f32 	%f186, %f76, %f76;
 	fma.rn.f32 	%f187, %f75, %f75, %f186;
 	fma.rn.f32 	%f79, %f74, %f74, %f187;
-	setp.eq.f32	%p62, %f79, 0f00000000;
-	or.pred  	%p63, %p61, %p62;
-	and.pred  	%p65, %p63, %p59;
-	@!%p65 bra 	BB0_60;
-	bra.uni 	BB0_59;
+	setp.neu.f32	%p62, %f79, 0f00000000;
+	and.pred  	%p63, %p61, %p62;
+	setp.eq.f32	%p64, %f77, 0f00000000;
+	or.pred  	%p65, %p63, %p64;
+	@%p65 bra 	BB0_60;
 
-BB0_59:
 	mul.f32 	%f188, %f64, %f64;
 	fma.rn.f32 	%f189, %f63, %f63, %f188;
 	fma.rn.f32 	%f190, %f62, %f62, %f189;
@@ -3034,8 +3025,7 @@ BB0_69:
 	bra.uni 	BB0_70;
 
 BB0_60:
-	setp.neu.f32	%p67, %f78, 0f00000000;
-	or.pred  	%p68, %p59, %p67;
+	or.pred  	%p68, %p59, %p61;
 	@%p68 bra 	BB0_62;
 	bra.uni 	BB0_61;
 
@@ -3044,18 +3034,19 @@ BB0_62:
 	fma.rn.f32 	%f192, %f63, %f63, %f191;
 	fma.rn.f32 	%f83, %f62, %f62, %f192;
 	setp.neu.f32	%p69, %f83, 0f00000000;
-	setp.neu.f32	%p70, %f79, 0f00000000;
-	or.pred  	%p71, %p69, %p70;
+	or.pred  	%p71, %p69, %p62;
 	@%p71 bra 	BB0_64;
 	bra.uni 	BB0_63;
 
 BB0_64:
-	or.pred  	%p73, %p61, %p59;
+	setp.eq.f32	%p72, %f78, 0f00000000;
+	or.pred  	%p73, %p72, %p59;
 	@%p73 bra 	BB0_66;
 	bra.uni 	BB0_65;
 
 BB0_66:
-	or.pred  	%p76, %p62, %p69;
+	setp.eq.f32	%p75, %f79, 0f00000000;
+	or.pred  	%p76, %p75, %p69;
 	@%p76 bra 	BB0_68;
 	bra.uni 	BB0_67;
 
@@ -3136,8 +3127,8 @@ BB0_72:
 
 
 `
-	settopologicalcharge_ptx_53 = `
-.version 6.3
+   settopologicalcharge_ptx_53 = `
+.version 6.4
 .target sm_53
 .address_size 64
 
@@ -3360,17 +3351,16 @@ BB0_24:
 	mul.f32 	%f126, %f8, %f8;
 	fma.rn.f32 	%f127, %f7, %f7, %f126;
 	fma.rn.f32 	%f29, %f9, %f9, %f127;
-	setp.eq.f32	%p27, %f29, 0f00000000;
+	setp.neu.f32	%p27, %f29, 0f00000000;
 	mul.f32 	%f128, %f26, %f26;
 	fma.rn.f32 	%f129, %f25, %f25, %f128;
 	fma.rn.f32 	%f30, %f27, %f27, %f129;
-	setp.eq.f32	%p28, %f30, 0f00000000;
-	or.pred  	%p29, %p27, %p28;
-	and.pred  	%p31, %p29, %p25;
-	@!%p31 bra 	BB0_26;
-	bra.uni 	BB0_25;
+	setp.neu.f32	%p28, %f30, 0f00000000;
+	and.pred  	%p29, %p27, %p28;
+	setp.eq.f32	%p30, %f28, 0f00000000;
+	or.pred  	%p31, %p29, %p30;
+	@%p31 bra 	BB0_26;
 
-BB0_25:
 	mul.f32 	%f130, %f14, %f14;
 	fma.rn.f32 	%f131, %f13, %f13, %f130;
 	fma.rn.f32 	%f132, %f15, %f15, %f131;
@@ -3388,8 +3378,7 @@ BB0_35:
 	bra.uni 	BB0_36;
 
 BB0_26:
-	setp.neu.f32	%p33, %f29, 0f00000000;
-	or.pred  	%p34, %p25, %p33;
+	or.pred  	%p34, %p25, %p27;
 	@%p34 bra 	BB0_28;
 	bra.uni 	BB0_27;
 
@@ -3398,18 +3387,19 @@ BB0_28:
 	fma.rn.f32 	%f134, %f13, %f13, %f133;
 	fma.rn.f32 	%f34, %f15, %f15, %f134;
 	setp.neu.f32	%p35, %f34, 0f00000000;
-	setp.neu.f32	%p36, %f30, 0f00000000;
-	or.pred  	%p37, %p35, %p36;
+	or.pred  	%p37, %p35, %p28;
 	@%p37 bra 	BB0_30;
 	bra.uni 	BB0_29;
 
 BB0_30:
-	or.pred  	%p39, %p27, %p25;
+	setp.eq.f32	%p38, %f29, 0f00000000;
+	or.pred  	%p39, %p38, %p25;
 	@%p39 bra 	BB0_32;
 	bra.uni 	BB0_31;
 
 BB0_32:
-	or.pred  	%p42, %p28, %p35;
+	setp.eq.f32	%p41, %f30, 0f00000000;
+	or.pred  	%p42, %p41, %p35;
 	@%p42 bra 	BB0_34;
 	bra.uni 	BB0_33;
 
@@ -3614,17 +3604,16 @@ BB0_58:
 	mul.f32 	%f184, %f58, %f58;
 	fma.rn.f32 	%f185, %f57, %f57, %f184;
 	fma.rn.f32 	%f78, %f56, %f56, %f185;
-	setp.eq.f32	%p61, %f78, 0f00000000;
+	setp.neu.f32	%p61, %f78, 0f00000000;
 	mul.f32 	%f186, %f76, %f76;
 	fma.rn.f32 	%f187, %f75, %f75, %f186;
 	fma.rn.f32 	%f79, %f74, %f74, %f187;
-	setp.eq.f32	%p62, %f79, 0f00000000;
-	or.pred  	%p63, %p61, %p62;
-	and.pred  	%p65, %p63, %p59;
-	@!%p65 bra 	BB0_60;
-	bra.uni 	BB0_59;
+	setp.neu.f32	%p62, %f79, 0f00000000;
+	and.pred  	%p63, %p61, %p62;
+	setp.eq.f32	%p64, %f77, 0f00000000;
+	or.pred  	%p65, %p63, %p64;
+	@%p65 bra 	BB0_60;
 
-BB0_59:
 	mul.f32 	%f188, %f64, %f64;
 	fma.rn.f32 	%f189, %f63, %f63, %f188;
 	fma.rn.f32 	%f190, %f62, %f62, %f189;
@@ -3642,8 +3631,7 @@ BB0_69:
 	bra.uni 	BB0_70;
 
 BB0_60:
-	setp.neu.f32	%p67, %f78, 0f00000000;
-	or.pred  	%p68, %p59, %p67;
+	or.pred  	%p68, %p59, %p61;
 	@%p68 bra 	BB0_62;
 	bra.uni 	BB0_61;
 
@@ -3652,18 +3640,19 @@ BB0_62:
 	fma.rn.f32 	%f192, %f63, %f63, %f191;
 	fma.rn.f32 	%f83, %f62, %f62, %f192;
 	setp.neu.f32	%p69, %f83, 0f00000000;
-	setp.neu.f32	%p70, %f79, 0f00000000;
-	or.pred  	%p71, %p69, %p70;
+	or.pred  	%p71, %p69, %p62;
 	@%p71 bra 	BB0_64;
 	bra.uni 	BB0_63;
 
 BB0_64:
-	or.pred  	%p73, %p61, %p59;
+	setp.eq.f32	%p72, %f78, 0f00000000;
+	or.pred  	%p73, %p72, %p59;
 	@%p73 bra 	BB0_66;
 	bra.uni 	BB0_65;
 
 BB0_66:
-	or.pred  	%p76, %p62, %p69;
+	setp.eq.f32	%p75, %f79, 0f00000000;
+	or.pred  	%p76, %p75, %p69;
 	@%p76 bra 	BB0_68;
 	bra.uni 	BB0_67;
 
@@ -3744,8 +3733,8 @@ BB0_72:
 
 
 `
-	settopologicalcharge_ptx_60 = `
-.version 6.3
+   settopologicalcharge_ptx_60 = `
+.version 6.4
 .target sm_60
 .address_size 64
 
@@ -3968,17 +3957,16 @@ BB0_24:
 	mul.f32 	%f126, %f8, %f8;
 	fma.rn.f32 	%f127, %f7, %f7, %f126;
 	fma.rn.f32 	%f29, %f9, %f9, %f127;
-	setp.eq.f32	%p27, %f29, 0f00000000;
+	setp.neu.f32	%p27, %f29, 0f00000000;
 	mul.f32 	%f128, %f26, %f26;
 	fma.rn.f32 	%f129, %f25, %f25, %f128;
 	fma.rn.f32 	%f30, %f27, %f27, %f129;
-	setp.eq.f32	%p28, %f30, 0f00000000;
-	or.pred  	%p29, %p27, %p28;
-	and.pred  	%p31, %p29, %p25;
-	@!%p31 bra 	BB0_26;
-	bra.uni 	BB0_25;
+	setp.neu.f32	%p28, %f30, 0f00000000;
+	and.pred  	%p29, %p27, %p28;
+	setp.eq.f32	%p30, %f28, 0f00000000;
+	or.pred  	%p31, %p29, %p30;
+	@%p31 bra 	BB0_26;
 
-BB0_25:
 	mul.f32 	%f130, %f14, %f14;
 	fma.rn.f32 	%f131, %f13, %f13, %f130;
 	fma.rn.f32 	%f132, %f15, %f15, %f131;
@@ -3996,8 +3984,7 @@ BB0_35:
 	bra.uni 	BB0_36;
 
 BB0_26:
-	setp.neu.f32	%p33, %f29, 0f00000000;
-	or.pred  	%p34, %p25, %p33;
+	or.pred  	%p34, %p25, %p27;
 	@%p34 bra 	BB0_28;
 	bra.uni 	BB0_27;
 
@@ -4006,18 +3993,19 @@ BB0_28:
 	fma.rn.f32 	%f134, %f13, %f13, %f133;
 	fma.rn.f32 	%f34, %f15, %f15, %f134;
 	setp.neu.f32	%p35, %f34, 0f00000000;
-	setp.neu.f32	%p36, %f30, 0f00000000;
-	or.pred  	%p37, %p35, %p36;
+	or.pred  	%p37, %p35, %p28;
 	@%p37 bra 	BB0_30;
 	bra.uni 	BB0_29;
 
 BB0_30:
-	or.pred  	%p39, %p27, %p25;
+	setp.eq.f32	%p38, %f29, 0f00000000;
+	or.pred  	%p39, %p38, %p25;
 	@%p39 bra 	BB0_32;
 	bra.uni 	BB0_31;
 
 BB0_32:
-	or.pred  	%p42, %p28, %p35;
+	setp.eq.f32	%p41, %f30, 0f00000000;
+	or.pred  	%p42, %p41, %p35;
 	@%p42 bra 	BB0_34;
 	bra.uni 	BB0_33;
 
@@ -4222,17 +4210,16 @@ BB0_58:
 	mul.f32 	%f184, %f58, %f58;
 	fma.rn.f32 	%f185, %f57, %f57, %f184;
 	fma.rn.f32 	%f78, %f56, %f56, %f185;
-	setp.eq.f32	%p61, %f78, 0f00000000;
+	setp.neu.f32	%p61, %f78, 0f00000000;
 	mul.f32 	%f186, %f76, %f76;
 	fma.rn.f32 	%f187, %f75, %f75, %f186;
 	fma.rn.f32 	%f79, %f74, %f74, %f187;
-	setp.eq.f32	%p62, %f79, 0f00000000;
-	or.pred  	%p63, %p61, %p62;
-	and.pred  	%p65, %p63, %p59;
-	@!%p65 bra 	BB0_60;
-	bra.uni 	BB0_59;
+	setp.neu.f32	%p62, %f79, 0f00000000;
+	and.pred  	%p63, %p61, %p62;
+	setp.eq.f32	%p64, %f77, 0f00000000;
+	or.pred  	%p65, %p63, %p64;
+	@%p65 bra 	BB0_60;
 
-BB0_59:
 	mul.f32 	%f188, %f64, %f64;
 	fma.rn.f32 	%f189, %f63, %f63, %f188;
 	fma.rn.f32 	%f190, %f62, %f62, %f189;
@@ -4250,8 +4237,7 @@ BB0_69:
 	bra.uni 	BB0_70;
 
 BB0_60:
-	setp.neu.f32	%p67, %f78, 0f00000000;
-	or.pred  	%p68, %p59, %p67;
+	or.pred  	%p68, %p59, %p61;
 	@%p68 bra 	BB0_62;
 	bra.uni 	BB0_61;
 
@@ -4260,18 +4246,19 @@ BB0_62:
 	fma.rn.f32 	%f192, %f63, %f63, %f191;
 	fma.rn.f32 	%f83, %f62, %f62, %f192;
 	setp.neu.f32	%p69, %f83, 0f00000000;
-	setp.neu.f32	%p70, %f79, 0f00000000;
-	or.pred  	%p71, %p69, %p70;
+	or.pred  	%p71, %p69, %p62;
 	@%p71 bra 	BB0_64;
 	bra.uni 	BB0_63;
 
 BB0_64:
-	or.pred  	%p73, %p61, %p59;
+	setp.eq.f32	%p72, %f78, 0f00000000;
+	or.pred  	%p73, %p72, %p59;
 	@%p73 bra 	BB0_66;
 	bra.uni 	BB0_65;
 
 BB0_66:
-	or.pred  	%p76, %p62, %p69;
+	setp.eq.f32	%p75, %f79, 0f00000000;
+	or.pred  	%p76, %p75, %p69;
 	@%p76 bra 	BB0_68;
 	bra.uni 	BB0_67;
 
@@ -4352,8 +4339,8 @@ BB0_72:
 
 
 `
-	settopologicalcharge_ptx_61 = `
-.version 6.3
+   settopologicalcharge_ptx_61 = `
+.version 6.4
 .target sm_61
 .address_size 64
 
@@ -4576,17 +4563,16 @@ BB0_24:
 	mul.f32 	%f126, %f8, %f8;
 	fma.rn.f32 	%f127, %f7, %f7, %f126;
 	fma.rn.f32 	%f29, %f9, %f9, %f127;
-	setp.eq.f32	%p27, %f29, 0f00000000;
+	setp.neu.f32	%p27, %f29, 0f00000000;
 	mul.f32 	%f128, %f26, %f26;
 	fma.rn.f32 	%f129, %f25, %f25, %f128;
 	fma.rn.f32 	%f30, %f27, %f27, %f129;
-	setp.eq.f32	%p28, %f30, 0f00000000;
-	or.pred  	%p29, %p27, %p28;
-	and.pred  	%p31, %p29, %p25;
-	@!%p31 bra 	BB0_26;
-	bra.uni 	BB0_25;
+	setp.neu.f32	%p28, %f30, 0f00000000;
+	and.pred  	%p29, %p27, %p28;
+	setp.eq.f32	%p30, %f28, 0f00000000;
+	or.pred  	%p31, %p29, %p30;
+	@%p31 bra 	BB0_26;
 
-BB0_25:
 	mul.f32 	%f130, %f14, %f14;
 	fma.rn.f32 	%f131, %f13, %f13, %f130;
 	fma.rn.f32 	%f132, %f15, %f15, %f131;
@@ -4604,8 +4590,7 @@ BB0_35:
 	bra.uni 	BB0_36;
 
 BB0_26:
-	setp.neu.f32	%p33, %f29, 0f00000000;
-	or.pred  	%p34, %p25, %p33;
+	or.pred  	%p34, %p25, %p27;
 	@%p34 bra 	BB0_28;
 	bra.uni 	BB0_27;
 
@@ -4614,18 +4599,19 @@ BB0_28:
 	fma.rn.f32 	%f134, %f13, %f13, %f133;
 	fma.rn.f32 	%f34, %f15, %f15, %f134;
 	setp.neu.f32	%p35, %f34, 0f00000000;
-	setp.neu.f32	%p36, %f30, 0f00000000;
-	or.pred  	%p37, %p35, %p36;
+	or.pred  	%p37, %p35, %p28;
 	@%p37 bra 	BB0_30;
 	bra.uni 	BB0_29;
 
 BB0_30:
-	or.pred  	%p39, %p27, %p25;
+	setp.eq.f32	%p38, %f29, 0f00000000;
+	or.pred  	%p39, %p38, %p25;
 	@%p39 bra 	BB0_32;
 	bra.uni 	BB0_31;
 
 BB0_32:
-	or.pred  	%p42, %p28, %p35;
+	setp.eq.f32	%p41, %f30, 0f00000000;
+	or.pred  	%p42, %p41, %p35;
 	@%p42 bra 	BB0_34;
 	bra.uni 	BB0_33;
 
@@ -4830,17 +4816,16 @@ BB0_58:
 	mul.f32 	%f184, %f58, %f58;
 	fma.rn.f32 	%f185, %f57, %f57, %f184;
 	fma.rn.f32 	%f78, %f56, %f56, %f185;
-	setp.eq.f32	%p61, %f78, 0f00000000;
+	setp.neu.f32	%p61, %f78, 0f00000000;
 	mul.f32 	%f186, %f76, %f76;
 	fma.rn.f32 	%f187, %f75, %f75, %f186;
 	fma.rn.f32 	%f79, %f74, %f74, %f187;
-	setp.eq.f32	%p62, %f79, 0f00000000;
-	or.pred  	%p63, %p61, %p62;
-	and.pred  	%p65, %p63, %p59;
-	@!%p65 bra 	BB0_60;
-	bra.uni 	BB0_59;
+	setp.neu.f32	%p62, %f79, 0f00000000;
+	and.pred  	%p63, %p61, %p62;
+	setp.eq.f32	%p64, %f77, 0f00000000;
+	or.pred  	%p65, %p63, %p64;
+	@%p65 bra 	BB0_60;
 
-BB0_59:
 	mul.f32 	%f188, %f64, %f64;
 	fma.rn.f32 	%f189, %f63, %f63, %f188;
 	fma.rn.f32 	%f190, %f62, %f62, %f189;
@@ -4858,8 +4843,7 @@ BB0_69:
 	bra.uni 	BB0_70;
 
 BB0_60:
-	setp.neu.f32	%p67, %f78, 0f00000000;
-	or.pred  	%p68, %p59, %p67;
+	or.pred  	%p68, %p59, %p61;
 	@%p68 bra 	BB0_62;
 	bra.uni 	BB0_61;
 
@@ -4868,18 +4852,19 @@ BB0_62:
 	fma.rn.f32 	%f192, %f63, %f63, %f191;
 	fma.rn.f32 	%f83, %f62, %f62, %f192;
 	setp.neu.f32	%p69, %f83, 0f00000000;
-	setp.neu.f32	%p70, %f79, 0f00000000;
-	or.pred  	%p71, %p69, %p70;
+	or.pred  	%p71, %p69, %p62;
 	@%p71 bra 	BB0_64;
 	bra.uni 	BB0_63;
 
 BB0_64:
-	or.pred  	%p73, %p61, %p59;
+	setp.eq.f32	%p72, %f78, 0f00000000;
+	or.pred  	%p73, %p72, %p59;
 	@%p73 bra 	BB0_66;
 	bra.uni 	BB0_65;
 
 BB0_66:
-	or.pred  	%p76, %p62, %p69;
+	setp.eq.f32	%p75, %f79, 0f00000000;
+	or.pred  	%p76, %p75, %p69;
 	@%p76 bra 	BB0_68;
 	bra.uni 	BB0_67;
 
@@ -4960,8 +4945,8 @@ BB0_72:
 
 
 `
-	settopologicalcharge_ptx_70 = `
-.version 6.3
+   settopologicalcharge_ptx_70 = `
+.version 6.4
 .target sm_70
 .address_size 64
 
@@ -5184,17 +5169,16 @@ BB0_24:
 	mul.f32 	%f126, %f8, %f8;
 	fma.rn.f32 	%f127, %f7, %f7, %f126;
 	fma.rn.f32 	%f29, %f9, %f9, %f127;
-	setp.eq.f32	%p27, %f29, 0f00000000;
+	setp.neu.f32	%p27, %f29, 0f00000000;
 	mul.f32 	%f128, %f26, %f26;
 	fma.rn.f32 	%f129, %f25, %f25, %f128;
 	fma.rn.f32 	%f30, %f27, %f27, %f129;
-	setp.eq.f32	%p28, %f30, 0f00000000;
-	or.pred  	%p29, %p27, %p28;
-	and.pred  	%p31, %p29, %p25;
-	@!%p31 bra 	BB0_26;
-	bra.uni 	BB0_25;
+	setp.neu.f32	%p28, %f30, 0f00000000;
+	and.pred  	%p29, %p27, %p28;
+	setp.eq.f32	%p30, %f28, 0f00000000;
+	or.pred  	%p31, %p29, %p30;
+	@%p31 bra 	BB0_26;
 
-BB0_25:
 	mul.f32 	%f130, %f14, %f14;
 	fma.rn.f32 	%f131, %f13, %f13, %f130;
 	fma.rn.f32 	%f132, %f15, %f15, %f131;
@@ -5212,8 +5196,7 @@ BB0_35:
 	bra.uni 	BB0_36;
 
 BB0_26:
-	setp.neu.f32	%p33, %f29, 0f00000000;
-	or.pred  	%p34, %p25, %p33;
+	or.pred  	%p34, %p25, %p27;
 	@%p34 bra 	BB0_28;
 	bra.uni 	BB0_27;
 
@@ -5222,18 +5205,19 @@ BB0_28:
 	fma.rn.f32 	%f134, %f13, %f13, %f133;
 	fma.rn.f32 	%f34, %f15, %f15, %f134;
 	setp.neu.f32	%p35, %f34, 0f00000000;
-	setp.neu.f32	%p36, %f30, 0f00000000;
-	or.pred  	%p37, %p35, %p36;
+	or.pred  	%p37, %p35, %p28;
 	@%p37 bra 	BB0_30;
 	bra.uni 	BB0_29;
 
 BB0_30:
-	or.pred  	%p39, %p27, %p25;
+	setp.eq.f32	%p38, %f29, 0f00000000;
+	or.pred  	%p39, %p38, %p25;
 	@%p39 bra 	BB0_32;
 	bra.uni 	BB0_31;
 
 BB0_32:
-	or.pred  	%p42, %p28, %p35;
+	setp.eq.f32	%p41, %f30, 0f00000000;
+	or.pred  	%p42, %p41, %p35;
 	@%p42 bra 	BB0_34;
 	bra.uni 	BB0_33;
 
@@ -5438,17 +5422,16 @@ BB0_58:
 	mul.f32 	%f184, %f58, %f58;
 	fma.rn.f32 	%f185, %f57, %f57, %f184;
 	fma.rn.f32 	%f78, %f56, %f56, %f185;
-	setp.eq.f32	%p61, %f78, 0f00000000;
+	setp.neu.f32	%p61, %f78, 0f00000000;
 	mul.f32 	%f186, %f76, %f76;
 	fma.rn.f32 	%f187, %f75, %f75, %f186;
 	fma.rn.f32 	%f79, %f74, %f74, %f187;
-	setp.eq.f32	%p62, %f79, 0f00000000;
-	or.pred  	%p63, %p61, %p62;
-	and.pred  	%p65, %p63, %p59;
-	@!%p65 bra 	BB0_60;
-	bra.uni 	BB0_59;
+	setp.neu.f32	%p62, %f79, 0f00000000;
+	and.pred  	%p63, %p61, %p62;
+	setp.eq.f32	%p64, %f77, 0f00000000;
+	or.pred  	%p65, %p63, %p64;
+	@%p65 bra 	BB0_60;
 
-BB0_59:
 	mul.f32 	%f188, %f64, %f64;
 	fma.rn.f32 	%f189, %f63, %f63, %f188;
 	fma.rn.f32 	%f190, %f62, %f62, %f189;
@@ -5466,8 +5449,7 @@ BB0_69:
 	bra.uni 	BB0_70;
 
 BB0_60:
-	setp.neu.f32	%p67, %f78, 0f00000000;
-	or.pred  	%p68, %p59, %p67;
+	or.pred  	%p68, %p59, %p61;
 	@%p68 bra 	BB0_62;
 	bra.uni 	BB0_61;
 
@@ -5476,18 +5458,19 @@ BB0_62:
 	fma.rn.f32 	%f192, %f63, %f63, %f191;
 	fma.rn.f32 	%f83, %f62, %f62, %f192;
 	setp.neu.f32	%p69, %f83, 0f00000000;
-	setp.neu.f32	%p70, %f79, 0f00000000;
-	or.pred  	%p71, %p69, %p70;
+	or.pred  	%p71, %p69, %p62;
 	@%p71 bra 	BB0_64;
 	bra.uni 	BB0_63;
 
 BB0_64:
-	or.pred  	%p73, %p61, %p59;
+	setp.eq.f32	%p72, %f78, 0f00000000;
+	or.pred  	%p73, %p72, %p59;
 	@%p73 bra 	BB0_66;
 	bra.uni 	BB0_65;
 
 BB0_66:
-	or.pred  	%p76, %p62, %p69;
+	setp.eq.f32	%p75, %f79, 0f00000000;
+	or.pred  	%p76, %p75, %p69;
 	@%p76 bra 	BB0_68;
 	bra.uni 	BB0_67;
 
@@ -5568,8 +5551,8 @@ BB0_72:
 
 
 `
-	settopologicalcharge_ptx_75 = `
-.version 6.3
+   settopologicalcharge_ptx_75 = `
+.version 6.4
 .target sm_75
 .address_size 64
 
@@ -5792,17 +5775,16 @@ BB0_24:
 	mul.f32 	%f126, %f8, %f8;
 	fma.rn.f32 	%f127, %f7, %f7, %f126;
 	fma.rn.f32 	%f29, %f9, %f9, %f127;
-	setp.eq.f32	%p27, %f29, 0f00000000;
+	setp.neu.f32	%p27, %f29, 0f00000000;
 	mul.f32 	%f128, %f26, %f26;
 	fma.rn.f32 	%f129, %f25, %f25, %f128;
 	fma.rn.f32 	%f30, %f27, %f27, %f129;
-	setp.eq.f32	%p28, %f30, 0f00000000;
-	or.pred  	%p29, %p27, %p28;
-	and.pred  	%p31, %p29, %p25;
-	@!%p31 bra 	BB0_26;
-	bra.uni 	BB0_25;
+	setp.neu.f32	%p28, %f30, 0f00000000;
+	and.pred  	%p29, %p27, %p28;
+	setp.eq.f32	%p30, %f28, 0f00000000;
+	or.pred  	%p31, %p29, %p30;
+	@%p31 bra 	BB0_26;
 
-BB0_25:
 	mul.f32 	%f130, %f14, %f14;
 	fma.rn.f32 	%f131, %f13, %f13, %f130;
 	fma.rn.f32 	%f132, %f15, %f15, %f131;
@@ -5820,8 +5802,7 @@ BB0_35:
 	bra.uni 	BB0_36;
 
 BB0_26:
-	setp.neu.f32	%p33, %f29, 0f00000000;
-	or.pred  	%p34, %p25, %p33;
+	or.pred  	%p34, %p25, %p27;
 	@%p34 bra 	BB0_28;
 	bra.uni 	BB0_27;
 
@@ -5830,18 +5811,19 @@ BB0_28:
 	fma.rn.f32 	%f134, %f13, %f13, %f133;
 	fma.rn.f32 	%f34, %f15, %f15, %f134;
 	setp.neu.f32	%p35, %f34, 0f00000000;
-	setp.neu.f32	%p36, %f30, 0f00000000;
-	or.pred  	%p37, %p35, %p36;
+	or.pred  	%p37, %p35, %p28;
 	@%p37 bra 	BB0_30;
 	bra.uni 	BB0_29;
 
 BB0_30:
-	or.pred  	%p39, %p27, %p25;
+	setp.eq.f32	%p38, %f29, 0f00000000;
+	or.pred  	%p39, %p38, %p25;
 	@%p39 bra 	BB0_32;
 	bra.uni 	BB0_31;
 
 BB0_32:
-	or.pred  	%p42, %p28, %p35;
+	setp.eq.f32	%p41, %f30, 0f00000000;
+	or.pred  	%p42, %p41, %p35;
 	@%p42 bra 	BB0_34;
 	bra.uni 	BB0_33;
 
@@ -6046,17 +6028,16 @@ BB0_58:
 	mul.f32 	%f184, %f58, %f58;
 	fma.rn.f32 	%f185, %f57, %f57, %f184;
 	fma.rn.f32 	%f78, %f56, %f56, %f185;
-	setp.eq.f32	%p61, %f78, 0f00000000;
+	setp.neu.f32	%p61, %f78, 0f00000000;
 	mul.f32 	%f186, %f76, %f76;
 	fma.rn.f32 	%f187, %f75, %f75, %f186;
 	fma.rn.f32 	%f79, %f74, %f74, %f187;
-	setp.eq.f32	%p62, %f79, 0f00000000;
-	or.pred  	%p63, %p61, %p62;
-	and.pred  	%p65, %p63, %p59;
-	@!%p65 bra 	BB0_60;
-	bra.uni 	BB0_59;
+	setp.neu.f32	%p62, %f79, 0f00000000;
+	and.pred  	%p63, %p61, %p62;
+	setp.eq.f32	%p64, %f77, 0f00000000;
+	or.pred  	%p65, %p63, %p64;
+	@%p65 bra 	BB0_60;
 
-BB0_59:
 	mul.f32 	%f188, %f64, %f64;
 	fma.rn.f32 	%f189, %f63, %f63, %f188;
 	fma.rn.f32 	%f190, %f62, %f62, %f189;
@@ -6074,8 +6055,7 @@ BB0_69:
 	bra.uni 	BB0_70;
 
 BB0_60:
-	setp.neu.f32	%p67, %f78, 0f00000000;
-	or.pred  	%p68, %p59, %p67;
+	or.pred  	%p68, %p59, %p61;
 	@%p68 bra 	BB0_62;
 	bra.uni 	BB0_61;
 
@@ -6084,18 +6064,19 @@ BB0_62:
 	fma.rn.f32 	%f192, %f63, %f63, %f191;
 	fma.rn.f32 	%f83, %f62, %f62, %f192;
 	setp.neu.f32	%p69, %f83, 0f00000000;
-	setp.neu.f32	%p70, %f79, 0f00000000;
-	or.pred  	%p71, %p69, %p70;
+	or.pred  	%p71, %p69, %p62;
 	@%p71 bra 	BB0_64;
 	bra.uni 	BB0_63;
 
 BB0_64:
-	or.pred  	%p73, %p61, %p59;
+	setp.eq.f32	%p72, %f78, 0f00000000;
+	or.pred  	%p73, %p72, %p59;
 	@%p73 bra 	BB0_66;
 	bra.uni 	BB0_65;
 
 BB0_66:
-	or.pred  	%p76, %p62, %p69;
+	setp.eq.f32	%p75, %f79, 0f00000000;
+	or.pred  	%p76, %p75, %p69;
 	@%p76 bra 	BB0_68;
 	bra.uni 	BB0_67;
 
@@ -6176,4 +6157,4 @@ BB0_72:
 
 
 `
-)
+ )
