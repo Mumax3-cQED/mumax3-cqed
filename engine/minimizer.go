@@ -114,7 +114,6 @@ func (mini *Minimizer) Step() {
 }
 
 func (mini *Minimizer) Free() {
-	// cuda.Recycle(mini.k)
 	mini.k.Free()
 }
 
@@ -149,7 +148,7 @@ func Minimize() {
 	// size := M.Buffer().Size()
 	mini := Minimizer{
 		h:      1e-4,
-		k:      nil, //cuda.Buffer(3, size),
+		k:      nil,
 		lastDm: FifoRing(DmSamples)}
 	stepper = &mini
 

@@ -180,7 +180,7 @@ func RunWhile(condition func() bool) {
 
 	PrintParametersTimeEvolution()
 	const output = true
-	stepper.Free()
+	stepper.Free() // start from a clean state
 	runWhile(condition, output)
 	pause = true
 }
