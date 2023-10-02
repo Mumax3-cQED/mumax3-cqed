@@ -155,6 +155,11 @@ func PrintParametersTimeEvolution() {
 
 		LogIn("------------------------------------------------")
 		LogIn("")
+
+		// check if not empty
+		if s.scn != nil {
+			s.Free()
+		}
 	}
 }
 
