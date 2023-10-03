@@ -178,7 +178,7 @@ func RunWhile(condition func() bool) {
 	SanityCheck()
 	pause = false // may be set by <-Inject
 
-	PrintParametersTimeEvolution()
+	PrintParametersTimeEvolution(alarm)
 	const output = true
 	stepper.Free() // start from a clean state
 	runWhile(condition, output)

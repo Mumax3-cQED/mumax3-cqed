@@ -37,7 +37,7 @@ var (
 	Kappa  = NewScalarParam("Kappa", "rad/s", "Kappa cavity dissipation")
 	NSpins = NewScalarParam("NSpins", "", "Number of spins")
 
-	s *MEMORY_TERM
+	mem_term *MEMORY_TERM = nil
 )
 
 const MEMORY_COMP = 6
@@ -49,7 +49,7 @@ type MEMORY_TERM struct {
 }
 
 func init() {
-	s = new(MEMORY_TERM)
+	mem_term = new(MEMORY_TERM)
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
@@ -64,9 +64,14 @@ func init() {
 	DeclROnly("FIXEDLAYER_BOTTOM", FIXEDLAYER_BOTTOM, "FixedLayerPosition = FIXEDLAYER_BOTTOM instructs mumax3 that fixed layer is underneath of the free layer")
 }
 
-func PrintParametersTimeEvolution() {
+func PrintParametersTimeEvolution(simulationTime float64) {
 
 	if !DisableTimeEvolutionTorque {
+
+		// check if not empty
+		if mem_term.scn != nil {
+			mem_term.Free()
+		}
 
 		c, r1 := B_rms.Slice()
 		if r1 {
@@ -153,13 +158,9 @@ func PrintParametersTimeEvolution() {
 			LogIn(" FixDt (s):", FixDt)
 		}
 
+		LogIn(" Full simulation time (s):", simulationTime)
 		LogIn("------------------------------------------------")
 		LogIn("")
-
-		// check if not empty
-		if s.scn != nil {
-			s.Free()
-		}
 	}
 }
 
@@ -189,12 +190,12 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 
 	if !DisableTimeEvolutionTorque {
 
-		if s.scn.Size() != Mesh().Size() {
-			s.Free()
+		if mem_term.scn.Size() != Mesh().Size() {
+			mem_term.Free()
 		}
 
-		if s.scn == nil {
-			s.scn = cuda.NewSlice(MEMORY_COMP, Mesh().Size())
+		if mem_term.scn == nil {
+			mem_term.scn = cuda.NewSlice(MEMORY_COMP, Mesh().Size())
 		}
 
 		wc_slice := Wc.MSlice()
@@ -206,21 +207,21 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		nspins := NSpins.MSlice()
 		defer nspins.Recycle()
 
-		dt_time := Time - s.last_time
+		dt_time := Time - mem_term.last_time
 
 		if !EnableCavityDissipation {
 			// calculations without cavity dissipation
-			cuda.SubSpinBextraBeff(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, dt_time, Time, GammaLL, Mesh())
+			cuda.SubSpinBextraBeff(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, nspins, dt_time, Time, GammaLL, Mesh())
 		} else {
 
 			// calculations with cavity dissipation
 			kappa := Kappa.MSlice()
 			defer kappa.Recycle()
 
-			cuda.SubSpinBextraBeffDissipation(dst, M.Buffer(), s.scn, brms_slice, wc_slice, nspins, kappa, dt_time, Time, GammaLL, Mesh())
+			cuda.SubSpinBextraBeffDissipation(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, nspins, kappa, dt_time, Time, GammaLL, Mesh())
 		}
 
-		s.last_time = Time
+		mem_term.last_time = Time
 	}
 }
 
