@@ -64,7 +64,7 @@ func init() {
 	DeclROnly("FIXEDLAYER_BOTTOM", FIXEDLAYER_BOTTOM, "FixedLayerPosition = FIXEDLAYER_BOTTOM instructs mumax3 that fixed layer is underneath of the free layer")
 }
 
-func PrintParametersTimeEvolution(simulationTime float64) {
+func PrintParametersTimeEvolution(simulationTime *float64) {
 
 	if !DisableTimeEvolutionTorque {
 
@@ -158,7 +158,7 @@ func PrintParametersTimeEvolution(simulationTime float64) {
 			LogIn(" FixDt (s):", FixDt)
 		}
 
-		LogIn(" Full simulation time (s):", simulationTime)
+		LogIn(" Full simulation time (s):", *simulationTime)
 		LogIn("------------------------------------------------")
 		LogIn("")
 	}
