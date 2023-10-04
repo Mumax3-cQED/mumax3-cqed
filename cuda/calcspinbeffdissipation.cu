@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "stencil.h"
 
-//Calculations for extra term in Beff with cavity dissipation
+// Calculations for extra term in Beff with cavity dissipation
 extern "C" __global__ void
 calcspinbeffdissipation(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
             float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
