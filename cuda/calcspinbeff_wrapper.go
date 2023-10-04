@@ -45,7 +45,8 @@ type calcspinbeff_args_t struct{
 	 arg_Nx int
 	 arg_Ny int
 	 arg_Nz int
-	 argptr [28]unsafe.Pointer
+	 arg_PBC byte
+	 argptr [29]unsafe.Pointer
 	sync.Mutex
 }
 
@@ -82,10 +83,11 @@ func init(){
 	 calcspinbeff_args.argptr[25] = unsafe.Pointer(&calcspinbeff_args.arg_Nx)
 	 calcspinbeff_args.argptr[26] = unsafe.Pointer(&calcspinbeff_args.arg_Ny)
 	 calcspinbeff_args.argptr[27] = unsafe.Pointer(&calcspinbeff_args.arg_Nz)
+	 calcspinbeff_args.argptr[28] = unsafe.Pointer(&calcspinbeff_args.arg_PBC)
 	 }
 
 // Wrapper for calcspinbeff CUDA kernel, asynchronous.
-func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, snx unsafe.Pointer, sny unsafe.Pointer, snz unsafe.Pointer, cnx unsafe.Pointer, cny unsafe.Pointer, cnz unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, nspins unsafe.Pointer, nspins_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, dt float32, ctime float32, gammaLL float32, Nx int, Ny int, Nz int,  cfg *config) {
+func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, snx unsafe.Pointer, sny unsafe.Pointer, snz unsafe.Pointer, cnx unsafe.Pointer, cny unsafe.Pointer, cnz unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, nspins unsafe.Pointer, nspins_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, dt float32, ctime float32, gammaLL float32, Nx int, Ny int, Nz int, PBC byte,  cfg *config) {
 	if Synchronous{ // debug
 		Sync()
 		timer.Start("calcspinbeff")
@@ -126,6 +128,7 @@ func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Poin
 	 calcspinbeff_args.arg_Nx = Nx
 	 calcspinbeff_args.arg_Ny = Ny
 	 calcspinbeff_args.arg_Nz = Nz
+	 calcspinbeff_args.arg_PBC = PBC
 	
 
 	args := calcspinbeff_args.argptr[:]
@@ -188,7 +191,8 @@ const(
 	.param .f32 calcspinbeff_param_24,
 	.param .u32 calcspinbeff_param_25,
 	.param .u32 calcspinbeff_param_26,
-	.param .u32 calcspinbeff_param_27
+	.param .u32 calcspinbeff_param_27,
+	.param .u8 calcspinbeff_param_28
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -819,7 +823,8 @@ BB0_70:
 	.param .f32 calcspinbeff_param_24,
 	.param .u32 calcspinbeff_param_25,
 	.param .u32 calcspinbeff_param_26,
-	.param .u32 calcspinbeff_param_27
+	.param .u32 calcspinbeff_param_27,
+	.param .u8 calcspinbeff_param_28
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -1445,7 +1450,8 @@ BB0_70:
 	.param .f32 calcspinbeff_param_24,
 	.param .u32 calcspinbeff_param_25,
 	.param .u32 calcspinbeff_param_26,
-	.param .u32 calcspinbeff_param_27
+	.param .u32 calcspinbeff_param_27,
+	.param .u8 calcspinbeff_param_28
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -2071,7 +2077,8 @@ BB0_70:
 	.param .f32 calcspinbeff_param_24,
 	.param .u32 calcspinbeff_param_25,
 	.param .u32 calcspinbeff_param_26,
-	.param .u32 calcspinbeff_param_27
+	.param .u32 calcspinbeff_param_27,
+	.param .u8 calcspinbeff_param_28
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -2697,7 +2704,8 @@ BB0_70:
 	.param .f32 calcspinbeff_param_24,
 	.param .u32 calcspinbeff_param_25,
 	.param .u32 calcspinbeff_param_26,
-	.param .u32 calcspinbeff_param_27
+	.param .u32 calcspinbeff_param_27,
+	.param .u8 calcspinbeff_param_28
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -3323,7 +3331,8 @@ BB0_70:
 	.param .f32 calcspinbeff_param_24,
 	.param .u32 calcspinbeff_param_25,
 	.param .u32 calcspinbeff_param_26,
-	.param .u32 calcspinbeff_param_27
+	.param .u32 calcspinbeff_param_27,
+	.param .u8 calcspinbeff_param_28
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -3949,7 +3958,8 @@ BB0_70:
 	.param .f32 calcspinbeff_param_24,
 	.param .u32 calcspinbeff_param_25,
 	.param .u32 calcspinbeff_param_26,
-	.param .u32 calcspinbeff_param_27
+	.param .u32 calcspinbeff_param_27,
+	.param .u8 calcspinbeff_param_28
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -4575,7 +4585,8 @@ BB0_70:
 	.param .f32 calcspinbeff_param_24,
 	.param .u32 calcspinbeff_param_25,
 	.param .u32 calcspinbeff_param_26,
-	.param .u32 calcspinbeff_param_27
+	.param .u32 calcspinbeff_param_27,
+	.param .u8 calcspinbeff_param_28
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -5201,7 +5212,8 @@ BB0_70:
 	.param .f32 calcspinbeff_param_24,
 	.param .u32 calcspinbeff_param_25,
 	.param .u32 calcspinbeff_param_26,
-	.param .u32 calcspinbeff_param_27
+	.param .u32 calcspinbeff_param_27,
+	.param .u8 calcspinbeff_param_28
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -5827,7 +5839,8 @@ BB0_70:
 	.param .f32 calcspinbeff_param_24,
 	.param .u32 calcspinbeff_param_25,
 	.param .u32 calcspinbeff_param_26,
-	.param .u32 calcspinbeff_param_27
+	.param .u32 calcspinbeff_param_27,
+	.param .u8 calcspinbeff_param_28
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];

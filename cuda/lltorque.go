@@ -47,7 +47,7 @@ func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc, nspins MSlice, deltah,
 		brms.DevPtr(X), brms.Mul(X),
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
-		float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], cfg)
+		float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], mesh.PBC_code(), cfg)
 }
 
 // Apply new value Spin Torque to Beff --> Beff - Bcustom with cavity dissipation
@@ -65,5 +65,5 @@ func SubSpinBextraBeffDissipation(dst, m, scn *data.Slice, brms, wc, nspins, kap
 		brms.DevPtr(X), brms.Mul(X),
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
-		float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], cfg)
+		float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], mesh.PBC_code(), cfg)
 }
