@@ -77,7 +77,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		if r1 {
 			defer cuda.Recycle(c)
 		}
-
+		//	println(c.Size()[0], " ", c.Size()[1], " ", c.Size()[2])
 		be, r2 := B_ext.Slice()
 		if r2 {
 			defer cuda.Recycle(be)
