@@ -37,9 +37,11 @@ calcspinbeffdissipation(float* __restrict__  tx, float* __restrict__  ty, float*
     float brmsz = amul(brms_z, brmsz_mul, i);
 
     // Summatory
-    float scalar_prod = amul(mx, brmsx, i) + amul(my, brmsy, i) + amul(mz, brmsz, i);
-    snx[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * scalar_prod * dt;
-    cnx[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * scalar_prod * dt;
+    float3 mi = make_float3(mx[i], my[i], mx[i]);
+    float3 brmsi = make_float3(brmsx, brmsy, brmsz);
+
+    snx[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * dot(mi, brmsi) * dt;
+    cnx[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * dot(mi, brmsi) * dt;
 
     // snx[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * amul(mx, brmsx, i) * dt;
     // sny[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * amul(my, brmsy, i) * dt;
