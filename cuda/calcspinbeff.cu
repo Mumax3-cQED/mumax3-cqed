@@ -41,7 +41,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     float3 brmsi = make_float3(brmsx, brmsy, brmsz);
 
     snx[i] += sin(wc_val * ctime) * dot(mi, brmsi) * dt;
-    cnx[i] += cos(wc_val * ctime) *  dot(mi, brmsi) * dt;
+    cnx[i] += cos(wc_val * ctime) * dot(mi, brmsi) * dt;
 
     // snx[i] += sin(wc_val * ctime) * amul(mx, brmsx, i) * dt;
     // sny[i] += sin(wc_val * ctime) * amul(my, brmsy, i) * dt;
