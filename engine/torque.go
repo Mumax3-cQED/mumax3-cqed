@@ -32,9 +32,10 @@ var (
 	EnableCavityDissipation            = false
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
-	B_rms  = NewExcitation("B_rms", "T", "Brms extra parameter")
-	Wc     = NewScalarParam("Wc", "rad/s", "Wc extra parameter")
-	Kappa  = NewScalarParam("Kappa", "rad/s", "Kappa cavity dissipation")
+	B_rms  = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
+	Wc     = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
+	Ws     = NewScalarParam("Ws", "rad/s", "Resonant frequency of the spins")
+	Kappa  = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
 	NSpins = NewScalarParam("NSpins", "", "Number of spins")
 
 	mem_term *MEMORY_TERM = nil
@@ -85,6 +86,9 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 		v := Wc.MSlice()
 		defer v.Recycle()
+
+		ws := Ws.MSlice()
+		defer ws.Recycle()
 
 		ns := NSpins.MSlice()
 		defer ns.Recycle()
@@ -140,7 +144,6 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
 		LogIn(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
 		LogIn(" Alpha:", alpha.Mul(0))
-		LogIn(" B field ext. custom (T):", cuda.GetElemPos(be, Z))
 		LogIn(" Num. spins:", ns.Mul(0))
 
 		if m_sat.Mul(0) != 0.0 {
@@ -150,9 +153,17 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		}
 
 		LogIn(" GammaLL (rad/Ts):", GammaLL)
-		LogIn(" Wc (rad/s):", v.Mul(0))
-		LogIn(" Brms vector (T): [", cuda.GetElemPos(c, X), cuda.GetElemPos(c, Y), cuda.GetElemPos(c, Z), "]")
-		LogIn(" B_ext vector (T): [", cuda.GetElemPos(be, X), cuda.GetElemPos(be, Y), cuda.GetElemPos(be, Z), "]")
+
+		if v.Mul(0) != 0.0 {
+			LogIn(" Wc (rad/s):", v.Mul(0))
+		}
+
+		if ws.Mul(0) != 0.0 {
+			LogIn(" Ws (rad/s):", ws.Mul(0))
+		}
+
+		LogIn(" B_rms vector (T): [", cuda.GetElemPos(c, X), ",", cuda.GetElemPos(c, Y), ",", cuda.GetElemPos(c, Z), "]")
+		LogIn(" B_ext vector (T): [", cuda.GetElemPos(be, X), ",", cuda.GetElemPos(be, Y), ",", cuda.GetElemPos(be, Z), "]")
 
 		if FixDt != 0 {
 			LogIn(" FixDt (s):", FixDt)
