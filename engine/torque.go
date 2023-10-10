@@ -87,8 +87,8 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		v := Wc.MSlice()
 		defer v.Recycle()
 
-		ws := Ws.MSlice()
-		defer ws.Recycle()
+		ws_info := Ws.MSlice()
+		defer ws_info.Recycle()
 
 		ns := NSpins.MSlice()
 		defer ns.Recycle()
@@ -158,8 +158,8 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogIn(" Wc (rad/s):", v.Mul(0))
 		}
 
-		if ws.Mul(0) != 0.0 {
-			LogIn(" Ws (rad/s):", ws.Mul(0))
+		if ws_info.Mul(0) != 0.0 {
+			LogIn(" Ws (rad/s):", ws_info.Mul(0))
 		}
 
 		LogIn(" B_rms vector (T): [", cuda.GetElemPos(c, X), ",", cuda.GetElemPos(c, Y), ",", cuda.GetElemPos(c, Z), "]")
