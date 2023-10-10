@@ -52,11 +52,11 @@ calcspinbeffdissipation(float* __restrict__  tx, float* __restrict__  ty, float*
     // cnz[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * amul(mz, brmsz, i) * dt;
 
     // Summatory
-    float sn = snx[i]; //+ sny[i] + snz[i];
-    float cn = cnx[i]; //+ cny[i] + cnz[i];
+    // float sn = snx[i]; //+ sny[i] + snz[i];
+    // float cn = cnx[i]; //+ cny[i] + cnz[i];
 
     float PREFACTOR = gammaLL * nspins_val;
-    float G = PREFACTOR * exp(-kappa_val * ctime) * (cos(wc_val * ctime) * sn - sin(wc_val * ctime) * cn);
+    float G = PREFACTOR * exp(-kappa_val * ctime) * (cos(wc_val * ctime) * snx[i] - sin(wc_val * ctime) * cnx[i]);
 
     // This is the new term to Beff
     float new_term_x = brmsx * G;
