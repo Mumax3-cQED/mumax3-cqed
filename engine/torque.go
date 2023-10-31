@@ -2,6 +2,7 @@ package engine
 
 // MODIFIED INMA
 import (
+	"errors"
 	"reflect"
 
 	"github.com/mumax/3/cuda"
@@ -144,7 +145,14 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
 		LogIn(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
 		LogIn(" Alpha:", alpha.Mul(0))
-		LogIn(" Num. spins:", ns.Mul(0))
+
+		if ns.Mul(0) == 0.0 {
+			errStr := "Panic Error: Number of spins must be greater than zero"
+			LogErr(errStr)
+			util.PanicErr(errors.New(errStr))
+		} else {
+			LogIn(" Num. spins:", ns.Mul(0))
+		}
 
 		if m_sat.Mul(0) != 0.0 {
 			LogIn(" Msat (A/m):", m_sat.Mul(0))
