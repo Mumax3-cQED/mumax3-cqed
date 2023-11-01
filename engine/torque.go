@@ -42,7 +42,10 @@ var (
 	mem_term *MEMORY_TERM = nil
 )
 
-const MEMORY_COMP = 6
+const (
+	MuB         = 9.2740091523E-24
+	MEMORY_COMP = 6
+)
 
 // Memory term computation
 type MEMORY_TERM struct {
@@ -142,14 +145,30 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		cell_size := Mesh().CellSize()
 		num_cells := Mesh().Size()
 
-		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
+		LogIn(" Shape size (m):", cell_size[X]*float64(num_cells[X]), "x", cell_size[Y]*float64(num_cells[Y]), "x", cell_size[Z]*float64(num_cells[Z]))
 		LogIn(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
+		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
 		LogIn(" Alpha:", alpha.Mul(0))
 
-		if ns.Mul(0) == 0.0 {
+		if ns.Mul(0) < 0.0 {
 			errStr := "Panic Error: Number of spins must be greater than zero"
 			LogErr(errStr)
 			util.PanicErr(errors.New(errStr))
+		} else if ns.Mul(0) == 0.0 {
+
+			size_cellx := cell_size[X]
+			size_celly := cell_size[Y]
+			size_cellz := cell_size[Z]
+
+			nspins_calc := (size_cellx * size_celly * size_cellz * float64(m_sat.Mul(0))) / MuB
+
+			NSpins.Set(nspins_calc)
+
+			ns_upd := NSpins.MSlice()
+			defer ns_upd.Recycle()
+
+			LogIn(" Num. spins:", ns_upd.Mul(0))
+
 		} else {
 			LogIn(" Num. spins:", ns.Mul(0))
 		}
