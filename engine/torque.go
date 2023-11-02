@@ -150,19 +150,21 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
 		LogIn(" Alpha:", alpha.Mul(0))
 
+		if m_sat.Mul(0) != 0.0 {
+			LogIn(" Msat (A/m):", m_sat.Mul(0))
+		} else {
+			LogIn(" Msat (A/m): 0.0")
+		}
+
 		if ns.Mul(0) < 0.0 {
+
 			errStr := "Panic Error: Number of spins must be greater than zero"
 			LogErr(errStr)
 			util.PanicErr(errors.New(errStr))
+
 		} else if ns.Mul(0) == 0.0 {
 
-			size_cellx := cell_size[X]
-			size_celly := cell_size[Y]
-			size_cellz := cell_size[Z]
-
-			nspins_calc := (size_cellx * size_celly * size_cellz * float64(m_sat.Mul(0))) / MuB
-
-			NSpins.Set(nspins_calc)
+			calcSpins()
 
 			ns_upd := NSpins.MSlice()
 			defer ns_upd.Recycle()
@@ -171,12 +173,6 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 		} else {
 			LogIn(" Num. spins:", ns.Mul(0))
-		}
-
-		if m_sat.Mul(0) != 0.0 {
-			LogIn(" Msat (A/m):", m_sat.Mul(0))
-		} else {
-			LogIn(" Msat (A/m): 0.0")
 		}
 
 		LogIn(" GammaLL (rad/Ts):", GammaLL)
@@ -202,6 +198,29 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 	}
 }
 
+// Calculate number of spins as function of Msat and set to NSpins variable
+func calcSpins() {
+
+	ns := NSpins.MSlice()
+	defer ns.Recycle()
+
+	if ns.Mul(0) == 0.0 {
+
+		m_sat := Msat.MSlice()
+		defer m_sat.Recycle()
+
+		cell_size := Mesh().CellSize()
+
+		size_cellx := cell_size[X]
+		size_celly := cell_size[Y]
+		size_cellz := cell_size[Z]
+
+		nspins_calc := (size_cellx * size_celly * size_cellz * float64(m_sat.Mul(0))) / MuB
+
+		NSpins.Set(nspins_calc)
+	}
+}
+
 // Sets dst to the current total torque
 func SetTorque(dst *data.Slice) {
 	SetLLTorque(dst)
@@ -211,6 +230,10 @@ func SetTorque(dst *data.Slice) {
 
 // Sets dst to the current Landau-Lifshitz torque
 func SetLLTorque(dst *data.Slice) {
+
+	if !DisableTimeEvolutionTorque {
+		calcSpins()
+	}
 
 	SetEffectiveField(dst) // calculate and store B_eff
 
