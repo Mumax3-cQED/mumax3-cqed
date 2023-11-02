@@ -231,10 +231,6 @@ func SetTorque(dst *data.Slice) {
 // Sets dst to the current Landau-Lifshitz torque
 func SetLLTorque(dst *data.Slice) {
 
-	if !DisableTimeEvolutionTorque {
-		calcSpins()
-	}
-
 	SetEffectiveField(dst) // calculate and store B_eff
 
 	alpha := Alpha.MSlice()
@@ -258,6 +254,8 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		if mem_term.scn == nil {
 			mem_term.scn = cuda.NewSlice(MEMORY_COMP, Mesh().Size())
 		}
+
+		calcSpins()
 
 		wc_slice := Wc.MSlice()
 		defer wc_slice.Recycle()
