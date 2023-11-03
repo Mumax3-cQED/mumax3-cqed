@@ -34,7 +34,7 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 }
 
 // Apply new value Spin Torque to Beff --> Beff - Bcustom without cavity dissipation
-func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc, nspins MSlice, deltah, ctime, gammaLL float64, mesh *data.Mesh) {
+func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc MSlice, nspins, deltah, ctime, gammaLL float64, mesh *data.Mesh) {
 
 	N := mesh.Size()
 	cfg := make3DConf(N)
@@ -43,15 +43,15 @@ func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc, nspins MSlice, deltah,
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		scn.DevPtr(0), scn.DevPtr(1), scn.DevPtr(2), scn.DevPtr(3), scn.DevPtr(4), scn.DevPtr(5),
 		wc.DevPtr(0), wc.Mul(0),
-		nspins.DevPtr(0), nspins.Mul(0),
+		// nspins.DevPtr(0), nspins.Mul(0),
 		brms.DevPtr(X), brms.Mul(X),
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
-		float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], mesh.PBC_code(), cfg)
+		float32(nspins), float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], mesh.PBC_code(), cfg)
 }
 
 // Apply new value Spin Torque to Beff --> Beff - Bcustom with cavity dissipation
-func SubSpinBextraBeffDissipation(dst, m, scn *data.Slice, brms, wc, nspins, kappa MSlice, deltah, ctime, gammaLL float64, mesh *data.Mesh) {
+func SubSpinBextraBeffDissipation(dst, m, scn *data.Slice, brms, wc, kappa MSlice, nspins, deltah, ctime, gammaLL float64, mesh *data.Mesh) {
 
 	N := mesh.Size()
 	cfg := make3DConf(N)
@@ -60,10 +60,10 @@ func SubSpinBextraBeffDissipation(dst, m, scn *data.Slice, brms, wc, nspins, kap
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		scn.DevPtr(0), scn.DevPtr(1), scn.DevPtr(2), scn.DevPtr(3), scn.DevPtr(4), scn.DevPtr(5),
 		wc.DevPtr(0), wc.Mul(0),
-		nspins.DevPtr(0), nspins.Mul(0),
+		// nspins.DevPtr(0), nspins.Mul(0),
 		kappa.DevPtr(0), kappa.Mul(0),
 		brms.DevPtr(X), brms.Mul(X),
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
-		float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], mesh.PBC_code(), cfg)
+		float32(nspins), float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], mesh.PBC_code(), cfg)
 }

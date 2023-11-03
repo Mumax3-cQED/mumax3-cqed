@@ -11,11 +11,10 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
             float* __restrict__ snx,   float* __restrict__ sny, float* __restrict__ snz,
             float* __restrict__ cnx, float* __restrict__ cny, float* __restrict__ cnz,
             float* __restrict__ wc, float wc_mul,
-            float* __restrict__ nspins, float nspins_mul,
             float* __restrict__ brms_x, float brmsx_mul,
             float* __restrict__ brms_y, float brmsy_mul,
             float* __restrict__ brms_z, float brmsz_mul,
-            float dt, float ctime, float gammaLL, int Nx, int Ny, int Nz, uint8_t PBC) {
+            float nspins, float dt, float ctime, float gammaLL, int Nx, int Ny, int Nz, uint8_t PBC) {
 
     int ix = blockIdx.x * blockDim.x + threadIdx.x;
     int iy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -28,7 +27,6 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     int i = idx(ix, iy, iz);
 
     float wc_val = amul(wc, wc_mul, i);
-    float nspins_val = amul(nspins, nspins_mul, i);
 
     float brmsx = amul(brms_x, brmsx_mul, i);
     float brmsy = amul(brms_y, brmsy_mul, i);
@@ -55,7 +53,7 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     // float sn = snx[i];// + sny[i] + snz[i];
     // float cn = cnx[i];// + cny[i] + cnz[i];
 
-    float PREFACTOR = gammaLL * nspins_val;
+    float PREFACTOR = gammaLL * nspins;
     float G = PREFACTOR * (cos(wc_val * ctime) * snx[i] - sin(wc_val * ctime) * cnx[i]);
 
     // This is the new term to Beff

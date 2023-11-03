@@ -3,6 +3,7 @@ package engine
 // MODIFIED INMA
 import (
 	"errors"
+	"math"
 	"reflect"
 
 	"github.com/mumax/3/cuda"
@@ -33,11 +34,11 @@ var (
 	EnableCavityDissipation            = false
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
-	B_rms  = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
-	Wc     = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
-	Ws     = NewScalarParam("Ws", "rad/s", "Resonant frequency of the spins")
-	Kappa  = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
-	NSpins = NewScalarParam("NSpins", "", "Number of spins")
+	B_rms             = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
+	Wc                = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
+	Kappa             = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
+	NSpins            = NewScalarParam("NSpins", "", "Number of spins")
+	NSpinsPowerFactor = NewScalarParam("NSpinsPowerFactor", "", "Power factor for number of spins")
 
 	mem_term *MEMORY_TERM = nil
 )
@@ -57,6 +58,7 @@ func init() {
 	mem_term = new(MEMORY_TERM)
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
+	NSpinsPowerFactor.Set(1)
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
@@ -82,7 +84,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		if r1 {
 			defer cuda.Recycle(c)
 		}
-		//	println(c.Size()[0], " ", c.Size()[1], " ", c.Size()[2])
+
 		be, r2 := B_ext.Slice()
 		if r2 {
 			defer cuda.Recycle(be)
@@ -90,9 +92,6 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 		v := Wc.MSlice()
 		defer v.Recycle()
-
-		ws_info := Ws.MSlice()
-		defer ws_info.Recycle()
 
 		ns := NSpins.MSlice()
 		defer ns.Recycle()
@@ -156,33 +155,26 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogIn(" Msat (A/m): 0.0")
 		}
 
-		if ns.Mul(0) < 0.0 {
+		checkSpinFactor()
+		spins_val := calcSpins()
 
+		if ns.Mul(0) < 0.0 {
 			errStr := "Panic Error: Number of spins must be greater than zero"
 			LogErr(errStr)
 			util.PanicErr(errors.New(errStr))
-
-		} else if ns.Mul(0) == 0.0 {
-
-			calcSpins()
-
-			ns_upd := NSpins.MSlice()
-			defer ns_upd.Recycle()
-
-			LogIn(" Num. spins:", ns_upd.Mul(0))
-
 		} else {
-			LogIn(" Num. spins:", ns.Mul(0))
+
+			ns_pfactor := NSpinsPowerFactor.MSlice()
+			defer ns_pfactor.Recycle()
+
+			// LogIn(" Spins Power factor:", ns_pfactor.Mul(0))
+			LogIn(" Num. spins:", math.Ceil(spins_val*100)/100)
 		}
 
 		LogIn(" GammaLL (rad/Ts):", GammaLL)
 
 		if v.Mul(0) != 0.0 {
 			LogIn(" Wc (rad/s):", v.Mul(0))
-		}
-
-		if ws_info.Mul(0) != 0.0 {
-			LogIn(" Ws (rad/s):", ws_info.Mul(0))
 		}
 
 		LogIn(" B_rms vector (T): [", cuda.GetElemPos(c, X), ",", cuda.GetElemPos(c, Y), ",", cuda.GetElemPos(c, Z), "]")
@@ -198,11 +190,23 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 	}
 }
 
+func checkSpinFactor() {
+
+	ns_pfactor := NSpinsPowerFactor.MSlice()
+	defer ns_pfactor.Recycle()
+
+	if ns_pfactor.Mul(0) == 0.0 {
+		NSpinsPowerFactor.Set(1)
+	}
+}
+
 // Calculate number of spins as function of Msat and set to NSpins variable
-func calcSpins() {
+func calcSpins() float64 {
 
 	ns := NSpins.MSlice()
 	defer ns.Recycle()
+
+	nspins_calc := 0.0
 
 	if ns.Mul(0) == 0.0 {
 
@@ -215,10 +219,20 @@ func calcSpins() {
 		size_celly := cell_size[Y]
 		size_cellz := cell_size[Z]
 
-		nspins_calc := (size_cellx * size_celly * size_cellz * float64(m_sat.Mul(0))) / MuB
+		nspins_calc = (size_cellx * size_celly * size_cellz * float64(m_sat.Mul(0))) / MuB
 
-		NSpins.Set(nspins_calc)
+	} else {
+		nspins_calc = float64(ns.Mul(0))
 	}
+
+	factor_spins := NSpinsPowerFactor.MSlice()
+	defer factor_spins.Recycle()
+
+	if factor_spins.Mul(0) > 1.0 {
+		return math.Pow(nspins_calc, float64(factor_spins.Mul(0)))
+	}
+
+	return nspins_calc
 }
 
 // Sets dst to the current total torque
@@ -255,16 +269,14 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 			mem_term.scn = cuda.NewSlice(MEMORY_COMP, Mesh().Size())
 		}
 
-		calcSpins()
+		checkSpinFactor()
+		nspins := calcSpins()
 
 		wc_slice := Wc.MSlice()
 		defer wc_slice.Recycle()
 
 		brms_slice := B_rms.MSlice()
 		defer brms_slice.Recycle()
-
-		nspins := NSpins.MSlice()
-		defer nspins.Recycle()
 
 		dt_time := Time - mem_term.last_time
 
@@ -277,7 +289,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 			kappa := Kappa.MSlice()
 			defer kappa.Recycle()
 
-			cuda.SubSpinBextraBeffDissipation(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, nspins, kappa, dt_time, Time, GammaLL, Mesh())
+			cuda.SubSpinBextraBeffDissipation(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, nspins, dt_time, Time, GammaLL, Mesh())
 		}
 
 		mem_term.last_time = Time
