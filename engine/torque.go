@@ -34,13 +34,13 @@ var (
 	EnableCavityDissipation            = false
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
-	B_rms                          = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
-	Wc                             = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
-	Kappa                          = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
-	NSpins                         = NewScalarParam("NSpins", "", "Number of spins")
-	NSpinsPowerFactor              = NewScalarParam("NSpinsPowerFactor", "", "Power factor for number of spins")
-	TAutosave                      = 0.0
-	mem_term          *MEMORY_TERM = nil
+	B_rms                              = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
+	Wc                                 = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
+	Kappa                              = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
+	NSpins                             = NewScalarParam("NSpins", "", "Number of spins")
+	NSpinsPowerFactor                  = NewScalarParam("NSpinsPowerFactor", "", "Power factor for number of spins")
+	TableAutosaveInterval              = 0.0
+	mem_term              *MEMORY_TERM = nil
 )
 
 const (
@@ -59,7 +59,7 @@ func init() {
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
 	NSpinsPowerFactor.Set(1)
-	DeclVar("TAutosave", &TAutosave, "Time interval to data table autosave")
+	DeclVar("TableAutosaveInterval", &TableAutosaveInterval, "Time interval to data table autosave")
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
@@ -185,8 +185,8 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogIn(" FixDt (s):", FixDt)
 		}
 
-		if TAutosave != 0 {
-			LogIn(" Table autosave interval (s):", TAutosave)
+		if TableAutosaveInterval != 0 {
+			LogIn(" Table autosave interval (s):", TableAutosaveInterval)
 		}
 
 		LogIn(" Full simulation time (s):", *simulationTime)
