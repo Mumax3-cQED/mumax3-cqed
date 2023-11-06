@@ -71,6 +71,7 @@ func init() {
 	DeclROnly("FIXEDLAYER_BOTTOM", FIXEDLAYER_BOTTOM, "FixedLayerPosition = FIXEDLAYER_BOTTOM instructs mumax3 that fixed layer is underneath of the free layer")
 }
 
+// Display a script configuration summary and log the information into the log.txt file
 func PrintParametersTimeEvolution(simulationTime *float64) {
 
 	if !DisableTimeEvolutionTorque {
@@ -188,13 +189,11 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 	}
 }
 
-// Calculate number of spins as function of Msat and set to NSpins variable
+// Calculate number of spins as function of Msat
 func calcSpins() float64 {
 
 	ns := NSpins.MSlice()
 	defer ns.Recycle()
-
-	nspins_calc := 0.0
 
 	if ns.Mul(0) == 0.0 {
 
@@ -207,13 +206,14 @@ func calcSpins() float64 {
 		size_celly := cell_size[Y]
 		size_cellz := cell_size[Z]
 
-		nspins_calc = (size_cellx * size_celly * size_cellz * float64(m_sat.Mul(0))) / MuB
+		nspins_calc := (size_cellx * size_celly * size_cellz * float64(m_sat.Mul(0))) / MuB
 
-	} else {
-		nspins_calc = float64(ns.Mul(0))
+		NSpins.Set(nspins_calc)
+
+		return nspins_calc
 	}
 
-	return nspins_calc
+	return float64(ns.Mul(0))
 }
 
 // Sets dst to the current total torque
