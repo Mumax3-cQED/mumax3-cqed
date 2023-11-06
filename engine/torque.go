@@ -38,7 +38,6 @@ var (
 	Wc                                 = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
 	Kappa                              = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
 	NSpins                             = NewScalarParam("NSpins", "", "Number of spins")
-	NSpinsPowerFactor                  = NewScalarParam("NSpinsPowerFactor", "", "Power factor for number of spins")
 	TableAutosaveInterval              = 0.0
 	mem_term              *MEMORY_TERM = nil
 )
@@ -58,7 +57,7 @@ func init() {
 	mem_term = new(MEMORY_TERM)
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
-	NSpinsPowerFactor.Set(1)
+
 	DeclVar("TableAutosaveInterval", &TableAutosaveInterval, "Time interval to data table autosave")
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
@@ -156,7 +155,6 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogIn(" Msat (A/m): 0.0")
 		}
 
-		checkSpinFactor()
 		spins_val := calcSpins()
 
 		if ns.Mul(0) < 0.0 {
@@ -164,11 +162,6 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogErr(errStr)
 			util.PanicErr(errors.New(errStr))
 		} else {
-
-			ns_pfactor := NSpinsPowerFactor.MSlice()
-			defer ns_pfactor.Recycle()
-
-			// LogIn(" Spins Power factor:", ns_pfactor.Mul(0))
 			LogIn(" Num. spins:", math.Ceil(spins_val*100)/100)
 		}
 
@@ -195,16 +188,6 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 	}
 }
 
-func checkSpinFactor() {
-
-	ns_pfactor := NSpinsPowerFactor.MSlice()
-	defer ns_pfactor.Recycle()
-
-	if ns_pfactor.Mul(0) == 0.0 {
-		NSpinsPowerFactor.Set(1)
-	}
-}
-
 // Calculate number of spins as function of Msat and set to NSpins variable
 func calcSpins() float64 {
 
@@ -228,13 +211,6 @@ func calcSpins() float64 {
 
 	} else {
 		nspins_calc = float64(ns.Mul(0))
-	}
-
-	factor_spins := NSpinsPowerFactor.MSlice()
-	defer factor_spins.Recycle()
-
-	if factor_spins.Mul(0) > 1.0 {
-		return math.Pow(nspins_calc, float64(factor_spins.Mul(0)))
 	}
 
 	return nspins_calc
@@ -274,7 +250,6 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 			mem_term.scn = cuda.NewSlice(MEMORY_COMP, Mesh().Size())
 		}
 
-		checkSpinFactor()
 		nspins := calcSpins()
 
 		wc_slice := Wc.MSlice()
