@@ -172,8 +172,13 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogIn(" Wc (rad/s):", v.Mul(0))
 		}
 
-		LogIn(" B_rms vector (T): [", cuda.GetElemPos(c, X), ",", cuda.GetElemPos(c, Y), ",", cuda.GetElemPos(c, Z), "]")
-		LogIn(" B_ext vector (T): [", cuda.GetElemPos(be, X), ",", cuda.GetElemPos(be, Y), ",", cuda.GetElemPos(be, Z), "]")
+		if c != nil {
+			LogIn(" B_rms vector (T): [", cuda.GetElemPos(c, X), ",", cuda.GetElemPos(c, Y), ",", cuda.GetElemPos(c, Z), "]")
+		}
+
+		if be != nil {
+			LogIn(" B_ext vector (T): [", cuda.GetElemPos(be, X), ",", cuda.GetElemPos(be, Y), ",", cuda.GetElemPos(be, Z), "]")
+		}
 
 		if FixDt != 0 {
 			LogIn(" FixDt (s):", FixDt)
