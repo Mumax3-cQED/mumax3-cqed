@@ -188,7 +188,10 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogIn(" Table autosave interval (s):", TableAutosaveInterval)
 		}
 
-		LogIn(" Full simulation time (s):", *simulationTime)
+		if *simulationTime != 0 {
+			LogIn(" Full simulation time (s):", *simulationTime)
+		}
+
 		LogIn("------------------------------------------------")
 		LogIn("")
 	}
