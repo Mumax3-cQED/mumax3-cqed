@@ -111,7 +111,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		year, month, day, hour, minute, seconds := getCurrentDate()
 		full_date := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, seconds)
 
-		LogIn(" Simulation date:", full_date)
+		LogIn(" Simulation date (yyyy-MM-dd HH:mm:ss):", full_date)
 		LogIn(" Time evolution factor in LLG equation: Enabled")
 
 		if DisableBeffContributions {
