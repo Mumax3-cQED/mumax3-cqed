@@ -43,8 +43,8 @@ var (
 )
 
 const (
-	MuB         = 9.2740091523E-24
-	MEMORY_COMP = 6
+	MuB               = 9.2740091523E-24
+	MEMORY_COMPONENTS = 6
 )
 
 // Memory term computation
@@ -54,10 +54,10 @@ type MEMORY_TERM struct {
 }
 
 func init() {
-	mem_term = new(MEMORY_TERM)
+	mem_term = new(MEMORY_TERM)  // init new memory term for equation
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
-	NSpins.Set(0)
+	NSpins.Set(0)                // default amount of spins
 
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
@@ -255,7 +255,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		}
 
 		if mem_term.scn == nil {
-			mem_term.scn = cuda.NewSlice(MEMORY_COMP, Mesh().Size())
+			mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, Mesh().Size())
 		}
 
 		nspins := calcSpins()
