@@ -57,6 +57,7 @@ func init() {
 	mem_term = new(MEMORY_TERM)
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
+	NSpins.Set(0)
 
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
@@ -149,7 +150,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
 		LogIn(" Alpha:", alpha.Mul(0))
 
-		if m_sat.Mul(0) != 0.0 {
+		if m_sat.Mul(0) != 0 {
 			LogIn(" Msat (A/m):", m_sat.Mul(0))
 		} else {
 			LogIn(" Msat (A/m): 0.0")
@@ -157,7 +158,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 		spins_val := calcSpins()
 
-		if ns.Mul(0) < 0.0 {
+		if ns.Mul(0) < 0 {
 			errStr := "Panic Error: Number of spins must be greater than zero"
 			LogErr(errStr)
 			util.PanicErr(errors.New(errStr))
@@ -167,7 +168,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 		LogIn(" GammaLL (rad/Ts):", GammaLL)
 
-		if v.Mul(0) != 0.0 {
+		if v.Mul(0) != 0 {
 			LogIn(" Wc (rad/s):", v.Mul(0))
 		}
 
@@ -202,7 +203,7 @@ func calcSpins() float64 {
 	ns := NSpins.MSlice()
 	defer ns.Recycle()
 
-	if ns.Mul(0) == 0.0 {
+	if ns.Mul(0) == 0 {
 
 		m_sat := Msat.MSlice()
 		defer m_sat.Recycle()
