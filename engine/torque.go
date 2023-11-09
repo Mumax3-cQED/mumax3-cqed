@@ -3,8 +3,10 @@ package engine
 // MODIFIED INMA
 import (
 	"errors"
+	"fmt"
 	"math"
 	"reflect"
+	"time"
 
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
@@ -105,6 +107,11 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 		LogIn("")
 		LogIn("------------------------------------------------")
+
+		year, month, day, hour, minute, seconds := getCurrentDate()
+		full_date := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, seconds)
+
+		LogIn(" Simulation date:", full_date)
 		LogIn(" Time evolution factor in LLG equation: Enabled")
 
 		if DisableBeffContributions {
@@ -148,7 +155,10 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn(" Shape size (m):", cell_size[X]*float64(num_cells[X]), "x", cell_size[Y]*float64(num_cells[Y]), "x", cell_size[Z]*float64(num_cells[Z]))
 		LogIn(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
 		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
-		LogIn(" Alpha:", alpha.Mul(0))
+
+		if alpha.Mul(0) != 0 {
+			LogIn(" Alpha:", alpha.Mul(0))
+		}
 
 		if m_sat.Mul(0) != 0 {
 			LogIn(" Msat (A/m):", m_sat.Mul(0))
@@ -195,6 +205,17 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn("------------------------------------------------")
 		LogIn("")
 	}
+}
+
+func getCurrentDate() (int, int, int, int, int, int) {
+
+	date_current := time.Now()
+	year, month, day := date_current.Date()
+	hour := date_current.Hour()
+	minute := date_current.Minute()
+	seconds := date_current.Second()
+
+	return year, int(month), day, hour, minute, seconds
 }
 
 // Calculate number of spins as a function of Msat
