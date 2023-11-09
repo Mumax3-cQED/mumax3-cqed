@@ -34,12 +34,12 @@ var (
 	EnableCavityDissipation            = false
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
-	B_rms                              = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
-	Wc                                 = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
-	Kappa                              = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
-	NSpins                             = NewScalarParam("NSpins", "", "Number of spins")
-	TableAutosaveInterval              = 0.0
-	mem_term              *MEMORY_TERM = nil
+	B_rms  = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
+	Wc     = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
+	Kappa  = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
+	NSpins = NewScalarParam("NSpins", "", "Number of spins")
+
+	mem_term *MEMORY_TERM = nil
 )
 
 const (
@@ -58,7 +58,6 @@ func init() {
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
 
-	DeclVar("TableAutosaveInterval", &TableAutosaveInterval, "Time interval to data table autosave")
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
@@ -184,8 +183,8 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogIn(" FixDt (s):", FixDt)
 		}
 
-		if TableAutosaveInterval != 0 {
-			LogIn(" Table autosave interval (s):", TableAutosaveInterval)
+		if Table.autosave.period != 0 {
+			LogIn(" Table autosave interval (s):", Table.autosave.period)
 		}
 
 		if *simulationTime != 0 {
@@ -197,7 +196,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 	}
 }
 
-// Calculate number of spins as function of Msat
+// Calculate number of spins as a function of Msat
 func calcSpins() float64 {
 
 	ns := NSpins.MSlice()
