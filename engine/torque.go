@@ -170,7 +170,6 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 		if ns.Mul(0) < 0 {
 			errStr := "Panic Error: Number of spins must be greater than zero"
-			LogIn(errStr)
 			LogErr(errStr)
 			util.PanicErr(errors.New(errStr))
 		} else {
