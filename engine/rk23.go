@@ -112,7 +112,7 @@ func (rk *RK23) Free() {
 }
 
 // TODO: into cuda
-func madd4(dst, src1, src2, src3, src4 *data.Slice, w1, w2, w3, w4 float32) {
-	cuda.Madd3(dst, src1, src2, src3, w1, w2, w3)
-	cuda.Madd2(dst, dst, src4, 1, w4)
-}
+// func madd4(dst, src1, src2, src3, src4 *data.Slice, w1, w2, w3, w4 float32) {
+// 	cuda.Madd3(dst, src1, src2, src3, w1, w2, w3)
+// 	cuda.Madd2(dst, dst, src4, 1, w4)
+// }
