@@ -1,7 +1,6 @@
 #include "amul.h"
 #include "float3.h"
 #include <stdint.h>
-#include "constants.h"
 
 // Landau-Lifshitz torque.
 extern "C" __global__ void
