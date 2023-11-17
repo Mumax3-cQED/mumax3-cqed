@@ -45,14 +45,14 @@ calcspinbeffdissipation(float* __restrict__  tx, float* __restrict__  ty, float*
     // snx[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * amul(mx, brmsx, i) * dt;
     // sny[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * amul(my, brmsy, i) * dt;
     // snz[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * amul(mz, brmsz, i) * dt;
-
+    //
     // cnx[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * amul(mx, brmsx, i) * dt;
     // cny[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * amul(my, brmsy, i) * dt;
     // cnz[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * amul(mz, brmsz, i) * dt;
 
     // Summatory
-    // float sn = snx[i]; //+ sny[i] + snz[i];
-    // float cn = cnx[i]; //+ cny[i] + cnz[i];
+    // float sn = snx[i]+ sny[i] + snz[i];
+    // float cn = cnx[i]+ cny[i] + cnz[i];
 
     float PREFACTOR = gammaLL * nspins;
     float G = PREFACTOR * exp(-kappa_val * ctime) * (cos(wc_val * ctime) * snx[i] - sin(wc_val * ctime) * cnx[i]);

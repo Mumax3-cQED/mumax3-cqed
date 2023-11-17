@@ -235,7 +235,18 @@ func calcSpins() float64 {
 		size_celly := cell_size[Y]
 		size_cellz := cell_size[Z]
 
-		nspins_calc := (size_cellx * size_celly * size_cellz * float64(m_sat.Mul(0))) / MuB
+		num_cells := Mesh().Size()
+		num_cellx := float64(num_cells[X])
+		num_celly := float64(num_cells[Y])
+		num_cellz := float64(num_cells[Z])
+
+		full_sizex := size_cellx * num_cellx
+		full_sizey := size_celly * num_celly
+		full_sizez := size_cellz * num_cellz
+
+		full_vol := full_sizex * full_sizey * full_sizez
+
+		nspins_calc := (full_vol * float64(m_sat.Mul(0))) / MuB
 
 		NSpins.Set(nspins_calc)
 
