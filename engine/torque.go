@@ -149,10 +149,9 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogIn(" Cavity Dissipation: Disabled")
 		}
 
-		cell_size := Mesh().CellSize()
-		num_cells := Mesh().Size()
+		full_sizex, full_sizey, full_sizez, cell_size, num_cells := calcFullSize()
 
-		LogIn(" Shape size (m):", cell_size[X]*float64(num_cells[X]), "x", cell_size[Y]*float64(num_cells[Y]), "x", cell_size[Z]*float64(num_cells[Z]))
+		LogIn(" Shape size (m):", full_sizex, "x", full_sizey, "x", full_sizez)
 		LogIn(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
 		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
 
@@ -218,6 +217,25 @@ func getCurrentDate() (int, int, int, int, int, int) {
 	return year, int(month), day, hour, minute, seconds
 }
 
+func calcFullSize() (float64, float64, float64, [3]float64, [3]int) {
+
+	cell_size := Mesh().CellSize()
+	size_cellx := cell_size[X]
+	size_celly := cell_size[Y]
+	size_cellz := cell_size[Z]
+
+	num_cells := Mesh().Size()
+	num_cellx := float64(num_cells[X])
+	num_celly := float64(num_cells[Y])
+	num_cellz := float64(num_cells[Z])
+
+	full_sizex := size_cellx * num_cellx
+	full_sizey := size_celly * num_celly
+	full_sizez := size_cellz * num_cellz
+
+	return full_sizex, full_sizey, full_sizez, cell_size, num_cells
+}
+
 // Calculate number of spins as a function of Msat
 func calcSpins() float64 {
 
@@ -229,20 +247,7 @@ func calcSpins() float64 {
 		m_sat := Msat.MSlice()
 		defer m_sat.Recycle()
 
-		cell_size := Mesh().CellSize()
-
-		size_cellx := cell_size[X]
-		size_celly := cell_size[Y]
-		size_cellz := cell_size[Z]
-
-		num_cells := Mesh().Size()
-		num_cellx := float64(num_cells[X])
-		num_celly := float64(num_cells[Y])
-		num_cellz := float64(num_cells[Z])
-
-		full_sizex := size_cellx * num_cellx
-		full_sizey := size_celly * num_celly
-		full_sizez := size_cellz * num_cellz
+		full_sizex, full_sizey, full_sizez, _, _ := calcFullSize()
 
 		full_vol := full_sizex * full_sizey * full_sizez
 
