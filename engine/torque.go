@@ -287,12 +287,14 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 
 	if !DisableTimeEvolutionTorque {
 
-		if mem_term.scn.Size() != Mesh().Size() {
+		sizeMesh := Mesh().Size()
+
+		if mem_term.scn.Size() != sizeMesh {
 			mem_term.Free()
 		}
 
 		if mem_term.scn == nil {
-			mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, Mesh().Size())
+			mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, sizeMesh)
 		}
 
 		nspins := calcSpins()
