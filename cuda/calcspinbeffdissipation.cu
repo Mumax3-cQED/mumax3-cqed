@@ -8,8 +8,7 @@
 extern "C" __global__ void
 calcspinbeffdissipation(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
             float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
-            float* __restrict__ snx,   float* __restrict__ sny, float* __restrict__ snz,
-            float* __restrict__ cnx, float* __restrict__ cny, float* __restrict__ cnz,
+            float* __restrict__ sn, float* __restrict__ cn, 
             float* __restrict__ wc, float wc_mul,
             float* __restrict__ kappa, float kappa_mul,
             float* __restrict__ brms_x, float brmsx_mul,
@@ -39,23 +38,11 @@ calcspinbeffdissipation(float* __restrict__  tx, float* __restrict__  ty, float*
     float3 mi = make_float3(mx[i], my[i], mz[i]);
     float3 brmsi = make_float3(brmsx, brmsy, brmsz);
 
-    snx[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * dot(mi, brmsi) * dt;
-    cnx[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * dot(mi, brmsi) * dt;
-
-    // snx[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * amul(mx, brmsx, i) * dt;
-    // sny[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * amul(my, brmsy, i) * dt;
-    // snz[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * amul(mz, brmsz, i) * dt;
-    //
-    // cnx[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * amul(mx, brmsx, i) * dt;
-    // cny[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * amul(my, brmsy, i) * dt;
-    // cnz[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * amul(mz, brmsz, i) * dt;
-
-    // Summatory
-    // float sn = snx[i]+ sny[i] + snz[i];
-    // float cn = cnx[i]+ cny[i] + cnz[i];
+    sn[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * dot(mi, brmsi) * dt;
+    cn[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * dot(mi, brmsi) * dt;
 
     float PREFACTOR = gammaLL * nspins;
-    float G = PREFACTOR * exp(-kappa_val * ctime) * (cos(wc_val * ctime) * snx[i] - sin(wc_val * ctime) * cnx[i]);
+    float G = PREFACTOR * exp(-kappa_val * ctime) * (cos(wc_val * ctime) * sn[i] - sin(wc_val * ctime) * cn[i]);
 
     // This is the new term to Beff
     float new_term_x = brmsx * G;

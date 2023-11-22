@@ -42,7 +42,7 @@ func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc MSlice, nspins, deltah,
 
 	k_calcspinbeff_async(dst.DevPtr(X), dst.DevPtr(Y), dst.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
-		scn.DevPtr(0), scn.DevPtr(1), scn.DevPtr(2), scn.DevPtr(3), scn.DevPtr(4), scn.DevPtr(5),
+		scn.DevPtr(0), scn.DevPtr(1),
 		wc.DevPtr(0), wc.Mul(0),
 		brms.DevPtr(X), brms.Mul(X),
 		brms.DevPtr(Y), brms.Mul(Y),
@@ -59,7 +59,7 @@ func SubSpinBextraBeffDissipation(dst, m, scn *data.Slice, brms, wc, kappa MSlic
 
 	k_calcspinbeffdissipation_async(dst.DevPtr(X), dst.DevPtr(Y), dst.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
-		scn.DevPtr(0), scn.DevPtr(1), scn.DevPtr(2), scn.DevPtr(3), scn.DevPtr(4), scn.DevPtr(5),
+		scn.DevPtr(0), scn.DevPtr(1),
 		wc.DevPtr(0), wc.Mul(0),
 		kappa.DevPtr(0), kappa.Mul(0),
 		brms.DevPtr(X), brms.Mul(X),

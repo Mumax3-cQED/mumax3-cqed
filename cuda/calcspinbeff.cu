@@ -8,8 +8,7 @@
 extern "C" __global__ void
 calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
             float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
-            float* __restrict__ snx,   float* __restrict__ sny, float* __restrict__ snz,
-            float* __restrict__ cnx, float* __restrict__ cny, float* __restrict__ cnz,
+            float* __restrict__ sn, float* __restrict__ cn, 
             float* __restrict__ wc, float wc_mul,
             float* __restrict__ brms_x, float brmsx_mul,
             float* __restrict__ brms_y, float brmsy_mul,
@@ -33,28 +32,14 @@ calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict
     float brmsz = amul(brms_z, brmsz_mul, i);
 
     // Summatory
-    //float scalar_prod = amul(mx, brmsx, i) + amul(my, brmsy, i) +  amul(mz, brmsz, i);
-
     float3 mi = make_float3(mx[i], my[i], mz[i]);
     float3 brmsi = make_float3(brmsx, brmsy, brmsz);
 
-    snx[i] += sin(wc_val * ctime) * dot(mi, brmsi) * dt;
-    cnx[i] += cos(wc_val * ctime) * dot(mi, brmsi) * dt;
-
-    // snx[i] += sin(wc_val * ctime) * amul(mx, brmsx, i) * dt;
-    // sny[i] += sin(wc_val * ctime) * amul(my, brmsy, i) * dt;
-    // snz[i] += sin(wc_val * ctime) * amul(mz, brmsz, i) * dt;
-
-    // cnx[i] += cos(wc_val * ctime) * amul(mx, brmsx, i) * dt;
-    // cny[i] += cos(wc_val * ctime) * amul(my, brmsy, i) * dt;
-    // cnz[i] += cos(wc_val * ctime) * amul(mz, brmsz, i) * dt;
-
-    // Summatory
-    // float sn = snx[i];// + sny[i] + snz[i];
-    // float cn = cnx[i];// + cny[i] + cnz[i];
+    sn[i] += sin(wc_val * ctime) * dot(mi, brmsi) * dt;
+    cn[i] += cos(wc_val * ctime) * dot(mi, brmsi) * dt;
 
     float PREFACTOR = gammaLL * nspins;
-    float G = PREFACTOR * (cos(wc_val * ctime) * snx[i] - sin(wc_val * ctime) * cnx[i]);
+    float G = PREFACTOR * (cos(wc_val * ctime) * sn[i] - sin(wc_val * ctime) * cn[i]);
 
     // This is the new term to Beff
     float new_term_x = brmsx * G;

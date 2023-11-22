@@ -46,7 +46,7 @@ var (
 
 const (
 	MuB               = 9.2740091523E-24
-	MEMORY_COMPONENTS = 6
+	MEMORY_COMPONENTS = 2
 )
 
 // Memory term computation
