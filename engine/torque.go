@@ -36,10 +36,10 @@ var (
 	EnableCavityDissipation            = false
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
-	B_rms  = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
-	Wc     = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
-	Kappa  = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
-	NSpins = NewScalarParam("NSpins", "", "Number of spins")
+	B_rms          = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
+	Wc             = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
+	Kappa          = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
+	NSpins float64 = 0 // Number of spins
 
 	mem_term *MEMORY_TERM = nil
 )
@@ -59,8 +59,8 @@ func init() {
 	mem_term = new(MEMORY_TERM)  // init new memory term for equation
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
-	NSpins.Set(0)                // default amount of spins
 
+	DeclVar("NSpins", &NSpins, "Number of spins")
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
@@ -95,9 +95,6 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 		v := Wc.MSlice()
 		defer v.Recycle()
-
-		ns := NSpins.MSlice()
-		defer ns.Recycle()
 
 		m_sat := Msat.MSlice()
 		defer m_sat.Recycle()
@@ -167,7 +164,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 		spins_val := calcSpins()
 
-		if ns.Mul(0) < 0 {
+		if NSpins < 0 {
 			errStr := "Panic Error: Number of spins must be greater than zero"
 			LogErr(errStr)
 			util.PanicErr(errors.New(errStr))
@@ -239,10 +236,7 @@ func calcFullSize() (float64, float64, float64, [3]float64, [3]int) {
 // Calculate number of spins as a function of Msat
 func calcSpins() float64 {
 
-	ns := NSpins.MSlice()
-	defer ns.Recycle()
-
-	if ns.Mul(0) == 0 {
+	if NSpins == 0 {
 
 		m_sat := Msat.MSlice()
 		defer m_sat.Recycle()
@@ -251,14 +245,10 @@ func calcSpins() float64 {
 
 		full_vol := full_sizex * full_sizey * full_sizez
 
-		nspins_calc := (full_vol * float64(m_sat.Mul(0))) / MuB
-
-		NSpins.Set(nspins_calc)
-
-		return nspins_calc
+		NSpins = (full_vol * float64(m_sat.Mul(0))) / MuB
 	}
 
-	return float64(ns.Mul(0))
+	return NSpins
 }
 
 // Sets dst to the current total torque
@@ -297,7 +287,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 			mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, sizeMesh)
 		}
 
-		nspins := calcSpins()
+		nspinsCalc := calcSpins()
 
 		wc_slice := Wc.MSlice()
 		defer wc_slice.Recycle()
@@ -309,14 +299,14 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 
 		if !EnableCavityDissipation {
 			// calculations without cavity dissipation
-			cuda.SubSpinBextraBeff(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, nspins, dt_time, Time, GammaLL, Mesh())
+			cuda.SubSpinBextraBeff(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, nspinsCalc, dt_time, Time, GammaLL, Mesh())
 		} else {
 
 			// calculations with cavity dissipation
 			kappa := Kappa.MSlice()
 			defer kappa.Recycle()
 
-			cuda.SubSpinBextraBeffDissipation(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, nspins, dt_time, Time, GammaLL, Mesh())
+			cuda.SubSpinBextraBeffDissipation(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, nspinsCalc, dt_time, Time, GammaLL, Mesh())
 		}
 
 		mem_term.last_time = Time
