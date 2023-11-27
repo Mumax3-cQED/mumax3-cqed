@@ -4,7 +4,6 @@ package engine
 import (
 	"errors"
 	"fmt"
-	"math"
 	"reflect"
 	"time"
 
@@ -83,13 +82,13 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			mem_term.Free()
 		}
 
-		c, r1 := B_rms.Slice()
-		if r1 {
+		c, rec := B_rms.Slice()
+		if rec {
 			defer cuda.Recycle(c)
 		}
 
-		be, r2 := B_ext.Slice()
-		if r2 {
+		be, rec := B_ext.Slice()
+		if rec {
 			defer cuda.Recycle(be)
 		}
 
@@ -169,7 +168,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogErr(errStr)
 			util.PanicErr(errors.New(errStr))
 		} else {
-			LogIn(" Num. spins:", math.Ceil(spins_val*100)/100)
+			LogIn(" Num. spins:", spins_val)
 		}
 
 		LogIn(" GammaLL (rad/Ts):", GammaLL)
