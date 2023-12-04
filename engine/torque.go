@@ -189,8 +189,10 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogIn(" FixDt (s):", FixDt)
 		}
 
-		if Table.autosave.period != 0 {
-			LogIn(" Table autosave interval (s):", Table.autosave.period)
+		savePeriod := Table.autosave.period
+
+		if savePeriod != 0 {
+			LogIn(" Table autosave interval (s):", savePeriod)
 		}
 
 		if *simulationTime != 0 {
