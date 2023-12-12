@@ -177,6 +177,10 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogIn(" Wc (rad/s):", v.Mul(0))
 		}
 
+		if uniform_vector.X() != 0.0 || uniform_vector.Y() != 0.0 || uniform_vector.Z() != 0.0 {
+			LogIn(" Uniform vector (T): [", uniform_vector.X(), ",", uniform_vector.Y(), ",", uniform_vector.Z(), "]")
+		}
+
 		if c != nil {
 			LogIn(" B_rms vector (T): [", cuda.GetElemPos(c, X), ",", cuda.GetElemPos(c, Y), ",", cuda.GetElemPos(c, Z), "]")
 		}

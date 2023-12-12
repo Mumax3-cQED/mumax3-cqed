@@ -3,9 +3,14 @@ package engine
 // Utilities for setting magnetic configurations.
 
 import (
-	"github.com/mumax/3/data"
 	"math"
 	"math/rand"
+
+	"github.com/mumax/3/data"
+)
+
+var (
+	uniform_vector data.Vector = data.Vector{0, 0, 0}
 )
 
 func init() {
@@ -52,6 +57,7 @@ func randomDir(rng *rand.Rand) data.Vector {
 // Returns a uniform magnetization state. E.g.:
 // 	M = Uniform(1, 0, 0)) // saturated along X
 func Uniform(mx, my, mz float64) Config {
+	uniform_vector = data.Vector{mx, my, mz}
 	return func(x, y, z float64) data.Vector {
 		return data.Vector{mx, my, mz}
 	}
