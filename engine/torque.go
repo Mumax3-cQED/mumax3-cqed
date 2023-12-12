@@ -52,6 +52,7 @@ const (
 type MEMORY_TERM struct {
 	scn       *data.Slice
 	last_time float64
+	dt_time   float64
 }
 
 func init() {
@@ -291,6 +292,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		if mem_term.scn == nil {
 			mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, sizeMesh)
 			mem_term.last_time = 0.0
+			mem_term.dt_time = 0.0
 		}
 
 		nspinsCalc := calcSpins()
@@ -301,18 +303,18 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 		brms_slice := B_rms.MSlice()
 		defer brms_slice.Recycle()
 
-		dt_time := Time - mem_term.last_time
+		mem_term.dt_time = Time - mem_term.last_time
 
 		if !EnableCavityDissipation {
 			// calculations without cavity dissipation
-			cuda.SubSpinBextraBeff(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, nspinsCalc, dt_time, Time, GammaLL, Mesh())
+			cuda.SubSpinBextraBeff(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
 		} else {
 
 			// calculations with cavity dissipation
 			kappa := Kappa.MSlice()
 			defer kappa.Recycle()
 
-			cuda.SubSpinBextraBeffDissipation(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, nspinsCalc, dt_time, Time, GammaLL, Mesh())
+			cuda.SubSpinBextraBeffDissipation(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
 		}
 
 		mem_term.last_time = Time
@@ -381,6 +383,7 @@ func (rk *MEMORY_TERM) Free() {
 	rk.scn.Free()
 	rk.scn = nil
 	rk.last_time = 0.0
+	rk.dt_time = 0.0
 }
 
 func GetMaxTorque() float64 {
