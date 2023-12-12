@@ -290,6 +290,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 
 		if mem_term.scn == nil {
 			mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, sizeMesh)
+			mem_term.last_time = 0.0
 		}
 
 		nspinsCalc := calcSpins()
@@ -379,6 +380,7 @@ func FreezeSpins(dst *data.Slice) {
 func (rk *MEMORY_TERM) Free() {
 	rk.scn.Free()
 	rk.scn = nil
+	rk.last_time = 0.0
 }
 
 func GetMaxTorque() float64 {
