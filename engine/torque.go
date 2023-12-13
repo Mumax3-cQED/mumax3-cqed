@@ -80,8 +80,12 @@ func init() {
 
 func PrintScriptExecutionTime() {
 
-	_, months, days, hours, mins, secs := getTimeDifference(start)
+	years, months, days, hours, mins, secs := getTimeDifference(start)
 	full_diff := ""
+
+	if years > 0 {
+		full_diff += fmt.Sprintf("%dY;", years)
+	}
 
 	if months > 0 {
 		full_diff += fmt.Sprintf("%dM;", months)
