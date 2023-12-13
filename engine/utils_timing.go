@@ -2,6 +2,8 @@ package engine
 
 // CREATED AND MODIFIED INMA
 import (
+	"fmt"
+	"strings"
 	"time"
 )
 
@@ -16,7 +18,7 @@ func getCurrentDate() (int, int, int, int, int, int) {
 	return year, int(month), day, hour, minute, seconds
 }
 
-func getTimeDifference(start time.Time) (year, month, day, hour, min, sec int) {
+func getTimeDifference(start time.Time) string {
 
 	end := time.Now()
 
@@ -34,12 +36,12 @@ func getTimeDifference(start time.Time) (year, month, day, hour, min, sec int) {
 	h1, m1, s1 := start.Clock()
 	h2, m2, s2 := end.Clock()
 
-	year = int(y2 - y1)
-	month = int(M2 - M1)
-	day = int(d2 - d1)
-	hour = int(h2 - h1)
-	min = int(m2 - m1)
-	sec = int(s2 - s1)
+	year := int(y2 - y1)
+	month := int(M2 - M1)
+	day := int(d2 - d1)
+	hour := int(h2 - h1)
+	min := int(m2 - m1)
+	sec := int(s2 - s1)
 
 	// Normalize negative values
 	if sec < 0 {
@@ -69,5 +71,38 @@ func getTimeDifference(start time.Time) (year, month, day, hour, min, sec int) {
 		year--
 	}
 
-	return
+	return parseTimeResponse(year, month, day, hour, min, sec)
+}
+
+func parseTimeResponse(years, months, days, hours, mins, secs int) string {
+
+	full_diff := ""
+
+	if years > 0 {
+		full_diff += fmt.Sprintf("%dy;", years)
+	}
+
+	if months > 0 {
+		full_diff += fmt.Sprintf("%dM;", months)
+	}
+
+	if days > 0 {
+		full_diff += fmt.Sprintf("%dd;", days)
+	}
+
+	if hours > 0 {
+		full_diff += fmt.Sprintf("%dh;", hours)
+	}
+
+	if mins > 0 {
+		full_diff += fmt.Sprintf("%dm;", mins)
+	}
+
+	if secs > 0 {
+		full_diff += fmt.Sprintf("%ds", secs)
+	}
+
+	full_diff = strings.Replace(full_diff, ";", " ", -1)
+
+	return full_diff
 }
