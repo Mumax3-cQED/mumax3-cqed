@@ -29,16 +29,16 @@ func leapYears(date time.Time) (leaps int) {
 	return leaps
 }
 
-func getTimeDifference(a time.Time) (days, hours, minutes, seconds int) {
+func getTimeDifference(start time.Time) (days, hours, minutes, seconds int) {
 
-	b := time.Now()
+	now := time.Now()
 
 	monthDays := [12]int{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 
-	y1, m1, d1 := a.Date()
-	y2, m2, d2 := b.Date()
-	h1, min1, s1 := a.Clock()
-	h2, min2, s2 := b.Clock()
+	y1, m1, d1 := start.Date()
+	y2, m2, d2 := now.Date()
+	h1, min1, s1 := start.Clock()
+	h2, min2, s2 := now.Clock()
 
 	totalDays1 := y1*365 + d1
 
@@ -46,14 +46,14 @@ func getTimeDifference(a time.Time) (days, hours, minutes, seconds int) {
 		totalDays1 += monthDays[i]
 	}
 
-	totalDays1 += leapYears(a)
+	totalDays1 += leapYears(start)
 	totalDays2 := y2*365 + d2
 
 	for i := 0; i < (int)(m2)-1; i++ {
 		totalDays2 += monthDays[i]
 	}
 
-	totalDays2 += leapYears(b)
+	totalDays2 += leapYears(now)
 
 	days = totalDays2 - totalDays1
 	hours = h2 - h1
