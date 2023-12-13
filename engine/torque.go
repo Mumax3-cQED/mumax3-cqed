@@ -82,7 +82,7 @@ func PrintScriptExecutionTime() {
 	days, hours, mins, secs := getTimeDifference(start)
 	full_diff := fmt.Sprintf("%dd %dh %dm %ds", days, hours, mins, secs)
 
-	LogIn("\nScript running Time:", full_diff, "\n")
+	LogIn("\n ---> Full mumax3 script running time:", full_diff, "\n")
 }
 
 // Display a script configuration summary and log the information into the log.txt file
