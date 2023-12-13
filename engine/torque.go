@@ -84,7 +84,7 @@ func PrintScriptExecutionTime() {
 	full_diff := ""
 
 	if years > 0 {
-		full_diff += fmt.Sprintf("%dY;", years)
+		full_diff += fmt.Sprintf("%dy;", years)
 	}
 
 	if months > 0 {
