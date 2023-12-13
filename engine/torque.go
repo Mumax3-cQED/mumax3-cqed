@@ -35,6 +35,7 @@ var (
 	EnableCavityDissipation            = false
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
+	start  time.Time
 	B_rms          = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
 	Wc             = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
 	Kappa          = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
@@ -56,6 +57,8 @@ type MEMORY_TERM struct {
 }
 
 func init() {
+
+	start = time.Now()
 	mem_term = new(MEMORY_TERM)  // init new memory term for equation
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
@@ -71,6 +74,15 @@ func init() {
 	DeclLValue("FixedLayerPosition", &flposition{}, "Position of the fixed layer: FIXEDLAYER_TOP, FIXEDLAYER_BOTTOM (default=FIXEDLAYER_TOP)")
 	DeclROnly("FIXEDLAYER_TOP", FIXEDLAYER_TOP, "FixedLayerPosition = FIXEDLAYER_TOP instructs mumax3 that fixed layer is on top of the free layer")
 	DeclROnly("FIXEDLAYER_BOTTOM", FIXEDLAYER_BOTTOM, "FixedLayerPosition = FIXEDLAYER_BOTTOM instructs mumax3 that fixed layer is underneath of the free layer")
+	DeclFunc("PrintScriptExecutionTime", PrintScriptExecutionTime, "Send string message to script execution log")
+}
+
+func PrintScriptExecutionTime() {
+
+	days, hours, mins, secs := getTimeDifference(start)
+	full_diff := fmt.Sprintf("%dd %dh %dm %ds", days, hours, mins, secs)
+
+	LogIn("\nScript running Time: ", full_diff, "\n")
 }
 
 // Display a script configuration summary and log the information into the log.txt file
@@ -183,11 +195,11 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		}
 
 		if c != nil {
-			LogIn(" B_rms vector (T): [", cuda.GetElemPos(c, X), ",", cuda.GetElemPos(c, Y), ",", cuda.GetElemPos(c, Z), "]")
+			LogIn(" B_rms vector (T): [", getElemPos(c, X), ",", getElemPos(c, Y), ",", getElemPos(c, Z), "]")
 		}
 
 		if be != nil {
-			LogIn(" B_ext vector (T): [", cuda.GetElemPos(be, X), ",", cuda.GetElemPos(be, Y), ",", cuda.GetElemPos(be, Z), "]")
+			LogIn(" B_ext vector (T): [", getElemPos(be, X), ",", getElemPos(be, Y), ",", getElemPos(be, Z), "]")
 		}
 
 		if FixDt != 0 {
@@ -209,15 +221,9 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 	}
 }
 
-func getCurrentDate() (int, int, int, int, int, int) {
-
-	date_current := time.Now()
-	year, month, day := date_current.Date()
-	hour := date_current.Hour()
-	minute := date_current.Minute()
-	seconds := date_current.Second()
-
-	return year, int(month), day, hour, minute, seconds
+func getElemPos(slice *data.Slice, position int) float32 {
+	mz_temp := cuda.GetCell(slice, position, 0, 0, 0)
+	return mz_temp
 }
 
 func calcFullSize() (float64, float64, float64, [3]float64, [3]int) {
