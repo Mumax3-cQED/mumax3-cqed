@@ -16,64 +16,58 @@ func getCurrentDate() (int, int, int, int, int, int) {
 	return year, int(month), day, hour, minute, seconds
 }
 
-func leapYears(date time.Time) (leaps int) {
+func getTimeDifference(start time.Time) (year, month, day, hour, min, sec int) {
 
-	y, m, _ := date.Date()
+	end := time.Now()
 
-	if m <= 2 {
-		y--
+	if start.Location() != end.Location() {
+		end = end.In(start.Location())
 	}
 
-	leaps = y/4 + y/400 - y/100
-
-	return leaps
-}
-
-func getTimeDifference(start time.Time) (days, hours, minutes, seconds int) {
-
-	now := time.Now()
-
-	monthDays := [12]int{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
-
-	y1, m1, d1 := start.Date()
-	y2, m2, d2 := now.Date()
-	h1, min1, s1 := start.Clock()
-	h2, min2, s2 := now.Clock()
-
-	totalDays1 := y1*365 + d1
-
-	for i := 0; i < (int)(m1)-1; i++ {
-		totalDays1 += monthDays[i]
+	if start.After(end) {
+		start, end = end, start
 	}
 
-	totalDays1 += leapYears(start)
-	totalDays2 := y2*365 + d2
+	y1, M1, d1 := start.Date()
+	y2, M2, d2 := end.Date()
 
-	for i := 0; i < (int)(m2)-1; i++ {
-		totalDays2 += monthDays[i]
+	h1, m1, s1 := start.Clock()
+	h2, m2, s2 := end.Clock()
+
+	year = int(y2 - y1)
+	month = int(M2 - M1)
+	day = int(d2 - d1)
+	hour = int(h2 - h1)
+	min = int(m2 - m1)
+	sec = int(s2 - s1)
+
+	// Normalize negative values
+	if sec < 0 {
+		sec += 60
+		min--
 	}
 
-	totalDays2 += leapYears(now)
-
-	days = totalDays2 - totalDays1
-	hours = h2 - h1
-	minutes = min2 - min1
-	seconds = s2 - s1
-
-	if seconds < 0 {
-		seconds += 60
-		minutes--
+	if min < 0 {
+		min += 60
+		hour--
 	}
 
-	if minutes < 0 {
-		minutes += 60
-		hours--
+	if hour < 0 {
+		hour += 24
+		day--
 	}
 
-	if hours < 0 {
-		hours += 24
-		days--
+	if day < 0 {
+		// days in month:
+		t := time.Date(y1, M1, 32, 0, 0, 0, 0, time.UTC)
+		day += 32 - t.Day()
+		month--
 	}
 
-	return days, hours, minutes, seconds
+	if month < 0 {
+		month += 12
+		year--
+	}
+
+	return
 }
