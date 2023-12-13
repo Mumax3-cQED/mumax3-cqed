@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/mumax/3/cuda"
@@ -80,7 +81,29 @@ func init() {
 func PrintScriptExecutionTime() {
 
 	_, months, days, hours, mins, secs := getTimeDifference(start)
-	full_diff := fmt.Sprintf("%dM %dd %dh %dm %ds", months, days, hours, mins, secs)
+	full_diff := ""
+
+	if months > 0 {
+		full_diff += fmt.Sprintf("%dM;", months)
+	}
+
+	if days > 0 {
+		full_diff += fmt.Sprintf("%dd;", days)
+	}
+
+	if hours > 0 {
+		full_diff += fmt.Sprintf("%dh;", hours)
+	}
+
+	if mins > 0 {
+		full_diff += fmt.Sprintf("%dm;", mins)
+	}
+
+	if secs > 0 {
+		full_diff += fmt.Sprintf("%ds", secs)
+	}
+
+	full_diff = strings.Replace(full_diff, ";", " ", -1)
 
 	LogIn("\n ---> Full mumax3 script running time:", full_diff, "\n")
 }
