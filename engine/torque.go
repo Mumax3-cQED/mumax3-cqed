@@ -77,13 +77,6 @@ func init() {
 	DeclFunc("PrintScriptExecutionTime", PrintScriptExecutionTime, "Print and save to log the script execution time")
 }
 
-func PrintScriptExecutionTime() {
-
-	diff_str := getTimeDifference(start)
-
-	LogIn("\n ---> Full mumax3 script running time:", diff_str, "\n")
-}
-
 // Display a script configuration summary and log the information into the log.txt file
 func PrintParametersTimeEvolution(simulationTime *float64) {
 
@@ -218,48 +211,6 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn("------------------------------------------------")
 		LogIn("")
 	}
-}
-
-func getElemPos(slice *data.Slice, position int) float32 {
-	mz_temp := cuda.GetCell(slice, position, 0, 0, 0)
-	return mz_temp
-}
-
-func calcFullSize() (float64, float64, float64, [3]float64, [3]int) {
-
-	cell_size := Mesh().CellSize()
-	size_cellx := cell_size[X]
-	size_celly := cell_size[Y]
-	size_cellz := cell_size[Z]
-
-	num_cells := Mesh().Size()
-	num_cellx := float64(num_cells[X])
-	num_celly := float64(num_cells[Y])
-	num_cellz := float64(num_cells[Z])
-
-	full_sizex := size_cellx * num_cellx
-	full_sizey := size_celly * num_celly
-	full_sizez := size_cellz * num_cellz
-
-	return full_sizex, full_sizey, full_sizez, cell_size, num_cells
-}
-
-// Calculate number of spins as a function of Msat
-func calcSpins() float64 {
-
-	if NSpins == 0 {
-
-		m_sat := Msat.MSlice()
-		defer m_sat.Recycle()
-
-		full_sizex, full_sizey, full_sizez, _, _ := calcFullSize()
-
-		full_vol := full_sizex * full_sizey * full_sizez
-
-		NSpins = (full_vol * float64(m_sat.Mul(0))) / MuB
-	}
-
-	return NSpins
 }
 
 // Sets dst to the current total torque
