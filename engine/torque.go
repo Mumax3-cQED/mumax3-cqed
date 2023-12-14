@@ -2,8 +2,6 @@ package engine
 
 // MODIFIED INMA
 import (
-	"errors"
-	"fmt"
 	"reflect"
 	"time"
 
@@ -35,12 +33,11 @@ var (
 	EnableCavityDissipation            = false
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
-	start  time.Time
-	B_rms          = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
-	Wc             = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
-	Kappa          = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
-	NSpins float64 = 0 // Number of spins
-
+	B_rms                 = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
+	Wc                    = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
+	Kappa                 = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
+	NSpins   float64      = 0          // Number of spins
+	Start    time.Time    = time.Now() // Starting date for mumax3 script to measure elapsed execution time
 	mem_term *MEMORY_TERM = nil
 )
 
@@ -58,11 +55,11 @@ type MEMORY_TERM struct {
 
 func init() {
 
-	start = time.Now()
 	mem_term = new(MEMORY_TERM)  // init new memory term for equation
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
 
+	DeclVar("Start", &Start, "Script launch starting date (default now() at the beginning of mumax3 allocation)")
 	DeclVar("NSpins", &NSpins, "Number of spins")
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
@@ -75,143 +72,6 @@ func init() {
 	DeclROnly("FIXEDLAYER_TOP", FIXEDLAYER_TOP, "FixedLayerPosition = FIXEDLAYER_TOP instructs mumax3 that fixed layer is on top of the free layer")
 	DeclROnly("FIXEDLAYER_BOTTOM", FIXEDLAYER_BOTTOM, "FixedLayerPosition = FIXEDLAYER_BOTTOM instructs mumax3 that fixed layer is underneath of the free layer")
 	DeclFunc("PrintScriptExecutionTime", PrintScriptExecutionTime, "Print and save to log the script execution time")
-}
-
-// Display script configuration summary in script output
-// and insert this information into the log.txt file (see run.go)
-func PrintParametersTimeEvolution(simulationTime *float64) {
-
-	if !DisableTimeEvolutionTorque {
-
-		// check if not empty
-		if mem_term.scn != nil {
-			mem_term.Free()
-		}
-
-		c, rec := B_rms.Slice()
-		if rec {
-			defer cuda.Recycle(c)
-		}
-
-		be, rec := B_ext.Slice()
-		if rec {
-			defer cuda.Recycle(be)
-		}
-
-		v := Wc.MSlice()
-		defer v.Recycle()
-
-		m_sat := Msat.MSlice()
-		defer m_sat.Recycle()
-
-		alpha := Alpha.MSlice()
-		defer alpha.Recycle()
-
-		LogIn("")
-		LogIn("------------------------------------------------")
-
-		year, month, day, hour, minute, seconds := getCurrentDate()
-		full_date := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, seconds)
-
-		LogIn(" Simulation date (yyyy-MM-dd HH:mm:ss):", full_date)
-		LogIn(" Time evolution factor in LLG equation: Enabled")
-
-		if DisableBeffContributions {
-			LogIn(" Beff default contributions: Disabled")
-		} else {
-			LogIn(" Beff default contributions: Enabled")
-		}
-
-		if EnableDemag {
-			LogIn(" B_demag: Enabled")
-		} else {
-			LogIn(" B_demag: Disabled")
-		}
-
-		if DisableZhangLiTorque {
-			LogIn(" Zhang-Li Spin-Transfer Torque: Disabled")
-		} else {
-			LogIn(" Zhang-Li Spin-Transfer Torque: Enabled")
-		}
-
-		if DisableSlonczewskiTorque {
-			LogIn(" Slonczewski Spin-Transfer Torque: Disabled")
-		} else {
-			LogIn(" Slonczewski Spin-Transfer Torque: Enabled")
-		}
-
-		if EnableCavityDissipation {
-			LogIn(" Cavity Dissipation: Enabled")
-
-			kappa := Kappa.MSlice()
-			defer kappa.Recycle()
-
-			LogIn(" Kappa (rad/s):", kappa.Mul(0))
-		} else {
-			LogIn(" Cavity Dissipation: Disabled")
-		}
-
-		full_sizex, full_sizey, full_sizez, cell_size, num_cells := calcFullSize()
-
-		LogIn(" Shape size (m):", full_sizex, "x", full_sizey, "x", full_sizez)
-		LogIn(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
-		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
-
-		if alpha.Mul(0) != 0 {
-			LogIn(" Alpha:", alpha.Mul(0))
-		}
-
-		if m_sat.Mul(0) != 0 {
-			LogIn(" Msat (A/m):", m_sat.Mul(0))
-		} else {
-			LogIn(" Msat (A/m): 0.0")
-		}
-
-		spins_val := calcSpins()
-
-		if NSpins < 0 {
-			errStr := "Panic Error: Number of spins must be greater than zero"
-			LogErr(errStr)
-			util.PanicErr(errors.New(errStr))
-		} else {
-			LogIn(" Num. spins:", spins_val)
-		}
-
-		LogIn(" GammaLL (rad/Ts):", GammaLL)
-
-		if v.Mul(0) != 0 {
-			LogIn(" Wc (rad/s):", v.Mul(0))
-		}
-
-		if uniform_vector.X() != 0.0 || uniform_vector.Y() != 0.0 || uniform_vector.Z() != 0.0 {
-			LogIn(" Uniform vector (T): [", uniform_vector.X(), ",", uniform_vector.Y(), ",", uniform_vector.Z(), "]")
-		}
-
-		if c != nil {
-			LogIn(" B_rms vector (T): [", getElemPos(c, X), ",", getElemPos(c, Y), ",", getElemPos(c, Z), "]")
-		}
-
-		if be != nil {
-			LogIn(" B_ext vector (T): [", getElemPos(be, X), ",", getElemPos(be, Y), ",", getElemPos(be, Z), "]")
-		}
-
-		if FixDt != 0 {
-			LogIn(" FixDt (s):", FixDt)
-		}
-
-		savePeriod := Table.autosave.period
-
-		if savePeriod != 0 {
-			LogIn(" Table autosave interval (s):", savePeriod)
-		}
-
-		if *simulationTime != 0 {
-			LogIn(" Full simulation time (s):", *simulationTime)
-		}
-
-		LogIn("------------------------------------------------")
-		LogIn("")
-	}
 }
 
 // Sets dst to the current total torque
@@ -239,44 +99,41 @@ func SetLLTorque(dst *data.Slice) {
 // Compute new extra term in effective field (see effectivefield.go)
 func ApplyExtraFieldBeff(dst *data.Slice) {
 
-	if !DisableTimeEvolutionTorque {
+	sizeMesh := Mesh().Size()
 
-		sizeMesh := Mesh().Size()
-
-		if mem_term.scn.Size() != sizeMesh {
-			mem_term.Free()
-		}
-
-		if mem_term.scn == nil {
-			mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, sizeMesh)
-			mem_term.last_time = 0.0
-			mem_term.dt_time = 0.0
-		}
-
-		nspinsCalc := calcSpins()
-
-		wc_slice := Wc.MSlice()
-		defer wc_slice.Recycle()
-
-		brms_slice := B_rms.MSlice()
-		defer brms_slice.Recycle()
-
-		mem_term.dt_time = Time - mem_term.last_time
-
-		if !EnableCavityDissipation {
-			// calculations without cavity dissipation
-			cuda.SubSpinBextraBeff(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
-		} else {
-
-			// calculations with cavity dissipation
-			kappa := Kappa.MSlice()
-			defer kappa.Recycle()
-
-			cuda.SubSpinBextraBeffDissipation(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
-		}
-
-		mem_term.last_time = Time
+	if mem_term.scn.Size() != sizeMesh {
+		mem_term.Free()
 	}
+
+	if mem_term.scn == nil {
+		mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, sizeMesh)
+		mem_term.last_time = 0.0
+		mem_term.dt_time = 0.0
+	}
+
+	nspinsCalc := calcSpins()
+
+	wc_slice := Wc.MSlice()
+	defer wc_slice.Recycle()
+
+	brms_slice := B_rms.MSlice()
+	defer brms_slice.Recycle()
+
+	mem_term.dt_time = Time - mem_term.last_time
+
+	if !EnableCavityDissipation {
+		// calculations without cavity dissipation
+		cuda.SubSpinBextraBeff(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
+	} else {
+
+		// calculations with cavity dissipation
+		kappa := Kappa.MSlice()
+		defer kappa.Recycle()
+
+		cuda.SubSpinBextraBeffDissipation(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
+	}
+
+	mem_term.last_time = Time
 }
 
 // Adds the current spin transfer torque to dst

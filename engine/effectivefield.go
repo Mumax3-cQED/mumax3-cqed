@@ -27,5 +27,7 @@ func SetEffectiveField(dst *data.Slice) {
 		B_ext.AddTo(dst)
 	}
 	// Apply new term in effective field
-	ApplyExtraFieldBeff(dst)
+	if !DisableTimeEvolutionTorque {
+		ApplyExtraFieldBeff(dst)
+	}
 }

@@ -2,13 +2,152 @@ package engine
 
 // CREATED AND MODIFIED INMA
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
+	"github.com/mumax/3/util"
 )
+
+// Display script configuration summary in script output
+// and insert this information into the log.txt file (see run.go)
+func PrintParametersTimeEvolution(simulationTime *float64) {
+
+	if !DisableTimeEvolutionTorque {
+
+		// check if not empty
+		if mem_term.scn != nil {
+			mem_term.Free()
+		}
+
+		c, rec := B_rms.Slice()
+		if rec {
+			defer cuda.Recycle(c)
+		}
+
+		be, rec := B_ext.Slice()
+		if rec {
+			defer cuda.Recycle(be)
+		}
+
+		v := Wc.MSlice()
+		defer v.Recycle()
+
+		m_sat := Msat.MSlice()
+		defer m_sat.Recycle()
+
+		alpha := Alpha.MSlice()
+		defer alpha.Recycle()
+
+		LogIn("")
+		LogIn("------------------------------------------------")
+
+		year, month, day, hour, minute, seconds := getCurrentDate()
+		full_date := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, seconds)
+
+		LogIn(" Simulation date (yyyy-MM-dd HH:mm:ss):", full_date)
+		LogIn(" Time evolution factor in LLG equation: Enabled")
+
+		if DisableBeffContributions {
+			LogIn(" Beff default contributions: Disabled")
+		} else {
+			LogIn(" Beff default contributions: Enabled")
+		}
+
+		if EnableDemag {
+			LogIn(" B_demag: Enabled")
+		} else {
+			LogIn(" B_demag: Disabled")
+		}
+
+		if DisableZhangLiTorque {
+			LogIn(" Zhang-Li Spin-Transfer Torque: Disabled")
+		} else {
+			LogIn(" Zhang-Li Spin-Transfer Torque: Enabled")
+		}
+
+		if DisableSlonczewskiTorque {
+			LogIn(" Slonczewski Spin-Transfer Torque: Disabled")
+		} else {
+			LogIn(" Slonczewski Spin-Transfer Torque: Enabled")
+		}
+
+		if EnableCavityDissipation {
+			LogIn(" Cavity Dissipation: Enabled")
+
+			kappa := Kappa.MSlice()
+			defer kappa.Recycle()
+
+			LogIn(" Kappa (rad/s):", kappa.Mul(0))
+		} else {
+			LogIn(" Cavity Dissipation: Disabled")
+		}
+
+		full_sizex, full_sizey, full_sizez, cell_size, num_cells := calcFullSize()
+
+		LogIn(" Shape size (m):", full_sizex, "x", full_sizey, "x", full_sizez)
+		LogIn(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
+		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
+
+		if alpha.Mul(0) != 0 {
+			LogIn(" Alpha:", alpha.Mul(0))
+		}
+
+		if m_sat.Mul(0) != 0 {
+			LogIn(" Msat (A/m):", m_sat.Mul(0))
+		} else {
+			LogIn(" Msat (A/m): 0.0")
+		}
+
+		spins_val := calcSpins()
+
+		if NSpins < 0 {
+			errStr := "Panic Error: Number of spins must be greater than zero"
+			LogErr(errStr)
+			util.PanicErr(errors.New(errStr))
+		} else {
+			LogIn(" Num. spins:", spins_val)
+		}
+
+		LogIn(" GammaLL (rad/Ts):", GammaLL)
+
+		if v.Mul(0) != 0 {
+			LogIn(" Wc (rad/s):", v.Mul(0))
+		}
+
+		if uniform_vector.X() != 0.0 || uniform_vector.Y() != 0.0 || uniform_vector.Z() != 0.0 {
+			LogIn(" Uniform vector (T): [", uniform_vector.X(), ",", uniform_vector.Y(), ",", uniform_vector.Z(), "]")
+		}
+
+		if c != nil {
+			LogIn(" B_rms vector (T): [", getElemPos(c, X), ",", getElemPos(c, Y), ",", getElemPos(c, Z), "]")
+		}
+
+		if be != nil {
+			LogIn(" B_ext vector (T): [", getElemPos(be, X), ",", getElemPos(be, Y), ",", getElemPos(be, Z), "]")
+		}
+
+		if FixDt != 0 {
+			LogIn(" FixDt (s):", FixDt)
+		}
+
+		savePeriod := Table.autosave.period
+
+		if savePeriod != 0 {
+			LogIn(" Table autosave interval (s):", savePeriod)
+		}
+
+		if *simulationTime != 0 {
+			LogIn(" Full simulation time (s):", *simulationTime)
+		}
+
+		LogIn("------------------------------------------------")
+		LogIn("")
+	}
+}
 
 // Get value at position from CUDA object
 func getElemPos(slice *data.Slice, position int) float32 {
@@ -54,14 +193,6 @@ func calcSpins() float64 {
 	return NSpins
 }
 
-// Print elapsed time of script execution, this function can be invoked at the end of mumax3 script
-func PrintScriptExecutionTime() {
-
-	diff_str := getTimeDifference(start)
-
-	LogIn("\n ---> Full mumax3 script running time:", diff_str, "\n")
-}
-
 // Get current date
 func getCurrentDate() (int, int, int, int, int, int) {
 
@@ -72,6 +203,14 @@ func getCurrentDate() (int, int, int, int, int, int) {
 	seconds := date_current.Second()
 
 	return year, int(month), day, hour, minute, seconds
+}
+
+// Print elapsed time of script execution, this function can be invoked at the end of mumax3 script
+func PrintScriptExecutionTime() {
+
+	diff_str := getTimeDifference(Start)
+
+	LogIn("\n ---> Full mumax3 script running time:", diff_str, "\n")
 }
 
 // Get time difference between two dates with a given starting date
