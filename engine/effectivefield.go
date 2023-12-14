@@ -26,5 +26,6 @@ func SetEffectiveField(dst *data.Slice) {
 	} else {
 		B_ext.AddTo(dst)
 	}
+	// Apply new term in effective field
 	ApplyExtraFieldBeff(dst)
 }

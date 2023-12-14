@@ -77,7 +77,8 @@ func init() {
 	DeclFunc("PrintScriptExecutionTime", PrintScriptExecutionTime, "Print and save to log the script execution time")
 }
 
-// Display a script configuration summary and log the information into the log.txt file
+// Display script configuration summary in script output
+// and insert this information into the log.txt file (see run.go)
 func PrintParametersTimeEvolution(simulationTime *float64) {
 
 	if !DisableTimeEvolutionTorque {
@@ -235,6 +236,7 @@ func SetLLTorque(dst *data.Slice) {
 	}
 }
 
+// Compute new extra term in effective field (see effectivefield.go)
 func ApplyExtraFieldBeff(dst *data.Slice) {
 
 	if !DisableTimeEvolutionTorque {
@@ -335,6 +337,7 @@ func FreezeSpins(dst *data.Slice) {
 	}
 }
 
+// Free memory resources
 func (rk *MEMORY_TERM) Free() {
 	rk.scn.Free()
 	rk.scn = nil
