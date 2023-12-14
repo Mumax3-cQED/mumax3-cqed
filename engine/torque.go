@@ -33,12 +33,12 @@ var (
 	EnableCavityDissipation            = false
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
-	B_rms                 = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
-	Wc                    = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
-	Kappa                 = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
-	NSpins   float64      = 0          // Number of spins
-	Start    time.Time    = time.Now() // Starting date for mumax3 script to measure elapsed execution time, to set starting date anywhere in the  --> Start = now()
-	mem_term *MEMORY_TERM = nil
+	B_rms                        = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
+	Wc                           = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
+	Kappa                        = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
+	NSpins          float64      = 0          // Number of spins
+	StartCheckpoint time.Time    = time.Now() // Starting date for mumax3 script to measure elapsed execution time, to set starting date anywhere in the  --> Start = now()
+	mem_term        *MEMORY_TERM = nil
 )
 
 const (
@@ -59,7 +59,7 @@ func init() {
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
 
-	DeclVar("Start", &Start, "Script launch starting date (default now() at the beginning of mumax3 allocation)")
+	DeclVar("StartCheckpoint", &StartCheckpoint, "Script launch starting date (default now() at the beginning of mumax3 allocation)")
 	DeclVar("NSpins", &NSpins, "Number of spins")
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")

@@ -208,7 +208,7 @@ func getCurrentDate() (int, int, int, int, int, int) {
 // Print elapsed time of script execution, this function can be invoked at the end of mumax3 script
 func PrintScriptExecutionTime() {
 
-	diff_str := getTimeDifference(Start)
+	diff_str := getTimeDifference(StartCheckpoint)
 
 	LogIn("\n ---> Full mumax3 script elapsed time:", diff_str, "\n")
 }
