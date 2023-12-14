@@ -210,7 +210,7 @@ func PrintScriptExecutionTime() {
 
 	diff_str := getTimeDifference(Start)
 
-	LogIn("\n ---> Full mumax3 script running time:", diff_str, "\n")
+	LogIn("\n ---> Full mumax3 script elapsed time:", diff_str, "\n")
 }
 
 // Get time difference between two dates with a given starting date
