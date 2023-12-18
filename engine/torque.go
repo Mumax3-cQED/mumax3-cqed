@@ -101,7 +101,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 
 	sizeMesh := Mesh().Size()
 
-	if mem_term.scn.Size() != sizeMesh {
+	if mem_term.scn != nil && mem_term.scn.Size() != sizeMesh {
 		mem_term.Free()
 	}
 
