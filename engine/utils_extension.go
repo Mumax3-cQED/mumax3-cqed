@@ -210,7 +210,12 @@ func PrintScriptExecutionTime() {
 
 	diff_str := getTimeDifference(StartCheckpoint)
 
-	LogIn("\n ---> Full mumax3 script elapsed time:", diff_str, "\n")
+	LogIn("\n ---> Full mumax3 script elapsed time:", diff_str)
+
+	year, month, day, hour, minute, seconds := getCurrentDate()
+	full_date_end := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, seconds)
+
+	LogIn(" ---> End simulation date (yyyy-MM-dd HH:mm:ss):", full_date_end, "\n")
 }
 
 // Get time difference between two dates with a given starting date
