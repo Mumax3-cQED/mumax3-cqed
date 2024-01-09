@@ -12,6 +12,13 @@ import (
 	"github.com/mumax/3/util"
 )
 
+func If_Ternary(statement bool, a, b interface{}) interface{} {
+	if statement {
+		return a
+	}
+	return b
+}
+
 // Display script configuration summary in script output
 // and insert this information into the log.txt file (see run.go)
 func PrintParametersTimeEvolution(simulationTime *float64) {
@@ -51,29 +58,10 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn(" Simulation date (yyyy-MM-dd HH:mm:ss):", full_date)
 		LogIn(" Time evolution factor in LLG equation: Enabled")
 
-		if DisableBeffContributions {
-			LogIn(" Beff default contributions: Disabled")
-		} else {
-			LogIn(" Beff default contributions: Enabled")
-		}
-
-		if EnableDemag {
-			LogIn(" B_demag: Enabled")
-		} else {
-			LogIn(" B_demag: Disabled")
-		}
-
-		if DisableZhangLiTorque {
-			LogIn(" Zhang-Li Spin-Transfer Torque: Disabled")
-		} else {
-			LogIn(" Zhang-Li Spin-Transfer Torque: Enabled")
-		}
-
-		if DisableSlonczewskiTorque {
-			LogIn(" Slonczewski Spin-Transfer Torque: Disabled")
-		} else {
-			LogIn(" Slonczewski Spin-Transfer Torque: Enabled")
-		}
+		LogIn(" Beff default contributions:", If_Ternary(DisableBeffContributions, "Disabled", "Enabled").(string))
+		LogIn(" B_demag:", If_Ternary(EnableDemag, "Enabled", "Disabled").(string))
+		LogIn(" Zhang-Li Spin-Transfer Torque:", If_Ternary(DisableZhangLiTorque, "Disabled", "Enabled").(string))
+		LogIn(" Slonczewski Spin-Transfer Torque:", If_Ternary(DisableSlonczewskiTorque, "Disabled", "Enabled").(string))
 
 		if EnableCavityDissipation {
 			LogIn(" Cavity Dissipation: Enabled")
