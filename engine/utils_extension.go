@@ -84,11 +84,12 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogIn(" Alpha:", alpha.Mul(0))
 		}
 
-		if m_sat.Mul(0) != 0 {
-			LogIn(" Msat (A/m):", m_sat.Mul(0))
-		} else {
-			LogIn(" Msat (A/m): 0.0")
-		}
+		// if m_sat.Mul(0) != 0 {
+		// 	LogIn(" Msat (A/m):", m_sat.Mul(0))
+		// } else {
+		// 	LogIn(" Msat (A/m): 0.0")
+		// }
+		LogIn(" Msat (A/m):", If_Ternary(m_sat.Mul(0) != 0, m_sat.Mul(0), 0.0).(float32))
 
 		spins_val := calcSpins()
 
