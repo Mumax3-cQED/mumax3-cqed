@@ -59,7 +59,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn(" Time evolution factor in LLG equation: Enabled")
 
 		LogIn(" Beff default contributions:", If_Ternary(DisableBeffContributions, "Disabled", "Enabled").(string))
-		LogIn(" B_demag:", If_Ternary(EnableDemag, "Enabled", "Disabled").(string))
+		LogIn(" B_demag (magnetostatic field):", If_Ternary(EnableDemag, "Enabled", "Disabled").(string))
 		LogIn(" Zhang-Li Spin-Transfer Torque:", If_Ternary(DisableZhangLiTorque, "Disabled", "Enabled").(string))
 		LogIn(" Slonczewski Spin-Transfer Torque:", If_Ternary(DisableSlonczewskiTorque, "Disabled", "Enabled").(string))
 
