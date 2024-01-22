@@ -46,7 +46,7 @@ const (
 	MEMORY_COMPONENTS = 2
 )
 
-// Memory term computation
+// Equation Memory Term
 type MEMORY_TERM struct {
 	scn       *data.Slice
 	last_time float64
