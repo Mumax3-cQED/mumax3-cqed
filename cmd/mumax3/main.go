@@ -165,7 +165,9 @@ func goServeGUI() string {
 // print version to stdout
 func printVersion() {
 	engine.LogOut(engine.UNAME)
-	engine.LogOut("Spin-Cavity feature modification developed by INMA/UNIZAR")
+	engine.LogOut("___________________________MUMAX3-CQED________________________________")
+	engine.LogOut("           Cavity QED feature modification developed by:              ")
+	engine.LogOut("           INMA/UNIZAR, Universidad de Zaragoza, Spain                ")
 	engine.LogOut(fmt.Sprintf("GPU info: %s, using cc=%d PTX", cuda.GPUInfo, cuda.UseCC))
 	engine.LogOut("(c) Arne Vansteenkiste, Dynamat LAB, Ghent University, Belgium")
 	engine.LogOut("This is free software without any warranty. See license.txt")
