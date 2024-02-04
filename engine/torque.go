@@ -42,7 +42,7 @@ var (
 )
 
 const (
-	MuB               = 9.2740091523E-24
+	MuB               = 9.2740091523E-24 // Bohr magneton in J/T
 	MEMORY_COMPONENTS = 2
 )
 
