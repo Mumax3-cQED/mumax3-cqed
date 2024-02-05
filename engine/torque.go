@@ -99,6 +99,7 @@ func SetLLTorque(dst *data.Slice) {
 // Compute new extra term in effective field (see effectivefield.go)
 func ApplyExtraFieldBeff(dst *data.Slice) {
 
+	// start summation from t > 0
 	if Time == 0.0 {
 		return
 	}
