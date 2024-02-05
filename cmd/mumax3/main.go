@@ -165,10 +165,13 @@ func goServeGUI() string {
 // print version to stdout
 func printVersion() {
 	engine.LogOut("")
-	engine.LogOut(" ___________________________MUMAX3-CQED______________________________ ")
+	engine.LogOut(" ____________________________________________________________________ ")
 	engine.LogOut("|                                                                    |")
-	engine.LogOut("|          Cavity QED feature modification developed by:             |")
-	engine.LogOut("|          INMA/UNIZAR, Universidad de Zaragoza, Spain               |")
+	engine.LogOut("|                            MUMAX3-CQED                             |")
+	engine.LogOut("|____________________________________________________________________|")
+	engine.LogOut("|                                                                    |")
+	engine.LogOut("|               MUMAX3 Cavity QED feature developed by:              |")
+	engine.LogOut("|             INMA/UNIZAR, Universidad de Zaragoza, Spain            |")
 	engine.LogOut("|____________________________________________________________________|")
 	engine.LogOut("")
 	engine.LogOut(engine.UNAME)
