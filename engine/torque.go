@@ -99,6 +99,10 @@ func SetLLTorque(dst *data.Slice) {
 // Compute new extra term in effective field (see effectivefield.go)
 func ApplyExtraFieldBeff(dst *data.Slice) {
 
+	if Time == 0.0 {
+		return
+	}
+
 	sizeMesh := Mesh().Size()
 
 	if mem_term.scn != nil && mem_term.scn.Size() != sizeMesh {
