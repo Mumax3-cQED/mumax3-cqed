@@ -36,6 +36,8 @@ switch ( $CUDA_VERSION ) {
 
 # The NVIDIA compiler which will be used to compile the cuda kernels
 # Works from Visual Studio 2015 to 2019
+# We used Visual Studio commuinity 2019, add this to path:
+# C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\bin\Hostx64\x64
 $NVCC = "${CUDA_HOME}/bin/nvcc.exe"
 #$CCBIN = "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"
 $CCBIN = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\bin\Hostx64\x64"
