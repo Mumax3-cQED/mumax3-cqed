@@ -66,5 +66,6 @@ Set-Location .
         & .\cuda2go $cudafile
         gofmt -w "${kernelname}_wrapper.go"
     }
+    go install -v
 #
 #}
