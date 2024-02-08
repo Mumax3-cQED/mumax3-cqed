@@ -2,7 +2,7 @@
 
 all:
 	./make.bash
-	go install -v
+	go install -v "github.com/mumax/3/..."
 
 cuda2go: cuda2go.go
 	go build $<
