@@ -39,7 +39,7 @@ $ mumax script-file.mx3
 #### INSTALLATION IN *NIX SYSTEMS
 ---------------------------------
 
-It is required to install [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads). This mumax3-cqed software has been tested in Windows 10 with [CUDA Toolkit 10.2](https://developer.nvidia.com/cuda-10.2-download-archive) and Debian GNU/Linux (Debian 12 Bookworm) with [CUDA Toolkit 12.0](https://developer.nvidia.com/cuda-12-0-0-download-archive), it is also required to install git. Follow [this guide](https://www.server-world.info/en/note?os=Debian_12&p=nvidia&f=1) to install CUDA 12.0 in Debian 12 Bookworm.
+It is required to install [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads). This mumax3-cqed software has been tested in Windows 10 with [CUDA Toolkit 10.2](https://developer.nvidia.com/cuda-10.2-download-archive) and Debian GNU/Linux (Debian 12 Bookworm) with [CUDA Toolkit 12.0](https://developer.nvidia.com/cuda-12-0-0-download-archive), it is also required to install `git`. Follow [this guide](https://www.server-world.info/en/note?os=Debian_12&p=nvidia&f=1) to install CUDA 12.0 in Debian 12 Bookworm.
 
 The installation process on *NIX systems takes place with the following commands:
 
