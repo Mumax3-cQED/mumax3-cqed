@@ -1,4 +1,4 @@
-# Extract taken from: https://github.com/mumax/3/blob/master/deploy/deploy_windows.ps1
+# Code taken from: https://github.com/mumax/3/blob/master/deploy/deploy_windows.ps1
 # This script compiles mumax3 for windows 10 against multiple cuda versions.
 
 # The cuda version against which we will compile mumax3
@@ -67,6 +67,6 @@ Set-Location .
         & .\cuda2go $cudafile
         gofmt -w "${kernelname}_wrapper.go"
     }
-    go install -v
+    go install -v "github.com/mumax/3/..."
 #
 #}
