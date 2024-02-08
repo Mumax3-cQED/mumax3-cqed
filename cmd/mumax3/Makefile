@@ -1,2 +1,2 @@
 all:
-	go install -v
+	go install -v "github.com/mumax/3/..."
