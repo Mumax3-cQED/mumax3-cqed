@@ -67,7 +67,7 @@ The binary file is placed in `$HOME/go/bin`
 
 For Windows systems install [Visual Studio Community 2019](https://visualstudio.microsoft.com/en/vs/older-downloads/) with **.Net desktop development**, **Desktop development with C++**, **Universal Windows Platform development**.
 
-[vs2019-community-installer](./images/vs2019-community-installer.png =250x)
+![vs2019-community-installer](./images/vs2019-community-installer.png =250x)
 
 Once the installation of Visual Studio Community 2019 finishes, put the following in the Path variable:
 
