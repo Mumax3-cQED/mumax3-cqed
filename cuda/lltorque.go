@@ -34,7 +34,7 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 }
 
 // Apply new value Spin Torque to Beff --> Beff - Bcustom with cavity dissipation
-func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc, kappa MSlice, m0, p0, nspins, deltah, ctime, gammaLL float64, mesh *data.Mesh) {
+func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc, kappa MSlice, x0, p0, nspins, deltah, ctime, gammaLL float64, mesh *data.Mesh) {
 
 	N := mesh.Size()
 	pbc := mesh.PBC_code()
@@ -48,5 +48,5 @@ func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc, kappa MSlice, m0, p0, 
 		brms.DevPtr(X), brms.Mul(X),
 		brms.DevPtr(Y), brms.Mul(Y),
 		brms.DevPtr(Z), brms.Mul(Z),
-		float32(m0), float32(p0), float32(nspins), float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], pbc, cfg)
+		float32(x0), float32(p0), float32(nspins), float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], pbc, cfg)
 }

@@ -35,7 +35,7 @@ type calcspinbeff_args_t struct{
 	 arg_brmsy_mul float32
 	 arg_brms_z unsafe.Pointer
 	 arg_brmsz_mul float32
-	 arg_m0 float32
+	 arg_x0 float32
 	 arg_p0 float32
 	 arg_nspins float32
 	 arg_dt float32
@@ -72,7 +72,7 @@ func init(){
 	 calcspinbeff_args.argptr[15] = unsafe.Pointer(&calcspinbeff_args.arg_brmsy_mul)
 	 calcspinbeff_args.argptr[16] = unsafe.Pointer(&calcspinbeff_args.arg_brms_z)
 	 calcspinbeff_args.argptr[17] = unsafe.Pointer(&calcspinbeff_args.arg_brmsz_mul)
-	 calcspinbeff_args.argptr[18] = unsafe.Pointer(&calcspinbeff_args.arg_m0)
+	 calcspinbeff_args.argptr[18] = unsafe.Pointer(&calcspinbeff_args.arg_x0)
 	 calcspinbeff_args.argptr[19] = unsafe.Pointer(&calcspinbeff_args.arg_p0)
 	 calcspinbeff_args.argptr[20] = unsafe.Pointer(&calcspinbeff_args.arg_nspins)
 	 calcspinbeff_args.argptr[21] = unsafe.Pointer(&calcspinbeff_args.arg_dt)
@@ -85,7 +85,7 @@ func init(){
 	 }
 
 // Wrapper for calcspinbeff CUDA kernel, asynchronous.
-func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, sn unsafe.Pointer, cn unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, kappa unsafe.Pointer, kappa_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, m0 float32, p0 float32, nspins float32, dt float32, ctime float32, gammaLL float32, Nx int, Ny int, Nz int, PBC byte,  cfg *config) {
+func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, sn unsafe.Pointer, cn unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, kappa unsafe.Pointer, kappa_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, x0 float32, p0 float32, nspins float32, dt float32, ctime float32, gammaLL float32, Nx int, Ny int, Nz int, PBC byte,  cfg *config) {
 	if Synchronous{ // debug
 		Sync()
 		timer.Start("calcspinbeff")
@@ -116,7 +116,7 @@ func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Poin
 	 calcspinbeff_args.arg_brmsy_mul = brmsy_mul
 	 calcspinbeff_args.arg_brms_z = brms_z
 	 calcspinbeff_args.arg_brmsz_mul = brmsz_mul
-	 calcspinbeff_args.arg_m0 = m0
+	 calcspinbeff_args.arg_x0 = x0
 	 calcspinbeff_args.arg_p0 = p0
 	 calcspinbeff_args.arg_nspins = nspins
 	 calcspinbeff_args.arg_dt = dt
