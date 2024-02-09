@@ -36,8 +36,8 @@ var (
 	Wc                           = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
 	Kappa                        = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
 	NSpins          float64      = 0          // Number of spins
-	x0              float64      = 0          // Initial condition in X-axis
-	p0              float64      = 0          // Initial condition in Y-axis
+	X0              float64      = 0          // Initial condition in X-axis
+	P0              float64      = 0          // Initial condition in Y-axis
 	StartCheckpoint time.Time    = time.Now() // Starting date for mumax3 script to measure elapsed execution time, to set starting date anywhere in the  --> StartCheckpoint = now()
 	mem_term        *MEMORY_TERM = nil
 )
@@ -62,8 +62,8 @@ func init() {
 
 	DeclVar("StartCheckpoint", &StartCheckpoint, "Script launch starting date (default now() at the beginning of mumax3 allocation)")
 	DeclVar("NSpins", &NSpins, "Number of spins")
-	DeclVar("X0", &x0, "Initial condition for the cavity (default=0)")
-	DeclVar("P0", &p0, "Initial condition for the cavity (default=0)")
+	DeclVar("X0", &X0, "Initial condition for the cavity (default=0)")
+	DeclVar("P0", &P0, "Initial condition for the cavity (default=0)")
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
@@ -132,7 +132,7 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 	mem_term.dt_time = Time - mem_term.last_time
 
 	// calculations with cavity dissipation
-	cuda.SubSpinBextraBeff(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, x0, p0, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
+	cuda.SubSpinBextraBeff(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, X0, P0, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
 
 	mem_term.last_time = Time
 }
