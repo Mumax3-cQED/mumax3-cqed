@@ -41,8 +41,7 @@ void calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __res
     sn[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * dot(mi, brmsi) * dt;
     cn[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * dot(mi, brmsi) * dt;
 
-    float PREFACTOR = gammaLL * nspins;
-    float G = PREFACTOR * exp(-kappa_val * ctime) * (cos(wc_val * ctime) * sn[i] - sin(wc_val * ctime) * cn[i]);
+    float G = exp(-kappa_val * ctime) * (cos(wc_val * ctime) * (x0 - gammaLL * nspins * sn[i]) - sin(wc_val * ctime) * (p0 - gammaLL * nspins * cn[i]));
 
     // This is the new term to Beff
     float new_term_x = brmsx * G;
@@ -50,7 +49,7 @@ void calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __res
     float new_term_z = brmsz * G;
 
     // Beff = Beff - new_term
-    tx[i] -= new_term_x;
-    ty[i] -= new_term_y;
-    tz[i] -= new_term_z;
+    tx[i] += new_term_x;
+    ty[i] += new_term_y;
+    tz[i] += new_term_z;
 }
