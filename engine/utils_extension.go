@@ -66,6 +66,9 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn(" Zhang-Li Spin-Transfer Torque:", If_Ternary(DisableZhangLiTorque, "Disabled", "Enabled").(string))
 		LogIn(" Slonczewski Spin-Transfer Torque:", If_Ternary(DisableSlonczewskiTorque, "Disabled", "Enabled").(string))
 
+		LogIn("Cavity initial condition X0:", x0)
+		LogIn("Cavity initial condition P0:", p0)
+
 		LogIn(" Kappa (rad/s):", kappa.Mul(0))
 
 		full_sizex, full_sizey, full_sizez, cell_size, num_cells := calcFullSize()
