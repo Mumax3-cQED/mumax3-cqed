@@ -12,7 +12,6 @@ $ 📦src/github.com/mumax/3
   │   	 └── 📄main.go (modified file)
   ├── 📂cuda
   │   ├── 📄calcspincbeff.cu (new file)
-  │   ├── 📄calcspinbeffdissipation.cu (new file)
   │   ├── 📄lltorque.go (modified file)
   │   ├── 📄Makefile (modified file)
   │   ├── 📄make.ps1 (new file)
