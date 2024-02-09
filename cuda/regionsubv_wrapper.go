@@ -79,7 +79,6 @@ func k_regionsubv_async ( dstx unsafe.Pointer, dsty unsafe.Pointer, dstz unsafe.
 
 // maps compute capability on PTX code for regionsubv kernel.
 var regionsubv_map = map[int]string{ 0: "" ,
-30: regionsubv_ptx_30 ,
 35: regionsubv_ptx_35 ,
 37: regionsubv_ptx_37 ,
 50: regionsubv_ptx_50 ,
@@ -92,86 +91,7 @@ var regionsubv_map = map[int]string{ 0: "" ,
 
 // regionsubv PTX code for various compute capabilities.
 const(
-  regionsubv_ptx_30 = `
-.version 6.4
-.target sm_30
-.address_size 64
-
-	// .globl	regionsubv
-
-.visible .entry regionsubv(
-	.param .u64 regionsubv_param_0,
-	.param .u64 regionsubv_param_1,
-	.param .u64 regionsubv_param_2,
-	.param .u64 regionsubv_param_3,
-	.param .u64 regionsubv_param_4,
-	.param .u64 regionsubv_param_5,
-	.param .u64 regionsubv_param_6,
-	.param .u32 regionsubv_param_7
-)
-{
-	.reg .pred 	%p<2>;
-	.reg .f32 	%f<10>;
-	.reg .b32 	%r<10>;
-	.reg .b64 	%rd<25>;
-
-
-	ld.param.u64 	%rd1, [regionsubv_param_0];
-	ld.param.u64 	%rd2, [regionsubv_param_1];
-	ld.param.u64 	%rd3, [regionsubv_param_2];
-	ld.param.u64 	%rd4, [regionsubv_param_3];
-	ld.param.u64 	%rd5, [regionsubv_param_4];
-	ld.param.u64 	%rd6, [regionsubv_param_5];
-	ld.param.u64 	%rd7, [regionsubv_param_6];
-	ld.param.u32 	%r2, [regionsubv_param_7];
-	mov.u32 	%r3, %ctaid.y;
-	mov.u32 	%r4, %nctaid.x;
-	mov.u32 	%r5, %ctaid.x;
-	mad.lo.s32 	%r6, %r4, %r3, %r5;
-	mov.u32 	%r7, %ntid.x;
-	mov.u32 	%r8, %tid.x;
-	mad.lo.s32 	%r1, %r6, %r7, %r8;
-	setp.ge.s32	%p1, %r1, %r2;
-	@%p1 bra 	BB0_2;
-
-	cvta.to.global.u64 	%rd8, %rd7;
-	cvt.s64.s32	%rd9, %r1;
-	add.s64 	%rd10, %rd8, %rd9;
-	cvta.to.global.u64 	%rd11, %rd4;
-	ld.global.u8 	%r9, [%rd10];
-	mul.wide.u32 	%rd12, %r9, 4;
-	add.s64 	%rd13, %rd11, %rd12;
-	cvta.to.global.u64 	%rd14, %rd1;
-	mul.wide.s32 	%rd15, %r1, 4;
-	add.s64 	%rd16, %rd14, %rd15;
-	ld.global.f32 	%f1, [%rd16];
-	ld.global.f32 	%f2, [%rd13];
-	sub.f32 	%f3, %f1, %f2;
-	st.global.f32 	[%rd16], %f3;
-	cvta.to.global.u64 	%rd17, %rd5;
-	add.s64 	%rd18, %rd17, %rd12;
-	cvta.to.global.u64 	%rd19, %rd2;
-	add.s64 	%rd20, %rd19, %rd15;
-	ld.global.f32 	%f4, [%rd20];
-	ld.global.f32 	%f5, [%rd18];
-	sub.f32 	%f6, %f4, %f5;
-	st.global.f32 	[%rd20], %f6;
-	cvta.to.global.u64 	%rd21, %rd6;
-	add.s64 	%rd22, %rd21, %rd12;
-	cvta.to.global.u64 	%rd23, %rd3;
-	add.s64 	%rd24, %rd23, %rd15;
-	ld.global.f32 	%f7, [%rd24];
-	ld.global.f32 	%f8, [%rd22];
-	sub.f32 	%f9, %f7, %f8;
-	st.global.f32 	[%rd24], %f9;
-
-BB0_2:
-	ret;
-}
-
-
-`
-   regionsubv_ptx_35 = `
+  regionsubv_ptx_35 = `
 .version 6.4
 .target sm_35
 .address_size 64

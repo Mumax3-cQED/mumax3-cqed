@@ -4,12 +4,13 @@
 #include <stdint.h>
 #include "stencil.h"
 
-// Calculations for extra term in Beff without cavity dissipation
+// Calculations for extra term in Beff with cavity dissipation
 extern "C" __global__
 void calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
             float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
             float* __restrict__ sn, float* __restrict__ cn,
             float* __restrict__ wc, float wc_mul,
+            float* __restrict__ kappa, float kappa_mul,
             float* __restrict__ brms_x, float brmsx_mul,
             float* __restrict__ brms_y, float brmsy_mul,
             float* __restrict__ brms_z, float brmsz_mul,
@@ -27,6 +28,8 @@ void calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __res
 
     float wc_val = amul(wc, wc_mul, i);
 
+    float kappa_val = amul(kappa, kappa_mul, i);
+
     float brmsx = amul(brms_x, brmsx_mul, i);
     float brmsy = amul(brms_y, brmsy_mul, i);
     float brmsz = amul(brms_z, brmsz_mul, i);
@@ -35,11 +38,11 @@ void calcspinbeff(float* __restrict__  tx, float* __restrict__  ty, float* __res
     float3 mi = make_float3(mx[i], my[i], mz[i]);
     float3 brmsi = make_float3(brmsx, brmsy, brmsz);
 
-    sn[i] += sin(wc_val * ctime) * dot(mi, brmsi) * dt;
-    cn[i] += cos(wc_val * ctime) * dot(mi, brmsi) * dt;
+    sn[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * dot(mi, brmsi) * dt;
+    cn[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * dot(mi, brmsi) * dt;
 
     float PREFACTOR = gammaLL * nspins;
-    float G = PREFACTOR * (cos(wc_val * ctime) * sn[i] - sin(wc_val * ctime) * cn[i]);
+    float G = PREFACTOR * exp(-kappa_val * ctime) * (cos(wc_val * ctime) * sn[i] - sin(wc_val * ctime) * cn[i]);
 
     // This is the new term to Beff
     float new_term_x = brmsx * G;

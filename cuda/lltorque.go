@@ -33,31 +33,14 @@ func LLNoPrecess(torque, m, B *data.Slice) {
 		B.DevPtr(X), B.DevPtr(Y), B.DevPtr(Z), N, cfg)
 }
 
-// Apply new value Spin Torque to Beff --> Beff - Bcustom without cavity dissipation
-func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc MSlice, nspins, deltah, ctime, gammaLL float64, mesh *data.Mesh) {
+// Apply new value Spin Torque to Beff --> Beff - Bcustom with cavity dissipation
+func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc, kappa MSlice, nspins, deltah, ctime, gammaLL float64, mesh *data.Mesh) {
 
 	N := mesh.Size()
 	pbc := mesh.PBC_code()
 	cfg := make3DConf(N)
 
 	k_calcspinbeff_async(dst.DevPtr(X), dst.DevPtr(Y), dst.DevPtr(Z),
-		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
-		scn.DevPtr(0), scn.DevPtr(1),
-		wc.DevPtr(0), wc.Mul(0),
-		brms.DevPtr(X), brms.Mul(X),
-		brms.DevPtr(Y), brms.Mul(Y),
-		brms.DevPtr(Z), brms.Mul(Z),
-		float32(nspins), float32(deltah), float32(ctime), float32(gammaLL), N[X], N[Y], N[Z], pbc, cfg)
-}
-
-// Apply new value Spin Torque to Beff --> Beff - Bcustom with cavity dissipation
-func SubSpinBextraBeffDissipation(dst, m, scn *data.Slice, brms, wc, kappa MSlice, nspins, deltah, ctime, gammaLL float64, mesh *data.Mesh) {
-
-	N := mesh.Size()
-	pbc := mesh.PBC_code()
-	cfg := make3DConf(N)
-
-	k_calcspinbeffdissipation_async(dst.DevPtr(X), dst.DevPtr(Y), dst.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		scn.DevPtr(0), scn.DevPtr(1),
 		wc.DevPtr(0), wc.Mul(0),
