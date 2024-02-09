@@ -35,6 +35,8 @@ type calcspinbeff_args_t struct{
 	 arg_brmsy_mul float32
 	 arg_brms_z unsafe.Pointer
 	 arg_brmsz_mul float32
+	 arg_m0 float32
+	 arg_p0 float32
 	 arg_nspins float32
 	 arg_dt float32
 	 arg_ctime float32
@@ -43,7 +45,7 @@ type calcspinbeff_args_t struct{
 	 arg_Ny int
 	 arg_Nz int
 	 arg_PBC byte
-	 argptr [26]unsafe.Pointer
+	 argptr [28]unsafe.Pointer
 	sync.Mutex
 }
 
@@ -70,18 +72,20 @@ func init(){
 	 calcspinbeff_args.argptr[15] = unsafe.Pointer(&calcspinbeff_args.arg_brmsy_mul)
 	 calcspinbeff_args.argptr[16] = unsafe.Pointer(&calcspinbeff_args.arg_brms_z)
 	 calcspinbeff_args.argptr[17] = unsafe.Pointer(&calcspinbeff_args.arg_brmsz_mul)
-	 calcspinbeff_args.argptr[18] = unsafe.Pointer(&calcspinbeff_args.arg_nspins)
-	 calcspinbeff_args.argptr[19] = unsafe.Pointer(&calcspinbeff_args.arg_dt)
-	 calcspinbeff_args.argptr[20] = unsafe.Pointer(&calcspinbeff_args.arg_ctime)
-	 calcspinbeff_args.argptr[21] = unsafe.Pointer(&calcspinbeff_args.arg_gammaLL)
-	 calcspinbeff_args.argptr[22] = unsafe.Pointer(&calcspinbeff_args.arg_Nx)
-	 calcspinbeff_args.argptr[23] = unsafe.Pointer(&calcspinbeff_args.arg_Ny)
-	 calcspinbeff_args.argptr[24] = unsafe.Pointer(&calcspinbeff_args.arg_Nz)
-	 calcspinbeff_args.argptr[25] = unsafe.Pointer(&calcspinbeff_args.arg_PBC)
+	 calcspinbeff_args.argptr[18] = unsafe.Pointer(&calcspinbeff_args.arg_m0)
+	 calcspinbeff_args.argptr[19] = unsafe.Pointer(&calcspinbeff_args.arg_p0)
+	 calcspinbeff_args.argptr[20] = unsafe.Pointer(&calcspinbeff_args.arg_nspins)
+	 calcspinbeff_args.argptr[21] = unsafe.Pointer(&calcspinbeff_args.arg_dt)
+	 calcspinbeff_args.argptr[22] = unsafe.Pointer(&calcspinbeff_args.arg_ctime)
+	 calcspinbeff_args.argptr[23] = unsafe.Pointer(&calcspinbeff_args.arg_gammaLL)
+	 calcspinbeff_args.argptr[24] = unsafe.Pointer(&calcspinbeff_args.arg_Nx)
+	 calcspinbeff_args.argptr[25] = unsafe.Pointer(&calcspinbeff_args.arg_Ny)
+	 calcspinbeff_args.argptr[26] = unsafe.Pointer(&calcspinbeff_args.arg_Nz)
+	 calcspinbeff_args.argptr[27] = unsafe.Pointer(&calcspinbeff_args.arg_PBC)
 	 }
 
 // Wrapper for calcspinbeff CUDA kernel, asynchronous.
-func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, sn unsafe.Pointer, cn unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, kappa unsafe.Pointer, kappa_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, nspins float32, dt float32, ctime float32, gammaLL float32, Nx int, Ny int, Nz int, PBC byte,  cfg *config) {
+func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, sn unsafe.Pointer, cn unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, kappa unsafe.Pointer, kappa_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, m0 float32, p0 float32, nspins float32, dt float32, ctime float32, gammaLL float32, Nx int, Ny int, Nz int, PBC byte,  cfg *config) {
 	if Synchronous{ // debug
 		Sync()
 		timer.Start("calcspinbeff")
@@ -112,6 +116,8 @@ func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Poin
 	 calcspinbeff_args.arg_brmsy_mul = brmsy_mul
 	 calcspinbeff_args.arg_brms_z = brms_z
 	 calcspinbeff_args.arg_brmsz_mul = brmsz_mul
+	 calcspinbeff_args.arg_m0 = m0
+	 calcspinbeff_args.arg_p0 = p0
 	 calcspinbeff_args.arg_nspins = nspins
 	 calcspinbeff_args.arg_dt = dt
 	 calcspinbeff_args.arg_ctime = ctime
@@ -176,10 +182,12 @@ const(
 	.param .f32 calcspinbeff_param_19,
 	.param .f32 calcspinbeff_param_20,
 	.param .f32 calcspinbeff_param_21,
-	.param .u32 calcspinbeff_param_22,
-	.param .u32 calcspinbeff_param_23,
+	.param .f32 calcspinbeff_param_22,
+	.param .f32 calcspinbeff_param_23,
 	.param .u32 calcspinbeff_param_24,
-	.param .u8 calcspinbeff_param_25
+	.param .u32 calcspinbeff_param_25,
+	.param .u32 calcspinbeff_param_26,
+	.param .u8 calcspinbeff_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -210,13 +218,13 @@ const(
 	ld.param.f32 	%f167, [calcspinbeff_param_15];
 	ld.param.u64 	%rd25, [calcspinbeff_param_16];
 	ld.param.f32 	%f168, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.u32 	%r76, [calcspinbeff_param_22];
-	ld.param.u32 	%r77, [calcspinbeff_param_23];
-	ld.param.u32 	%r78, [calcspinbeff_param_24];
+	ld.param.f32 	%f59, [calcspinbeff_param_20];
+	ld.param.f32 	%f60, [calcspinbeff_param_21];
+	ld.param.f32 	%f61, [calcspinbeff_param_22];
+	ld.param.f32 	%f62, [calcspinbeff_param_23];
+	ld.param.u32 	%r76, [calcspinbeff_param_24];
+	ld.param.u32 	%r77, [calcspinbeff_param_25];
+	ld.param.u32 	%r78, [calcspinbeff_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -761,10 +769,12 @@ BB0_58:
 	.param .f32 calcspinbeff_param_19,
 	.param .f32 calcspinbeff_param_20,
 	.param .f32 calcspinbeff_param_21,
-	.param .u32 calcspinbeff_param_22,
-	.param .u32 calcspinbeff_param_23,
+	.param .f32 calcspinbeff_param_22,
+	.param .f32 calcspinbeff_param_23,
 	.param .u32 calcspinbeff_param_24,
-	.param .u8 calcspinbeff_param_25
+	.param .u32 calcspinbeff_param_25,
+	.param .u32 calcspinbeff_param_26,
+	.param .u8 calcspinbeff_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -795,13 +805,13 @@ BB0_58:
 	ld.param.f32 	%f167, [calcspinbeff_param_15];
 	ld.param.u64 	%rd25, [calcspinbeff_param_16];
 	ld.param.f32 	%f168, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.u32 	%r76, [calcspinbeff_param_22];
-	ld.param.u32 	%r77, [calcspinbeff_param_23];
-	ld.param.u32 	%r78, [calcspinbeff_param_24];
+	ld.param.f32 	%f59, [calcspinbeff_param_20];
+	ld.param.f32 	%f60, [calcspinbeff_param_21];
+	ld.param.f32 	%f61, [calcspinbeff_param_22];
+	ld.param.f32 	%f62, [calcspinbeff_param_23];
+	ld.param.u32 	%r76, [calcspinbeff_param_24];
+	ld.param.u32 	%r77, [calcspinbeff_param_25];
+	ld.param.u32 	%r78, [calcspinbeff_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -1346,10 +1356,12 @@ BB0_58:
 	.param .f32 calcspinbeff_param_19,
 	.param .f32 calcspinbeff_param_20,
 	.param .f32 calcspinbeff_param_21,
-	.param .u32 calcspinbeff_param_22,
-	.param .u32 calcspinbeff_param_23,
+	.param .f32 calcspinbeff_param_22,
+	.param .f32 calcspinbeff_param_23,
 	.param .u32 calcspinbeff_param_24,
-	.param .u8 calcspinbeff_param_25
+	.param .u32 calcspinbeff_param_25,
+	.param .u32 calcspinbeff_param_26,
+	.param .u8 calcspinbeff_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -1380,13 +1392,13 @@ BB0_58:
 	ld.param.f32 	%f167, [calcspinbeff_param_15];
 	ld.param.u64 	%rd25, [calcspinbeff_param_16];
 	ld.param.f32 	%f168, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.u32 	%r76, [calcspinbeff_param_22];
-	ld.param.u32 	%r77, [calcspinbeff_param_23];
-	ld.param.u32 	%r78, [calcspinbeff_param_24];
+	ld.param.f32 	%f59, [calcspinbeff_param_20];
+	ld.param.f32 	%f60, [calcspinbeff_param_21];
+	ld.param.f32 	%f61, [calcspinbeff_param_22];
+	ld.param.f32 	%f62, [calcspinbeff_param_23];
+	ld.param.u32 	%r76, [calcspinbeff_param_24];
+	ld.param.u32 	%r77, [calcspinbeff_param_25];
+	ld.param.u32 	%r78, [calcspinbeff_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -1931,10 +1943,12 @@ BB0_58:
 	.param .f32 calcspinbeff_param_19,
 	.param .f32 calcspinbeff_param_20,
 	.param .f32 calcspinbeff_param_21,
-	.param .u32 calcspinbeff_param_22,
-	.param .u32 calcspinbeff_param_23,
+	.param .f32 calcspinbeff_param_22,
+	.param .f32 calcspinbeff_param_23,
 	.param .u32 calcspinbeff_param_24,
-	.param .u8 calcspinbeff_param_25
+	.param .u32 calcspinbeff_param_25,
+	.param .u32 calcspinbeff_param_26,
+	.param .u8 calcspinbeff_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -1965,13 +1979,13 @@ BB0_58:
 	ld.param.f32 	%f167, [calcspinbeff_param_15];
 	ld.param.u64 	%rd25, [calcspinbeff_param_16];
 	ld.param.f32 	%f168, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.u32 	%r76, [calcspinbeff_param_22];
-	ld.param.u32 	%r77, [calcspinbeff_param_23];
-	ld.param.u32 	%r78, [calcspinbeff_param_24];
+	ld.param.f32 	%f59, [calcspinbeff_param_20];
+	ld.param.f32 	%f60, [calcspinbeff_param_21];
+	ld.param.f32 	%f61, [calcspinbeff_param_22];
+	ld.param.f32 	%f62, [calcspinbeff_param_23];
+	ld.param.u32 	%r76, [calcspinbeff_param_24];
+	ld.param.u32 	%r77, [calcspinbeff_param_25];
+	ld.param.u32 	%r78, [calcspinbeff_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -2516,10 +2530,12 @@ BB0_58:
 	.param .f32 calcspinbeff_param_19,
 	.param .f32 calcspinbeff_param_20,
 	.param .f32 calcspinbeff_param_21,
-	.param .u32 calcspinbeff_param_22,
-	.param .u32 calcspinbeff_param_23,
+	.param .f32 calcspinbeff_param_22,
+	.param .f32 calcspinbeff_param_23,
 	.param .u32 calcspinbeff_param_24,
-	.param .u8 calcspinbeff_param_25
+	.param .u32 calcspinbeff_param_25,
+	.param .u32 calcspinbeff_param_26,
+	.param .u8 calcspinbeff_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -2550,13 +2566,13 @@ BB0_58:
 	ld.param.f32 	%f167, [calcspinbeff_param_15];
 	ld.param.u64 	%rd25, [calcspinbeff_param_16];
 	ld.param.f32 	%f168, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.u32 	%r76, [calcspinbeff_param_22];
-	ld.param.u32 	%r77, [calcspinbeff_param_23];
-	ld.param.u32 	%r78, [calcspinbeff_param_24];
+	ld.param.f32 	%f59, [calcspinbeff_param_20];
+	ld.param.f32 	%f60, [calcspinbeff_param_21];
+	ld.param.f32 	%f61, [calcspinbeff_param_22];
+	ld.param.f32 	%f62, [calcspinbeff_param_23];
+	ld.param.u32 	%r76, [calcspinbeff_param_24];
+	ld.param.u32 	%r77, [calcspinbeff_param_25];
+	ld.param.u32 	%r78, [calcspinbeff_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -3101,10 +3117,12 @@ BB0_58:
 	.param .f32 calcspinbeff_param_19,
 	.param .f32 calcspinbeff_param_20,
 	.param .f32 calcspinbeff_param_21,
-	.param .u32 calcspinbeff_param_22,
-	.param .u32 calcspinbeff_param_23,
+	.param .f32 calcspinbeff_param_22,
+	.param .f32 calcspinbeff_param_23,
 	.param .u32 calcspinbeff_param_24,
-	.param .u8 calcspinbeff_param_25
+	.param .u32 calcspinbeff_param_25,
+	.param .u32 calcspinbeff_param_26,
+	.param .u8 calcspinbeff_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -3135,13 +3153,13 @@ BB0_58:
 	ld.param.f32 	%f167, [calcspinbeff_param_15];
 	ld.param.u64 	%rd25, [calcspinbeff_param_16];
 	ld.param.f32 	%f168, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.u32 	%r76, [calcspinbeff_param_22];
-	ld.param.u32 	%r77, [calcspinbeff_param_23];
-	ld.param.u32 	%r78, [calcspinbeff_param_24];
+	ld.param.f32 	%f59, [calcspinbeff_param_20];
+	ld.param.f32 	%f60, [calcspinbeff_param_21];
+	ld.param.f32 	%f61, [calcspinbeff_param_22];
+	ld.param.f32 	%f62, [calcspinbeff_param_23];
+	ld.param.u32 	%r76, [calcspinbeff_param_24];
+	ld.param.u32 	%r77, [calcspinbeff_param_25];
+	ld.param.u32 	%r78, [calcspinbeff_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -3686,10 +3704,12 @@ BB0_58:
 	.param .f32 calcspinbeff_param_19,
 	.param .f32 calcspinbeff_param_20,
 	.param .f32 calcspinbeff_param_21,
-	.param .u32 calcspinbeff_param_22,
-	.param .u32 calcspinbeff_param_23,
+	.param .f32 calcspinbeff_param_22,
+	.param .f32 calcspinbeff_param_23,
 	.param .u32 calcspinbeff_param_24,
-	.param .u8 calcspinbeff_param_25
+	.param .u32 calcspinbeff_param_25,
+	.param .u32 calcspinbeff_param_26,
+	.param .u8 calcspinbeff_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -3720,13 +3740,13 @@ BB0_58:
 	ld.param.f32 	%f167, [calcspinbeff_param_15];
 	ld.param.u64 	%rd25, [calcspinbeff_param_16];
 	ld.param.f32 	%f168, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.u32 	%r76, [calcspinbeff_param_22];
-	ld.param.u32 	%r77, [calcspinbeff_param_23];
-	ld.param.u32 	%r78, [calcspinbeff_param_24];
+	ld.param.f32 	%f59, [calcspinbeff_param_20];
+	ld.param.f32 	%f60, [calcspinbeff_param_21];
+	ld.param.f32 	%f61, [calcspinbeff_param_22];
+	ld.param.f32 	%f62, [calcspinbeff_param_23];
+	ld.param.u32 	%r76, [calcspinbeff_param_24];
+	ld.param.u32 	%r77, [calcspinbeff_param_25];
+	ld.param.u32 	%r78, [calcspinbeff_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -4271,10 +4291,12 @@ BB0_58:
 	.param .f32 calcspinbeff_param_19,
 	.param .f32 calcspinbeff_param_20,
 	.param .f32 calcspinbeff_param_21,
-	.param .u32 calcspinbeff_param_22,
-	.param .u32 calcspinbeff_param_23,
+	.param .f32 calcspinbeff_param_22,
+	.param .f32 calcspinbeff_param_23,
 	.param .u32 calcspinbeff_param_24,
-	.param .u8 calcspinbeff_param_25
+	.param .u32 calcspinbeff_param_25,
+	.param .u32 calcspinbeff_param_26,
+	.param .u8 calcspinbeff_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -4305,13 +4327,13 @@ BB0_58:
 	ld.param.f32 	%f167, [calcspinbeff_param_15];
 	ld.param.u64 	%rd25, [calcspinbeff_param_16];
 	ld.param.f32 	%f168, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.u32 	%r76, [calcspinbeff_param_22];
-	ld.param.u32 	%r77, [calcspinbeff_param_23];
-	ld.param.u32 	%r78, [calcspinbeff_param_24];
+	ld.param.f32 	%f59, [calcspinbeff_param_20];
+	ld.param.f32 	%f60, [calcspinbeff_param_21];
+	ld.param.f32 	%f61, [calcspinbeff_param_22];
+	ld.param.f32 	%f62, [calcspinbeff_param_23];
+	ld.param.u32 	%r76, [calcspinbeff_param_24];
+	ld.param.u32 	%r77, [calcspinbeff_param_25];
+	ld.param.u32 	%r78, [calcspinbeff_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -4856,10 +4878,12 @@ BB0_58:
 	.param .f32 calcspinbeff_param_19,
 	.param .f32 calcspinbeff_param_20,
 	.param .f32 calcspinbeff_param_21,
-	.param .u32 calcspinbeff_param_22,
-	.param .u32 calcspinbeff_param_23,
+	.param .f32 calcspinbeff_param_22,
+	.param .f32 calcspinbeff_param_23,
 	.param .u32 calcspinbeff_param_24,
-	.param .u8 calcspinbeff_param_25
+	.param .u32 calcspinbeff_param_25,
+	.param .u32 calcspinbeff_param_26,
+	.param .u8 calcspinbeff_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -4890,13 +4914,13 @@ BB0_58:
 	ld.param.f32 	%f167, [calcspinbeff_param_15];
 	ld.param.u64 	%rd25, [calcspinbeff_param_16];
 	ld.param.f32 	%f168, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.u32 	%r76, [calcspinbeff_param_22];
-	ld.param.u32 	%r77, [calcspinbeff_param_23];
-	ld.param.u32 	%r78, [calcspinbeff_param_24];
+	ld.param.f32 	%f59, [calcspinbeff_param_20];
+	ld.param.f32 	%f60, [calcspinbeff_param_21];
+	ld.param.f32 	%f61, [calcspinbeff_param_22];
+	ld.param.f32 	%f62, [calcspinbeff_param_23];
+	ld.param.u32 	%r76, [calcspinbeff_param_24];
+	ld.param.u32 	%r77, [calcspinbeff_param_25];
+	ld.param.u32 	%r78, [calcspinbeff_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
