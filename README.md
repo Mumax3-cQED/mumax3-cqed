@@ -29,11 +29,11 @@ The files under `cuda` folder manage the operations in the GPU and files below `
 
 To run the mumax3-cqed binary, open a shell and run your script as:
 ```console
-$ mumax.exe script-file.mx3
+$ mumax3.exe script-file.mx3
 ```
 or in *NIX systems:
 ```console
-$ mumax script-file.mx3
+$ mumax3 script-file.mx3
 ```
 
 #### INSTALLATION IN *NIX SYSTEMS
@@ -96,4 +96,4 @@ Alternatively, you can use Windows Subsystem Linux (WSL) just to compile CUDA co
 
 The binary file is placed in `c:\go\bin`
 
-Add `c:\go\bin` to Path to call the `mumax.exe` binary file from shell
+Add `c:\go\bin` to Path to call the `mumax3.exe` binary file from shell
