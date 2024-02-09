@@ -49,6 +49,9 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		alpha := Alpha.MSlice()
 		defer alpha.Recycle()
 
+		kappa := Kappa.MSlice()
+		defer kappa.Recycle()
+
 		LogIn("")
 		LogIn("------------------------------------------------")
 
@@ -63,16 +66,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn(" Zhang-Li Spin-Transfer Torque:", If_Ternary(DisableZhangLiTorque, "Disabled", "Enabled").(string))
 		LogIn(" Slonczewski Spin-Transfer Torque:", If_Ternary(DisableSlonczewskiTorque, "Disabled", "Enabled").(string))
 
-		if EnableCavityDissipation {
-			LogIn(" Cavity Dissipation: Enabled")
-
-			kappa := Kappa.MSlice()
-			defer kappa.Recycle()
-
-			LogIn(" Kappa (rad/s):", kappa.Mul(0))
-		} else {
-			LogIn(" Cavity Dissipation: Disabled")
-		}
+		LogIn(" Kappa (rad/s):", kappa.Mul(0))
 
 		full_sizex, full_sizey, full_sizez, cell_size, num_cells := calcFullSize()
 

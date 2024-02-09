@@ -30,7 +30,6 @@ var (
 	DisableSlonczewskiTorque           = false
 	DisableTimeEvolutionTorque         = true
 	DisableBeffContributions           = false
-	EnableCavityDissipation            = false
 	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
 	B_rms                        = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
@@ -66,7 +65,6 @@ func init() {
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
 	DeclVar("DisableTimeEvolutionTorque", &DisableTimeEvolutionTorque, "Disables Cavity Time evolution torque (default=true)")
 	DeclVar("DisableBeffContributions", &DisableBeffContributions, "Disables Beff default contributions (default=false)")
-	DeclVar("EnableCavityDissipation", &EnableCavityDissipation, "Enable/Disable Cavity Dissipation (default=false)")
 	DeclVar("DoPrecess", &Precess, "Enables LL precession (default=true)")
 	DeclLValue("FixedLayerPosition", &flposition{}, "Position of the fixed layer: FIXEDLAYER_TOP, FIXEDLAYER_BOTTOM (default=FIXEDLAYER_TOP)")
 	DeclROnly("FIXEDLAYER_TOP", FIXEDLAYER_TOP, "FixedLayerPosition = FIXEDLAYER_TOP instructs mumax3 that fixed layer is on top of the free layer")
@@ -124,19 +122,13 @@ func ApplyExtraFieldBeff(dst *data.Slice) {
 	brms_slice := B_rms.MSlice()
 	defer brms_slice.Recycle()
 
+	kappa := Kappa.MSlice()
+	defer kappa.Recycle()
+
 	mem_term.dt_time = Time - mem_term.last_time
 
-	if !EnableCavityDissipation {
-		// calculations without cavity dissipation
-		cuda.SubSpinBextraBeff(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
-	} else {
-
-		// calculations with cavity dissipation
-		kappa := Kappa.MSlice()
-		defer kappa.Recycle()
-
-		cuda.SubSpinBextraBeffDissipation(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
-	}
+	// calculations with cavity dissipation
+	cuda.SubSpinBextraBeff(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
 
 	mem_term.last_time = Time
 }
