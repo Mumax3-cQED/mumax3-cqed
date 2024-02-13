@@ -88,7 +88,7 @@ Once the installation of Visual Studio Community 2019 finishes, put the followin
 c:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\bin\Hostx64\x64
 ```
 
-Install [CUDA Tollkit 10.2](https://developer.nvidia.com/cuda-10.2-download-archive) (or later). Follow these steps to install mumax3-cqed in Windows 10:
+Install [CUDA Tollkit 10.2](https://developer.nvidia.com/cuda-10.2-download-archive) (or later) in `c:\cuda`. Follow these steps to install mumax3-cqed in Windows 10:
 
 1. Install [Git for Windows](https://git-scm.com/download/win)
 2. Download [Golang 1.9](https://dl.google.com/go/go1.9.windows-amd64.zip) and uncompress the file in `c:\`, rename the folder to go1.9: `c:\go1.9`
