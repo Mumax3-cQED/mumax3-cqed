@@ -30,17 +30,19 @@ To run the mumax3-cqed binary, open a shell and run your script as:
 ```console
 $ mumax3.exe script-file.mx3
 ```
-or in *NIX systems:
+or in UNIX systems:
 ```console
 $ mumax3 script-file.mx3
 ```
 
-#### INSTALLATION IN *NIX SYSTEMS
+It is required to install [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads). This mumax3-cqed software has been tested in Windows 10 with [CUDA Toolkit 10.2](https://developer.nvidia.com/cuda-10.2-download-archive) and Debian GNU/Linux (Debian 12 Bookworm) with latest [CUDA Toolkit 12.3](https://developer.nvidia.com/cuda-downloads), it is also required to install `git`.
+
+#### INSTALLATION IN UNIX SYSTEMS
 ---------------------------------
 
-It is required to install [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads). This mumax3-cqed software has been tested in Windows 10 with [CUDA Toolkit 10.2](https://developer.nvidia.com/cuda-10.2-download-archive) and Debian GNU/Linux (Debian 12 Bookworm) with [CUDA Toolkit 12.0](https://developer.nvidia.com/cuda-12-0-0-download-archive), it is also required to install `git`. Follow [this guide](https://www.server-world.info/en/note?os=Debian_12&p=nvidia&f=1) to install CUDA 12.0 in Debian 12 Bookworm.
+Follow this `bash` commands to install CUDA 12.3 in Debian 12 Bookworm.
 
-The installation process on *NIX systems takes place with the following commands:
+The installation process on UNIX systems takes place with the following commands:
 
 ```bash
 $ cd $HOME
@@ -64,7 +66,7 @@ The binary file is placed in `$HOME/go/bin`
 #### INSTALLATION IN WINDOWS SYSTEMS
 ------------------------------------
 
-For Windows systems install [Visual Studio Community 2019](https://visualstudio.microsoft.com/en/vs/older-downloads/) with **.Net desktop development**, **Desktop development with C++**, **Universal Windows Platform development**.
+For Windows systems, you must install [Visual Studio Community 2019](https://visualstudio.microsoft.com/en/vs/older-downloads/) with **.Net desktop development**, **Desktop development with C++**, **Universal Windows Platform development**.
 
 ![vs2019-community-installer](./images/vs2019-community-installer.png)
 
@@ -95,4 +97,4 @@ Alternatively, you can use Windows Subsystem Linux (WSL) just to compile CUDA co
 
 The binary file is placed in `c:\go\bin`
 
-Add `c:\go\bin` to Path to call the `mumax3.exe` binary file from shell
+Add `c:\go\bin` to Path to call the `mumax3.exe` binary file from shell.
