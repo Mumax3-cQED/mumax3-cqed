@@ -112,4 +112,4 @@ The binary file is placed in `c:\go\bin`
 
 Add `c:\go\bin` to Path to call the `mumax3.exe` binary file from shell.
 
-**IMPORTANT NOTE**: This repository is not the official mumax <sup>3</sup> repository. The official mumax<sup>3</sup> is available ![here](https://github.com/mumax/3).
+**IMPORTANT NOTE**: This repository is not the official mumax<sup>3</sup> repository. The official mumax<sup>3</sup> is available ![here](https://github.com/mumax/3).
