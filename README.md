@@ -111,3 +111,5 @@ Alternatively, you can use Windows Subsystem Linux (WSL) just to compile CUDA co
 The binary file is placed in `c:\go\bin`
 
 Add `c:\go\bin` to Path to call the `mumax3.exe` binary file from shell.
+
+IMPORTANT NOTE: This repository is not the official mumax3 repository. The official mumax3 is available ![here](https://github.com/mumax/3).
