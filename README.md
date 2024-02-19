@@ -2,12 +2,12 @@
 
 This software adds a new feature to open source software called [mumax<sup>3</sup>](https://mumax.github.io/). The new MUMAX3-CQED is also open source and it is available at [https://github.com/sergiomtzlosa/mumax3-cqed](https://github.com/sergiomtzlosa/mumax3-cqed).
 
-<aside>
+<html>
 <link rel="stylesheet" href="./html/style.css">
 <a class="click" href="https://doi.org/10.5281/zenodo.4450141">
   <div class="sticker">&nbsp;DOI&nbsp;&nbsp;&nbsp;&nbsp;10.5281/zenodo.4450141</div>
 </a>
-</aside>
+</html>
 
 The original mumax<sup>3</sup> code contains lots of files managing the frontend and the CUDA calculations, and for this purpose we list below the files we modified or created to develop our new feature:
 
