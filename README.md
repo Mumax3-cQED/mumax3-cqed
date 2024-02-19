@@ -3,11 +3,6 @@
 This software adds a new feature to open source software called [mumax<sup>3</sup>](https://mumax.github.io/). The new MUMAX3-CQED is also open source and it is available at [https://github.com/sergiomtzlosa/mumax3-cqed](https://github.com/sergiomtzlosa/mumax3-cqed).
 
 
-<a style="display:block; text-decoration: none;" href="https://doi.org/10.5281/zenodo.4450141">
-  <div style="font-size: xx-small; font-weight: bold; font-family: Arial; text-shadow: 1px 1px 2px black; color: white; width: 135px; padding-left: 3px; padding-right: 3px; padding-top: 2px; padding-bottom: 3px; border-radius: 2px; -moz-border-radius: 2px; background: linear-gradient(to left, rgb(13,126,191) 0%, rgb(13,126,191) 80.5%, rgba(87,87,87) 80%, rgba(87,87,87) 100%); box-shadow: 1px 1px 3px 1px black;   border-collapse: separate; display: block;">&nbsp;DOI&nbsp;&nbsp;&nbsp;&nbsp;10.5281/zenodo.4450141</div>
-</a>
-
-
 The original mumax<sup>3</sup> code contains lots of files managing the frontend and the CUDA calculations, and for this purpose we list below the files we modified or created to develop our new feature:
 
 ```bash
