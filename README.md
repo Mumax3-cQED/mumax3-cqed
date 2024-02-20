@@ -2,7 +2,6 @@
 
 This software adds a new feature to open source software called [mumax<sup>3</sup>](https://mumax.github.io/). The new MUMAX3-CQED is also open source and it is available at [https://github.com/sergiomtzlosa/mumax3-cqed](https://github.com/sergiomtzlosa/mumax3-cqed).
 
-
 The original mumax<sup>3</sup> code contains lots of files managing the frontend and the CUDA calculations, and for this purpose we list below the files we modified or created to develop our new feature:
 
 ```bash
@@ -113,4 +112,4 @@ The binary file is placed in `c:\go\bin`
 
 Add `c:\go\bin` to Path to call the `mumax3.exe` binary file from shell.
 
-**IMPORTANT NOTE**: This repository is not the official mumax<sup>3</sup> repository. The official mumax<sup>3</sup> is available ![here](https://github.com/mumax/3).
+**IMPORTANT**: This repository is not the official mumax<sup>3</sup> repository. The official mumax<sup>3</sup> is available ![here](https://github.com/mumax/3).
