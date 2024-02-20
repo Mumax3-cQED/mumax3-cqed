@@ -59,7 +59,7 @@ The installation process on UNIX systems takes place with the following commands
 
 ```bash
 $ cd $HOME
-$ sudo apt update && sudo apt install git
+$ sudo apt update && sudo apt install git build-essential
 $ curl -OL https://golang.google.cn/dl/go1.9.linux-amd64.tar.gz
 $ tar -xf go1.9.linux-amd64.tar.gz
 $ mv go go1.9
