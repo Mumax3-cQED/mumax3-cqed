@@ -12,11 +12,11 @@ import(
 	"sync"
 )
 
-// CUDA handle for calcspinbeff kernel
-var calcspinbeff_code cu.Function
+// CUDA handle for addcavityfield kernel
+var addcavityfield_code cu.Function
 
-// Stores the arguments for calcspinbeff kernel invocation
-type calcspinbeff_args_t struct{
+// Stores the arguments for addcavityfield kernel invocation
+type addcavityfield_args_t struct{
 	 arg_tx unsafe.Pointer
 	 arg_ty unsafe.Pointer
 	 arg_tz unsafe.Pointer
@@ -49,145 +49,145 @@ type calcspinbeff_args_t struct{
 	sync.Mutex
 }
 
-// Stores the arguments for calcspinbeff kernel invocation
-var calcspinbeff_args calcspinbeff_args_t
+// Stores the arguments for addcavityfield kernel invocation
+var addcavityfield_args addcavityfield_args_t
 
 func init(){
 	// CUDA driver kernel call wants pointers to arguments, set them up once.
-	 calcspinbeff_args.argptr[0] = unsafe.Pointer(&calcspinbeff_args.arg_tx)
-	 calcspinbeff_args.argptr[1] = unsafe.Pointer(&calcspinbeff_args.arg_ty)
-	 calcspinbeff_args.argptr[2] = unsafe.Pointer(&calcspinbeff_args.arg_tz)
-	 calcspinbeff_args.argptr[3] = unsafe.Pointer(&calcspinbeff_args.arg_mx)
-	 calcspinbeff_args.argptr[4] = unsafe.Pointer(&calcspinbeff_args.arg_my)
-	 calcspinbeff_args.argptr[5] = unsafe.Pointer(&calcspinbeff_args.arg_mz)
-	 calcspinbeff_args.argptr[6] = unsafe.Pointer(&calcspinbeff_args.arg_sn)
-	 calcspinbeff_args.argptr[7] = unsafe.Pointer(&calcspinbeff_args.arg_cn)
-	 calcspinbeff_args.argptr[8] = unsafe.Pointer(&calcspinbeff_args.arg_wc)
-	 calcspinbeff_args.argptr[9] = unsafe.Pointer(&calcspinbeff_args.arg_wc_mul)
-	 calcspinbeff_args.argptr[10] = unsafe.Pointer(&calcspinbeff_args.arg_kappa)
-	 calcspinbeff_args.argptr[11] = unsafe.Pointer(&calcspinbeff_args.arg_kappa_mul)
-	 calcspinbeff_args.argptr[12] = unsafe.Pointer(&calcspinbeff_args.arg_brms_x)
-	 calcspinbeff_args.argptr[13] = unsafe.Pointer(&calcspinbeff_args.arg_brmsx_mul)
-	 calcspinbeff_args.argptr[14] = unsafe.Pointer(&calcspinbeff_args.arg_brms_y)
-	 calcspinbeff_args.argptr[15] = unsafe.Pointer(&calcspinbeff_args.arg_brmsy_mul)
-	 calcspinbeff_args.argptr[16] = unsafe.Pointer(&calcspinbeff_args.arg_brms_z)
-	 calcspinbeff_args.argptr[17] = unsafe.Pointer(&calcspinbeff_args.arg_brmsz_mul)
-	 calcspinbeff_args.argptr[18] = unsafe.Pointer(&calcspinbeff_args.arg_x0)
-	 calcspinbeff_args.argptr[19] = unsafe.Pointer(&calcspinbeff_args.arg_p0)
-	 calcspinbeff_args.argptr[20] = unsafe.Pointer(&calcspinbeff_args.arg_nspins)
-	 calcspinbeff_args.argptr[21] = unsafe.Pointer(&calcspinbeff_args.arg_dt)
-	 calcspinbeff_args.argptr[22] = unsafe.Pointer(&calcspinbeff_args.arg_ctime)
-	 calcspinbeff_args.argptr[23] = unsafe.Pointer(&calcspinbeff_args.arg_gammaLL)
-	 calcspinbeff_args.argptr[24] = unsafe.Pointer(&calcspinbeff_args.arg_Nx)
-	 calcspinbeff_args.argptr[25] = unsafe.Pointer(&calcspinbeff_args.arg_Ny)
-	 calcspinbeff_args.argptr[26] = unsafe.Pointer(&calcspinbeff_args.arg_Nz)
-	 calcspinbeff_args.argptr[27] = unsafe.Pointer(&calcspinbeff_args.arg_PBC)
+	 addcavityfield_args.argptr[0] = unsafe.Pointer(&addcavityfield_args.arg_tx)
+	 addcavityfield_args.argptr[1] = unsafe.Pointer(&addcavityfield_args.arg_ty)
+	 addcavityfield_args.argptr[2] = unsafe.Pointer(&addcavityfield_args.arg_tz)
+	 addcavityfield_args.argptr[3] = unsafe.Pointer(&addcavityfield_args.arg_mx)
+	 addcavityfield_args.argptr[4] = unsafe.Pointer(&addcavityfield_args.arg_my)
+	 addcavityfield_args.argptr[5] = unsafe.Pointer(&addcavityfield_args.arg_mz)
+	 addcavityfield_args.argptr[6] = unsafe.Pointer(&addcavityfield_args.arg_sn)
+	 addcavityfield_args.argptr[7] = unsafe.Pointer(&addcavityfield_args.arg_cn)
+	 addcavityfield_args.argptr[8] = unsafe.Pointer(&addcavityfield_args.arg_wc)
+	 addcavityfield_args.argptr[9] = unsafe.Pointer(&addcavityfield_args.arg_wc_mul)
+	 addcavityfield_args.argptr[10] = unsafe.Pointer(&addcavityfield_args.arg_kappa)
+	 addcavityfield_args.argptr[11] = unsafe.Pointer(&addcavityfield_args.arg_kappa_mul)
+	 addcavityfield_args.argptr[12] = unsafe.Pointer(&addcavityfield_args.arg_brms_x)
+	 addcavityfield_args.argptr[13] = unsafe.Pointer(&addcavityfield_args.arg_brmsx_mul)
+	 addcavityfield_args.argptr[14] = unsafe.Pointer(&addcavityfield_args.arg_brms_y)
+	 addcavityfield_args.argptr[15] = unsafe.Pointer(&addcavityfield_args.arg_brmsy_mul)
+	 addcavityfield_args.argptr[16] = unsafe.Pointer(&addcavityfield_args.arg_brms_z)
+	 addcavityfield_args.argptr[17] = unsafe.Pointer(&addcavityfield_args.arg_brmsz_mul)
+	 addcavityfield_args.argptr[18] = unsafe.Pointer(&addcavityfield_args.arg_x0)
+	 addcavityfield_args.argptr[19] = unsafe.Pointer(&addcavityfield_args.arg_p0)
+	 addcavityfield_args.argptr[20] = unsafe.Pointer(&addcavityfield_args.arg_nspins)
+	 addcavityfield_args.argptr[21] = unsafe.Pointer(&addcavityfield_args.arg_dt)
+	 addcavityfield_args.argptr[22] = unsafe.Pointer(&addcavityfield_args.arg_ctime)
+	 addcavityfield_args.argptr[23] = unsafe.Pointer(&addcavityfield_args.arg_gammaLL)
+	 addcavityfield_args.argptr[24] = unsafe.Pointer(&addcavityfield_args.arg_Nx)
+	 addcavityfield_args.argptr[25] = unsafe.Pointer(&addcavityfield_args.arg_Ny)
+	 addcavityfield_args.argptr[26] = unsafe.Pointer(&addcavityfield_args.arg_Nz)
+	 addcavityfield_args.argptr[27] = unsafe.Pointer(&addcavityfield_args.arg_PBC)
 	 }
 
-// Wrapper for calcspinbeff CUDA kernel, asynchronous.
-func k_calcspinbeff_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, sn unsafe.Pointer, cn unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, kappa unsafe.Pointer, kappa_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, x0 float32, p0 float32, nspins float32, dt float32, ctime float32, gammaLL float32, Nx int, Ny int, Nz int, PBC byte,  cfg *config) {
+// Wrapper for addcavityfield CUDA kernel, asynchronous.
+func k_addcavityfield_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, mx unsafe.Pointer, my unsafe.Pointer, mz unsafe.Pointer, sn unsafe.Pointer, cn unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, kappa unsafe.Pointer, kappa_mul float32, brms_x unsafe.Pointer, brmsx_mul float32, brms_y unsafe.Pointer, brmsy_mul float32, brms_z unsafe.Pointer, brmsz_mul float32, x0 float32, p0 float32, nspins float32, dt float32, ctime float32, gammaLL float32, Nx int, Ny int, Nz int, PBC byte,  cfg *config) {
 	if Synchronous{ // debug
 		Sync()
-		timer.Start("calcspinbeff")
+		timer.Start("addcavityfield")
 	}
 
-	calcspinbeff_args.Lock()
-	defer calcspinbeff_args.Unlock()
+	addcavityfield_args.Lock()
+	defer addcavityfield_args.Unlock()
 
-	if calcspinbeff_code == 0{
-		calcspinbeff_code = fatbinLoad(calcspinbeff_map, "calcspinbeff")
+	if addcavityfield_code == 0{
+		addcavityfield_code = fatbinLoad(addcavityfield_map, "addcavityfield")
 	}
 
-	 calcspinbeff_args.arg_tx = tx
-	 calcspinbeff_args.arg_ty = ty
-	 calcspinbeff_args.arg_tz = tz
-	 calcspinbeff_args.arg_mx = mx
-	 calcspinbeff_args.arg_my = my
-	 calcspinbeff_args.arg_mz = mz
-	 calcspinbeff_args.arg_sn = sn
-	 calcspinbeff_args.arg_cn = cn
-	 calcspinbeff_args.arg_wc = wc
-	 calcspinbeff_args.arg_wc_mul = wc_mul
-	 calcspinbeff_args.arg_kappa = kappa
-	 calcspinbeff_args.arg_kappa_mul = kappa_mul
-	 calcspinbeff_args.arg_brms_x = brms_x
-	 calcspinbeff_args.arg_brmsx_mul = brmsx_mul
-	 calcspinbeff_args.arg_brms_y = brms_y
-	 calcspinbeff_args.arg_brmsy_mul = brmsy_mul
-	 calcspinbeff_args.arg_brms_z = brms_z
-	 calcspinbeff_args.arg_brmsz_mul = brmsz_mul
-	 calcspinbeff_args.arg_x0 = x0
-	 calcspinbeff_args.arg_p0 = p0
-	 calcspinbeff_args.arg_nspins = nspins
-	 calcspinbeff_args.arg_dt = dt
-	 calcspinbeff_args.arg_ctime = ctime
-	 calcspinbeff_args.arg_gammaLL = gammaLL
-	 calcspinbeff_args.arg_Nx = Nx
-	 calcspinbeff_args.arg_Ny = Ny
-	 calcspinbeff_args.arg_Nz = Nz
-	 calcspinbeff_args.arg_PBC = PBC
+	 addcavityfield_args.arg_tx = tx
+	 addcavityfield_args.arg_ty = ty
+	 addcavityfield_args.arg_tz = tz
+	 addcavityfield_args.arg_mx = mx
+	 addcavityfield_args.arg_my = my
+	 addcavityfield_args.arg_mz = mz
+	 addcavityfield_args.arg_sn = sn
+	 addcavityfield_args.arg_cn = cn
+	 addcavityfield_args.arg_wc = wc
+	 addcavityfield_args.arg_wc_mul = wc_mul
+	 addcavityfield_args.arg_kappa = kappa
+	 addcavityfield_args.arg_kappa_mul = kappa_mul
+	 addcavityfield_args.arg_brms_x = brms_x
+	 addcavityfield_args.arg_brmsx_mul = brmsx_mul
+	 addcavityfield_args.arg_brms_y = brms_y
+	 addcavityfield_args.arg_brmsy_mul = brmsy_mul
+	 addcavityfield_args.arg_brms_z = brms_z
+	 addcavityfield_args.arg_brmsz_mul = brmsz_mul
+	 addcavityfield_args.arg_x0 = x0
+	 addcavityfield_args.arg_p0 = p0
+	 addcavityfield_args.arg_nspins = nspins
+	 addcavityfield_args.arg_dt = dt
+	 addcavityfield_args.arg_ctime = ctime
+	 addcavityfield_args.arg_gammaLL = gammaLL
+	 addcavityfield_args.arg_Nx = Nx
+	 addcavityfield_args.arg_Ny = Ny
+	 addcavityfield_args.arg_Nz = Nz
+	 addcavityfield_args.arg_PBC = PBC
 	
 
-	args := calcspinbeff_args.argptr[:]
-	cu.LaunchKernel(calcspinbeff_code, cfg.Grid.X, cfg.Grid.Y, cfg.Grid.Z, cfg.Block.X, cfg.Block.Y, cfg.Block.Z, 0, stream0, args)
+	args := addcavityfield_args.argptr[:]
+	cu.LaunchKernel(addcavityfield_code, cfg.Grid.X, cfg.Grid.Y, cfg.Grid.Z, cfg.Block.X, cfg.Block.Y, cfg.Block.Z, 0, stream0, args)
 
 	if Synchronous{ // debug
 		Sync()
-		timer.Stop("calcspinbeff")
+		timer.Stop("addcavityfield")
 	}
 }
 
-// maps compute capability on PTX code for calcspinbeff kernel.
-var calcspinbeff_map = map[int]string{ 0: "" ,
-35: calcspinbeff_ptx_35 ,
-37: calcspinbeff_ptx_37 ,
-50: calcspinbeff_ptx_50 ,
-52: calcspinbeff_ptx_52 ,
-53: calcspinbeff_ptx_53 ,
-60: calcspinbeff_ptx_60 ,
-61: calcspinbeff_ptx_61 ,
-70: calcspinbeff_ptx_70 ,
-75: calcspinbeff_ptx_75  }
+// maps compute capability on PTX code for addcavityfield kernel.
+var addcavityfield_map = map[int]string{ 0: "" ,
+35: addcavityfield_ptx_35 ,
+37: addcavityfield_ptx_37 ,
+50: addcavityfield_ptx_50 ,
+52: addcavityfield_ptx_52 ,
+53: addcavityfield_ptx_53 ,
+60: addcavityfield_ptx_60 ,
+61: addcavityfield_ptx_61 ,
+70: addcavityfield_ptx_70 ,
+75: addcavityfield_ptx_75  }
 
-// calcspinbeff PTX code for various compute capabilities.
+// addcavityfield PTX code for various compute capabilities.
 const(
-  calcspinbeff_ptx_35 = `
+  addcavityfield_ptx_35 = `
 .version 6.4
 .target sm_35
 .address_size 64
 
-	// .globl	calcspinbeff
+	// .globl	addcavityfield
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry calcspinbeff(
-	.param .u64 calcspinbeff_param_0,
-	.param .u64 calcspinbeff_param_1,
-	.param .u64 calcspinbeff_param_2,
-	.param .u64 calcspinbeff_param_3,
-	.param .u64 calcspinbeff_param_4,
-	.param .u64 calcspinbeff_param_5,
-	.param .u64 calcspinbeff_param_6,
-	.param .u64 calcspinbeff_param_7,
-	.param .u64 calcspinbeff_param_8,
-	.param .f32 calcspinbeff_param_9,
-	.param .u64 calcspinbeff_param_10,
-	.param .f32 calcspinbeff_param_11,
-	.param .u64 calcspinbeff_param_12,
-	.param .f32 calcspinbeff_param_13,
-	.param .u64 calcspinbeff_param_14,
-	.param .f32 calcspinbeff_param_15,
-	.param .u64 calcspinbeff_param_16,
-	.param .f32 calcspinbeff_param_17,
-	.param .f32 calcspinbeff_param_18,
-	.param .f32 calcspinbeff_param_19,
-	.param .f32 calcspinbeff_param_20,
-	.param .f32 calcspinbeff_param_21,
-	.param .f32 calcspinbeff_param_22,
-	.param .f32 calcspinbeff_param_23,
-	.param .u32 calcspinbeff_param_24,
-	.param .u32 calcspinbeff_param_25,
-	.param .u32 calcspinbeff_param_26,
-	.param .u8 calcspinbeff_param_27
+.visible .entry addcavityfield(
+	.param .u64 addcavityfield_param_0,
+	.param .u64 addcavityfield_param_1,
+	.param .u64 addcavityfield_param_2,
+	.param .u64 addcavityfield_param_3,
+	.param .u64 addcavityfield_param_4,
+	.param .u64 addcavityfield_param_5,
+	.param .u64 addcavityfield_param_6,
+	.param .u64 addcavityfield_param_7,
+	.param .u64 addcavityfield_param_8,
+	.param .f32 addcavityfield_param_9,
+	.param .u64 addcavityfield_param_10,
+	.param .f32 addcavityfield_param_11,
+	.param .u64 addcavityfield_param_12,
+	.param .f32 addcavityfield_param_13,
+	.param .u64 addcavityfield_param_14,
+	.param .f32 addcavityfield_param_15,
+	.param .u64 addcavityfield_param_16,
+	.param .f32 addcavityfield_param_17,
+	.param .f32 addcavityfield_param_18,
+	.param .f32 addcavityfield_param_19,
+	.param .f32 addcavityfield_param_20,
+	.param .f32 addcavityfield_param_21,
+	.param .f32 addcavityfield_param_22,
+	.param .f32 addcavityfield_param_23,
+	.param .u32 addcavityfield_param_24,
+	.param .u32 addcavityfield_param_25,
+	.param .u32 addcavityfield_param_26,
+	.param .u8 addcavityfield_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -200,33 +200,33 @@ const(
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd13, [calcspinbeff_param_0];
-	ld.param.u64 	%rd14, [calcspinbeff_param_1];
-	ld.param.u64 	%rd15, [calcspinbeff_param_2];
-	ld.param.u64 	%rd16, [calcspinbeff_param_3];
-	ld.param.u64 	%rd17, [calcspinbeff_param_4];
-	ld.param.u64 	%rd18, [calcspinbeff_param_5];
-	ld.param.u64 	%rd19, [calcspinbeff_param_6];
-	ld.param.u64 	%rd20, [calcspinbeff_param_7];
-	ld.param.u64 	%rd21, [calcspinbeff_param_8];
-	ld.param.f32 	%f166, [calcspinbeff_param_9];
-	ld.param.u64 	%rd22, [calcspinbeff_param_10];
-	ld.param.f32 	%f167, [calcspinbeff_param_11];
-	ld.param.u64 	%rd23, [calcspinbeff_param_12];
-	ld.param.f32 	%f168, [calcspinbeff_param_13];
-	ld.param.u64 	%rd24, [calcspinbeff_param_14];
-	ld.param.f32 	%f169, [calcspinbeff_param_15];
-	ld.param.u64 	%rd25, [calcspinbeff_param_16];
-	ld.param.f32 	%f170, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.f32 	%f63, [calcspinbeff_param_22];
-	ld.param.f32 	%f64, [calcspinbeff_param_23];
-	ld.param.u32 	%r76, [calcspinbeff_param_24];
-	ld.param.u32 	%r77, [calcspinbeff_param_25];
-	ld.param.u32 	%r78, [calcspinbeff_param_26];
+	ld.param.u64 	%rd13, [addcavityfield_param_0];
+	ld.param.u64 	%rd14, [addcavityfield_param_1];
+	ld.param.u64 	%rd15, [addcavityfield_param_2];
+	ld.param.u64 	%rd16, [addcavityfield_param_3];
+	ld.param.u64 	%rd17, [addcavityfield_param_4];
+	ld.param.u64 	%rd18, [addcavityfield_param_5];
+	ld.param.u64 	%rd19, [addcavityfield_param_6];
+	ld.param.u64 	%rd20, [addcavityfield_param_7];
+	ld.param.u64 	%rd21, [addcavityfield_param_8];
+	ld.param.f32 	%f166, [addcavityfield_param_9];
+	ld.param.u64 	%rd22, [addcavityfield_param_10];
+	ld.param.f32 	%f167, [addcavityfield_param_11];
+	ld.param.u64 	%rd23, [addcavityfield_param_12];
+	ld.param.f32 	%f168, [addcavityfield_param_13];
+	ld.param.u64 	%rd24, [addcavityfield_param_14];
+	ld.param.f32 	%f169, [addcavityfield_param_15];
+	ld.param.u64 	%rd25, [addcavityfield_param_16];
+	ld.param.f32 	%f170, [addcavityfield_param_17];
+	ld.param.f32 	%f59, [addcavityfield_param_18];
+	ld.param.f32 	%f60, [addcavityfield_param_19];
+	ld.param.f32 	%f61, [addcavityfield_param_20];
+	ld.param.f32 	%f62, [addcavityfield_param_21];
+	ld.param.f32 	%f63, [addcavityfield_param_22];
+	ld.param.f32 	%f64, [addcavityfield_param_23];
+	ld.param.u32 	%r76, [addcavityfield_param_24];
+	ld.param.u32 	%r77, [addcavityfield_param_25];
+	ld.param.u32 	%r78, [addcavityfield_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -740,43 +740,43 @@ BB0_58:
 
 
 `
-   calcspinbeff_ptx_37 = `
+   addcavityfield_ptx_37 = `
 .version 6.4
 .target sm_37
 .address_size 64
 
-	// .globl	calcspinbeff
+	// .globl	addcavityfield
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry calcspinbeff(
-	.param .u64 calcspinbeff_param_0,
-	.param .u64 calcspinbeff_param_1,
-	.param .u64 calcspinbeff_param_2,
-	.param .u64 calcspinbeff_param_3,
-	.param .u64 calcspinbeff_param_4,
-	.param .u64 calcspinbeff_param_5,
-	.param .u64 calcspinbeff_param_6,
-	.param .u64 calcspinbeff_param_7,
-	.param .u64 calcspinbeff_param_8,
-	.param .f32 calcspinbeff_param_9,
-	.param .u64 calcspinbeff_param_10,
-	.param .f32 calcspinbeff_param_11,
-	.param .u64 calcspinbeff_param_12,
-	.param .f32 calcspinbeff_param_13,
-	.param .u64 calcspinbeff_param_14,
-	.param .f32 calcspinbeff_param_15,
-	.param .u64 calcspinbeff_param_16,
-	.param .f32 calcspinbeff_param_17,
-	.param .f32 calcspinbeff_param_18,
-	.param .f32 calcspinbeff_param_19,
-	.param .f32 calcspinbeff_param_20,
-	.param .f32 calcspinbeff_param_21,
-	.param .f32 calcspinbeff_param_22,
-	.param .f32 calcspinbeff_param_23,
-	.param .u32 calcspinbeff_param_24,
-	.param .u32 calcspinbeff_param_25,
-	.param .u32 calcspinbeff_param_26,
-	.param .u8 calcspinbeff_param_27
+.visible .entry addcavityfield(
+	.param .u64 addcavityfield_param_0,
+	.param .u64 addcavityfield_param_1,
+	.param .u64 addcavityfield_param_2,
+	.param .u64 addcavityfield_param_3,
+	.param .u64 addcavityfield_param_4,
+	.param .u64 addcavityfield_param_5,
+	.param .u64 addcavityfield_param_6,
+	.param .u64 addcavityfield_param_7,
+	.param .u64 addcavityfield_param_8,
+	.param .f32 addcavityfield_param_9,
+	.param .u64 addcavityfield_param_10,
+	.param .f32 addcavityfield_param_11,
+	.param .u64 addcavityfield_param_12,
+	.param .f32 addcavityfield_param_13,
+	.param .u64 addcavityfield_param_14,
+	.param .f32 addcavityfield_param_15,
+	.param .u64 addcavityfield_param_16,
+	.param .f32 addcavityfield_param_17,
+	.param .f32 addcavityfield_param_18,
+	.param .f32 addcavityfield_param_19,
+	.param .f32 addcavityfield_param_20,
+	.param .f32 addcavityfield_param_21,
+	.param .f32 addcavityfield_param_22,
+	.param .f32 addcavityfield_param_23,
+	.param .u32 addcavityfield_param_24,
+	.param .u32 addcavityfield_param_25,
+	.param .u32 addcavityfield_param_26,
+	.param .u8 addcavityfield_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -789,33 +789,33 @@ BB0_58:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd13, [calcspinbeff_param_0];
-	ld.param.u64 	%rd14, [calcspinbeff_param_1];
-	ld.param.u64 	%rd15, [calcspinbeff_param_2];
-	ld.param.u64 	%rd16, [calcspinbeff_param_3];
-	ld.param.u64 	%rd17, [calcspinbeff_param_4];
-	ld.param.u64 	%rd18, [calcspinbeff_param_5];
-	ld.param.u64 	%rd19, [calcspinbeff_param_6];
-	ld.param.u64 	%rd20, [calcspinbeff_param_7];
-	ld.param.u64 	%rd21, [calcspinbeff_param_8];
-	ld.param.f32 	%f166, [calcspinbeff_param_9];
-	ld.param.u64 	%rd22, [calcspinbeff_param_10];
-	ld.param.f32 	%f167, [calcspinbeff_param_11];
-	ld.param.u64 	%rd23, [calcspinbeff_param_12];
-	ld.param.f32 	%f168, [calcspinbeff_param_13];
-	ld.param.u64 	%rd24, [calcspinbeff_param_14];
-	ld.param.f32 	%f169, [calcspinbeff_param_15];
-	ld.param.u64 	%rd25, [calcspinbeff_param_16];
-	ld.param.f32 	%f170, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.f32 	%f63, [calcspinbeff_param_22];
-	ld.param.f32 	%f64, [calcspinbeff_param_23];
-	ld.param.u32 	%r76, [calcspinbeff_param_24];
-	ld.param.u32 	%r77, [calcspinbeff_param_25];
-	ld.param.u32 	%r78, [calcspinbeff_param_26];
+	ld.param.u64 	%rd13, [addcavityfield_param_0];
+	ld.param.u64 	%rd14, [addcavityfield_param_1];
+	ld.param.u64 	%rd15, [addcavityfield_param_2];
+	ld.param.u64 	%rd16, [addcavityfield_param_3];
+	ld.param.u64 	%rd17, [addcavityfield_param_4];
+	ld.param.u64 	%rd18, [addcavityfield_param_5];
+	ld.param.u64 	%rd19, [addcavityfield_param_6];
+	ld.param.u64 	%rd20, [addcavityfield_param_7];
+	ld.param.u64 	%rd21, [addcavityfield_param_8];
+	ld.param.f32 	%f166, [addcavityfield_param_9];
+	ld.param.u64 	%rd22, [addcavityfield_param_10];
+	ld.param.f32 	%f167, [addcavityfield_param_11];
+	ld.param.u64 	%rd23, [addcavityfield_param_12];
+	ld.param.f32 	%f168, [addcavityfield_param_13];
+	ld.param.u64 	%rd24, [addcavityfield_param_14];
+	ld.param.f32 	%f169, [addcavityfield_param_15];
+	ld.param.u64 	%rd25, [addcavityfield_param_16];
+	ld.param.f32 	%f170, [addcavityfield_param_17];
+	ld.param.f32 	%f59, [addcavityfield_param_18];
+	ld.param.f32 	%f60, [addcavityfield_param_19];
+	ld.param.f32 	%f61, [addcavityfield_param_20];
+	ld.param.f32 	%f62, [addcavityfield_param_21];
+	ld.param.f32 	%f63, [addcavityfield_param_22];
+	ld.param.f32 	%f64, [addcavityfield_param_23];
+	ld.param.u32 	%r76, [addcavityfield_param_24];
+	ld.param.u32 	%r77, [addcavityfield_param_25];
+	ld.param.u32 	%r78, [addcavityfield_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -1329,43 +1329,43 @@ BB0_58:
 
 
 `
-   calcspinbeff_ptx_50 = `
+   addcavityfield_ptx_50 = `
 .version 6.4
 .target sm_50
 .address_size 64
 
-	// .globl	calcspinbeff
+	// .globl	addcavityfield
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry calcspinbeff(
-	.param .u64 calcspinbeff_param_0,
-	.param .u64 calcspinbeff_param_1,
-	.param .u64 calcspinbeff_param_2,
-	.param .u64 calcspinbeff_param_3,
-	.param .u64 calcspinbeff_param_4,
-	.param .u64 calcspinbeff_param_5,
-	.param .u64 calcspinbeff_param_6,
-	.param .u64 calcspinbeff_param_7,
-	.param .u64 calcspinbeff_param_8,
-	.param .f32 calcspinbeff_param_9,
-	.param .u64 calcspinbeff_param_10,
-	.param .f32 calcspinbeff_param_11,
-	.param .u64 calcspinbeff_param_12,
-	.param .f32 calcspinbeff_param_13,
-	.param .u64 calcspinbeff_param_14,
-	.param .f32 calcspinbeff_param_15,
-	.param .u64 calcspinbeff_param_16,
-	.param .f32 calcspinbeff_param_17,
-	.param .f32 calcspinbeff_param_18,
-	.param .f32 calcspinbeff_param_19,
-	.param .f32 calcspinbeff_param_20,
-	.param .f32 calcspinbeff_param_21,
-	.param .f32 calcspinbeff_param_22,
-	.param .f32 calcspinbeff_param_23,
-	.param .u32 calcspinbeff_param_24,
-	.param .u32 calcspinbeff_param_25,
-	.param .u32 calcspinbeff_param_26,
-	.param .u8 calcspinbeff_param_27
+.visible .entry addcavityfield(
+	.param .u64 addcavityfield_param_0,
+	.param .u64 addcavityfield_param_1,
+	.param .u64 addcavityfield_param_2,
+	.param .u64 addcavityfield_param_3,
+	.param .u64 addcavityfield_param_4,
+	.param .u64 addcavityfield_param_5,
+	.param .u64 addcavityfield_param_6,
+	.param .u64 addcavityfield_param_7,
+	.param .u64 addcavityfield_param_8,
+	.param .f32 addcavityfield_param_9,
+	.param .u64 addcavityfield_param_10,
+	.param .f32 addcavityfield_param_11,
+	.param .u64 addcavityfield_param_12,
+	.param .f32 addcavityfield_param_13,
+	.param .u64 addcavityfield_param_14,
+	.param .f32 addcavityfield_param_15,
+	.param .u64 addcavityfield_param_16,
+	.param .f32 addcavityfield_param_17,
+	.param .f32 addcavityfield_param_18,
+	.param .f32 addcavityfield_param_19,
+	.param .f32 addcavityfield_param_20,
+	.param .f32 addcavityfield_param_21,
+	.param .f32 addcavityfield_param_22,
+	.param .f32 addcavityfield_param_23,
+	.param .u32 addcavityfield_param_24,
+	.param .u32 addcavityfield_param_25,
+	.param .u32 addcavityfield_param_26,
+	.param .u8 addcavityfield_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -1378,33 +1378,33 @@ BB0_58:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd13, [calcspinbeff_param_0];
-	ld.param.u64 	%rd14, [calcspinbeff_param_1];
-	ld.param.u64 	%rd15, [calcspinbeff_param_2];
-	ld.param.u64 	%rd16, [calcspinbeff_param_3];
-	ld.param.u64 	%rd17, [calcspinbeff_param_4];
-	ld.param.u64 	%rd18, [calcspinbeff_param_5];
-	ld.param.u64 	%rd19, [calcspinbeff_param_6];
-	ld.param.u64 	%rd20, [calcspinbeff_param_7];
-	ld.param.u64 	%rd21, [calcspinbeff_param_8];
-	ld.param.f32 	%f166, [calcspinbeff_param_9];
-	ld.param.u64 	%rd22, [calcspinbeff_param_10];
-	ld.param.f32 	%f167, [calcspinbeff_param_11];
-	ld.param.u64 	%rd23, [calcspinbeff_param_12];
-	ld.param.f32 	%f168, [calcspinbeff_param_13];
-	ld.param.u64 	%rd24, [calcspinbeff_param_14];
-	ld.param.f32 	%f169, [calcspinbeff_param_15];
-	ld.param.u64 	%rd25, [calcspinbeff_param_16];
-	ld.param.f32 	%f170, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.f32 	%f63, [calcspinbeff_param_22];
-	ld.param.f32 	%f64, [calcspinbeff_param_23];
-	ld.param.u32 	%r76, [calcspinbeff_param_24];
-	ld.param.u32 	%r77, [calcspinbeff_param_25];
-	ld.param.u32 	%r78, [calcspinbeff_param_26];
+	ld.param.u64 	%rd13, [addcavityfield_param_0];
+	ld.param.u64 	%rd14, [addcavityfield_param_1];
+	ld.param.u64 	%rd15, [addcavityfield_param_2];
+	ld.param.u64 	%rd16, [addcavityfield_param_3];
+	ld.param.u64 	%rd17, [addcavityfield_param_4];
+	ld.param.u64 	%rd18, [addcavityfield_param_5];
+	ld.param.u64 	%rd19, [addcavityfield_param_6];
+	ld.param.u64 	%rd20, [addcavityfield_param_7];
+	ld.param.u64 	%rd21, [addcavityfield_param_8];
+	ld.param.f32 	%f166, [addcavityfield_param_9];
+	ld.param.u64 	%rd22, [addcavityfield_param_10];
+	ld.param.f32 	%f167, [addcavityfield_param_11];
+	ld.param.u64 	%rd23, [addcavityfield_param_12];
+	ld.param.f32 	%f168, [addcavityfield_param_13];
+	ld.param.u64 	%rd24, [addcavityfield_param_14];
+	ld.param.f32 	%f169, [addcavityfield_param_15];
+	ld.param.u64 	%rd25, [addcavityfield_param_16];
+	ld.param.f32 	%f170, [addcavityfield_param_17];
+	ld.param.f32 	%f59, [addcavityfield_param_18];
+	ld.param.f32 	%f60, [addcavityfield_param_19];
+	ld.param.f32 	%f61, [addcavityfield_param_20];
+	ld.param.f32 	%f62, [addcavityfield_param_21];
+	ld.param.f32 	%f63, [addcavityfield_param_22];
+	ld.param.f32 	%f64, [addcavityfield_param_23];
+	ld.param.u32 	%r76, [addcavityfield_param_24];
+	ld.param.u32 	%r77, [addcavityfield_param_25];
+	ld.param.u32 	%r78, [addcavityfield_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -1918,43 +1918,43 @@ BB0_58:
 
 
 `
-   calcspinbeff_ptx_52 = `
+   addcavityfield_ptx_52 = `
 .version 6.4
 .target sm_52
 .address_size 64
 
-	// .globl	calcspinbeff
+	// .globl	addcavityfield
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry calcspinbeff(
-	.param .u64 calcspinbeff_param_0,
-	.param .u64 calcspinbeff_param_1,
-	.param .u64 calcspinbeff_param_2,
-	.param .u64 calcspinbeff_param_3,
-	.param .u64 calcspinbeff_param_4,
-	.param .u64 calcspinbeff_param_5,
-	.param .u64 calcspinbeff_param_6,
-	.param .u64 calcspinbeff_param_7,
-	.param .u64 calcspinbeff_param_8,
-	.param .f32 calcspinbeff_param_9,
-	.param .u64 calcspinbeff_param_10,
-	.param .f32 calcspinbeff_param_11,
-	.param .u64 calcspinbeff_param_12,
-	.param .f32 calcspinbeff_param_13,
-	.param .u64 calcspinbeff_param_14,
-	.param .f32 calcspinbeff_param_15,
-	.param .u64 calcspinbeff_param_16,
-	.param .f32 calcspinbeff_param_17,
-	.param .f32 calcspinbeff_param_18,
-	.param .f32 calcspinbeff_param_19,
-	.param .f32 calcspinbeff_param_20,
-	.param .f32 calcspinbeff_param_21,
-	.param .f32 calcspinbeff_param_22,
-	.param .f32 calcspinbeff_param_23,
-	.param .u32 calcspinbeff_param_24,
-	.param .u32 calcspinbeff_param_25,
-	.param .u32 calcspinbeff_param_26,
-	.param .u8 calcspinbeff_param_27
+.visible .entry addcavityfield(
+	.param .u64 addcavityfield_param_0,
+	.param .u64 addcavityfield_param_1,
+	.param .u64 addcavityfield_param_2,
+	.param .u64 addcavityfield_param_3,
+	.param .u64 addcavityfield_param_4,
+	.param .u64 addcavityfield_param_5,
+	.param .u64 addcavityfield_param_6,
+	.param .u64 addcavityfield_param_7,
+	.param .u64 addcavityfield_param_8,
+	.param .f32 addcavityfield_param_9,
+	.param .u64 addcavityfield_param_10,
+	.param .f32 addcavityfield_param_11,
+	.param .u64 addcavityfield_param_12,
+	.param .f32 addcavityfield_param_13,
+	.param .u64 addcavityfield_param_14,
+	.param .f32 addcavityfield_param_15,
+	.param .u64 addcavityfield_param_16,
+	.param .f32 addcavityfield_param_17,
+	.param .f32 addcavityfield_param_18,
+	.param .f32 addcavityfield_param_19,
+	.param .f32 addcavityfield_param_20,
+	.param .f32 addcavityfield_param_21,
+	.param .f32 addcavityfield_param_22,
+	.param .f32 addcavityfield_param_23,
+	.param .u32 addcavityfield_param_24,
+	.param .u32 addcavityfield_param_25,
+	.param .u32 addcavityfield_param_26,
+	.param .u8 addcavityfield_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -1967,33 +1967,33 @@ BB0_58:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd13, [calcspinbeff_param_0];
-	ld.param.u64 	%rd14, [calcspinbeff_param_1];
-	ld.param.u64 	%rd15, [calcspinbeff_param_2];
-	ld.param.u64 	%rd16, [calcspinbeff_param_3];
-	ld.param.u64 	%rd17, [calcspinbeff_param_4];
-	ld.param.u64 	%rd18, [calcspinbeff_param_5];
-	ld.param.u64 	%rd19, [calcspinbeff_param_6];
-	ld.param.u64 	%rd20, [calcspinbeff_param_7];
-	ld.param.u64 	%rd21, [calcspinbeff_param_8];
-	ld.param.f32 	%f166, [calcspinbeff_param_9];
-	ld.param.u64 	%rd22, [calcspinbeff_param_10];
-	ld.param.f32 	%f167, [calcspinbeff_param_11];
-	ld.param.u64 	%rd23, [calcspinbeff_param_12];
-	ld.param.f32 	%f168, [calcspinbeff_param_13];
-	ld.param.u64 	%rd24, [calcspinbeff_param_14];
-	ld.param.f32 	%f169, [calcspinbeff_param_15];
-	ld.param.u64 	%rd25, [calcspinbeff_param_16];
-	ld.param.f32 	%f170, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.f32 	%f63, [calcspinbeff_param_22];
-	ld.param.f32 	%f64, [calcspinbeff_param_23];
-	ld.param.u32 	%r76, [calcspinbeff_param_24];
-	ld.param.u32 	%r77, [calcspinbeff_param_25];
-	ld.param.u32 	%r78, [calcspinbeff_param_26];
+	ld.param.u64 	%rd13, [addcavityfield_param_0];
+	ld.param.u64 	%rd14, [addcavityfield_param_1];
+	ld.param.u64 	%rd15, [addcavityfield_param_2];
+	ld.param.u64 	%rd16, [addcavityfield_param_3];
+	ld.param.u64 	%rd17, [addcavityfield_param_4];
+	ld.param.u64 	%rd18, [addcavityfield_param_5];
+	ld.param.u64 	%rd19, [addcavityfield_param_6];
+	ld.param.u64 	%rd20, [addcavityfield_param_7];
+	ld.param.u64 	%rd21, [addcavityfield_param_8];
+	ld.param.f32 	%f166, [addcavityfield_param_9];
+	ld.param.u64 	%rd22, [addcavityfield_param_10];
+	ld.param.f32 	%f167, [addcavityfield_param_11];
+	ld.param.u64 	%rd23, [addcavityfield_param_12];
+	ld.param.f32 	%f168, [addcavityfield_param_13];
+	ld.param.u64 	%rd24, [addcavityfield_param_14];
+	ld.param.f32 	%f169, [addcavityfield_param_15];
+	ld.param.u64 	%rd25, [addcavityfield_param_16];
+	ld.param.f32 	%f170, [addcavityfield_param_17];
+	ld.param.f32 	%f59, [addcavityfield_param_18];
+	ld.param.f32 	%f60, [addcavityfield_param_19];
+	ld.param.f32 	%f61, [addcavityfield_param_20];
+	ld.param.f32 	%f62, [addcavityfield_param_21];
+	ld.param.f32 	%f63, [addcavityfield_param_22];
+	ld.param.f32 	%f64, [addcavityfield_param_23];
+	ld.param.u32 	%r76, [addcavityfield_param_24];
+	ld.param.u32 	%r77, [addcavityfield_param_25];
+	ld.param.u32 	%r78, [addcavityfield_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -2507,43 +2507,43 @@ BB0_58:
 
 
 `
-   calcspinbeff_ptx_53 = `
+   addcavityfield_ptx_53 = `
 .version 6.4
 .target sm_53
 .address_size 64
 
-	// .globl	calcspinbeff
+	// .globl	addcavityfield
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry calcspinbeff(
-	.param .u64 calcspinbeff_param_0,
-	.param .u64 calcspinbeff_param_1,
-	.param .u64 calcspinbeff_param_2,
-	.param .u64 calcspinbeff_param_3,
-	.param .u64 calcspinbeff_param_4,
-	.param .u64 calcspinbeff_param_5,
-	.param .u64 calcspinbeff_param_6,
-	.param .u64 calcspinbeff_param_7,
-	.param .u64 calcspinbeff_param_8,
-	.param .f32 calcspinbeff_param_9,
-	.param .u64 calcspinbeff_param_10,
-	.param .f32 calcspinbeff_param_11,
-	.param .u64 calcspinbeff_param_12,
-	.param .f32 calcspinbeff_param_13,
-	.param .u64 calcspinbeff_param_14,
-	.param .f32 calcspinbeff_param_15,
-	.param .u64 calcspinbeff_param_16,
-	.param .f32 calcspinbeff_param_17,
-	.param .f32 calcspinbeff_param_18,
-	.param .f32 calcspinbeff_param_19,
-	.param .f32 calcspinbeff_param_20,
-	.param .f32 calcspinbeff_param_21,
-	.param .f32 calcspinbeff_param_22,
-	.param .f32 calcspinbeff_param_23,
-	.param .u32 calcspinbeff_param_24,
-	.param .u32 calcspinbeff_param_25,
-	.param .u32 calcspinbeff_param_26,
-	.param .u8 calcspinbeff_param_27
+.visible .entry addcavityfield(
+	.param .u64 addcavityfield_param_0,
+	.param .u64 addcavityfield_param_1,
+	.param .u64 addcavityfield_param_2,
+	.param .u64 addcavityfield_param_3,
+	.param .u64 addcavityfield_param_4,
+	.param .u64 addcavityfield_param_5,
+	.param .u64 addcavityfield_param_6,
+	.param .u64 addcavityfield_param_7,
+	.param .u64 addcavityfield_param_8,
+	.param .f32 addcavityfield_param_9,
+	.param .u64 addcavityfield_param_10,
+	.param .f32 addcavityfield_param_11,
+	.param .u64 addcavityfield_param_12,
+	.param .f32 addcavityfield_param_13,
+	.param .u64 addcavityfield_param_14,
+	.param .f32 addcavityfield_param_15,
+	.param .u64 addcavityfield_param_16,
+	.param .f32 addcavityfield_param_17,
+	.param .f32 addcavityfield_param_18,
+	.param .f32 addcavityfield_param_19,
+	.param .f32 addcavityfield_param_20,
+	.param .f32 addcavityfield_param_21,
+	.param .f32 addcavityfield_param_22,
+	.param .f32 addcavityfield_param_23,
+	.param .u32 addcavityfield_param_24,
+	.param .u32 addcavityfield_param_25,
+	.param .u32 addcavityfield_param_26,
+	.param .u8 addcavityfield_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -2556,33 +2556,33 @@ BB0_58:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd13, [calcspinbeff_param_0];
-	ld.param.u64 	%rd14, [calcspinbeff_param_1];
-	ld.param.u64 	%rd15, [calcspinbeff_param_2];
-	ld.param.u64 	%rd16, [calcspinbeff_param_3];
-	ld.param.u64 	%rd17, [calcspinbeff_param_4];
-	ld.param.u64 	%rd18, [calcspinbeff_param_5];
-	ld.param.u64 	%rd19, [calcspinbeff_param_6];
-	ld.param.u64 	%rd20, [calcspinbeff_param_7];
-	ld.param.u64 	%rd21, [calcspinbeff_param_8];
-	ld.param.f32 	%f166, [calcspinbeff_param_9];
-	ld.param.u64 	%rd22, [calcspinbeff_param_10];
-	ld.param.f32 	%f167, [calcspinbeff_param_11];
-	ld.param.u64 	%rd23, [calcspinbeff_param_12];
-	ld.param.f32 	%f168, [calcspinbeff_param_13];
-	ld.param.u64 	%rd24, [calcspinbeff_param_14];
-	ld.param.f32 	%f169, [calcspinbeff_param_15];
-	ld.param.u64 	%rd25, [calcspinbeff_param_16];
-	ld.param.f32 	%f170, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.f32 	%f63, [calcspinbeff_param_22];
-	ld.param.f32 	%f64, [calcspinbeff_param_23];
-	ld.param.u32 	%r76, [calcspinbeff_param_24];
-	ld.param.u32 	%r77, [calcspinbeff_param_25];
-	ld.param.u32 	%r78, [calcspinbeff_param_26];
+	ld.param.u64 	%rd13, [addcavityfield_param_0];
+	ld.param.u64 	%rd14, [addcavityfield_param_1];
+	ld.param.u64 	%rd15, [addcavityfield_param_2];
+	ld.param.u64 	%rd16, [addcavityfield_param_3];
+	ld.param.u64 	%rd17, [addcavityfield_param_4];
+	ld.param.u64 	%rd18, [addcavityfield_param_5];
+	ld.param.u64 	%rd19, [addcavityfield_param_6];
+	ld.param.u64 	%rd20, [addcavityfield_param_7];
+	ld.param.u64 	%rd21, [addcavityfield_param_8];
+	ld.param.f32 	%f166, [addcavityfield_param_9];
+	ld.param.u64 	%rd22, [addcavityfield_param_10];
+	ld.param.f32 	%f167, [addcavityfield_param_11];
+	ld.param.u64 	%rd23, [addcavityfield_param_12];
+	ld.param.f32 	%f168, [addcavityfield_param_13];
+	ld.param.u64 	%rd24, [addcavityfield_param_14];
+	ld.param.f32 	%f169, [addcavityfield_param_15];
+	ld.param.u64 	%rd25, [addcavityfield_param_16];
+	ld.param.f32 	%f170, [addcavityfield_param_17];
+	ld.param.f32 	%f59, [addcavityfield_param_18];
+	ld.param.f32 	%f60, [addcavityfield_param_19];
+	ld.param.f32 	%f61, [addcavityfield_param_20];
+	ld.param.f32 	%f62, [addcavityfield_param_21];
+	ld.param.f32 	%f63, [addcavityfield_param_22];
+	ld.param.f32 	%f64, [addcavityfield_param_23];
+	ld.param.u32 	%r76, [addcavityfield_param_24];
+	ld.param.u32 	%r77, [addcavityfield_param_25];
+	ld.param.u32 	%r78, [addcavityfield_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -3096,43 +3096,43 @@ BB0_58:
 
 
 `
-   calcspinbeff_ptx_60 = `
+   addcavityfield_ptx_60 = `
 .version 6.4
 .target sm_60
 .address_size 64
 
-	// .globl	calcspinbeff
+	// .globl	addcavityfield
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry calcspinbeff(
-	.param .u64 calcspinbeff_param_0,
-	.param .u64 calcspinbeff_param_1,
-	.param .u64 calcspinbeff_param_2,
-	.param .u64 calcspinbeff_param_3,
-	.param .u64 calcspinbeff_param_4,
-	.param .u64 calcspinbeff_param_5,
-	.param .u64 calcspinbeff_param_6,
-	.param .u64 calcspinbeff_param_7,
-	.param .u64 calcspinbeff_param_8,
-	.param .f32 calcspinbeff_param_9,
-	.param .u64 calcspinbeff_param_10,
-	.param .f32 calcspinbeff_param_11,
-	.param .u64 calcspinbeff_param_12,
-	.param .f32 calcspinbeff_param_13,
-	.param .u64 calcspinbeff_param_14,
-	.param .f32 calcspinbeff_param_15,
-	.param .u64 calcspinbeff_param_16,
-	.param .f32 calcspinbeff_param_17,
-	.param .f32 calcspinbeff_param_18,
-	.param .f32 calcspinbeff_param_19,
-	.param .f32 calcspinbeff_param_20,
-	.param .f32 calcspinbeff_param_21,
-	.param .f32 calcspinbeff_param_22,
-	.param .f32 calcspinbeff_param_23,
-	.param .u32 calcspinbeff_param_24,
-	.param .u32 calcspinbeff_param_25,
-	.param .u32 calcspinbeff_param_26,
-	.param .u8 calcspinbeff_param_27
+.visible .entry addcavityfield(
+	.param .u64 addcavityfield_param_0,
+	.param .u64 addcavityfield_param_1,
+	.param .u64 addcavityfield_param_2,
+	.param .u64 addcavityfield_param_3,
+	.param .u64 addcavityfield_param_4,
+	.param .u64 addcavityfield_param_5,
+	.param .u64 addcavityfield_param_6,
+	.param .u64 addcavityfield_param_7,
+	.param .u64 addcavityfield_param_8,
+	.param .f32 addcavityfield_param_9,
+	.param .u64 addcavityfield_param_10,
+	.param .f32 addcavityfield_param_11,
+	.param .u64 addcavityfield_param_12,
+	.param .f32 addcavityfield_param_13,
+	.param .u64 addcavityfield_param_14,
+	.param .f32 addcavityfield_param_15,
+	.param .u64 addcavityfield_param_16,
+	.param .f32 addcavityfield_param_17,
+	.param .f32 addcavityfield_param_18,
+	.param .f32 addcavityfield_param_19,
+	.param .f32 addcavityfield_param_20,
+	.param .f32 addcavityfield_param_21,
+	.param .f32 addcavityfield_param_22,
+	.param .f32 addcavityfield_param_23,
+	.param .u32 addcavityfield_param_24,
+	.param .u32 addcavityfield_param_25,
+	.param .u32 addcavityfield_param_26,
+	.param .u8 addcavityfield_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -3145,33 +3145,33 @@ BB0_58:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd13, [calcspinbeff_param_0];
-	ld.param.u64 	%rd14, [calcspinbeff_param_1];
-	ld.param.u64 	%rd15, [calcspinbeff_param_2];
-	ld.param.u64 	%rd16, [calcspinbeff_param_3];
-	ld.param.u64 	%rd17, [calcspinbeff_param_4];
-	ld.param.u64 	%rd18, [calcspinbeff_param_5];
-	ld.param.u64 	%rd19, [calcspinbeff_param_6];
-	ld.param.u64 	%rd20, [calcspinbeff_param_7];
-	ld.param.u64 	%rd21, [calcspinbeff_param_8];
-	ld.param.f32 	%f166, [calcspinbeff_param_9];
-	ld.param.u64 	%rd22, [calcspinbeff_param_10];
-	ld.param.f32 	%f167, [calcspinbeff_param_11];
-	ld.param.u64 	%rd23, [calcspinbeff_param_12];
-	ld.param.f32 	%f168, [calcspinbeff_param_13];
-	ld.param.u64 	%rd24, [calcspinbeff_param_14];
-	ld.param.f32 	%f169, [calcspinbeff_param_15];
-	ld.param.u64 	%rd25, [calcspinbeff_param_16];
-	ld.param.f32 	%f170, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.f32 	%f63, [calcspinbeff_param_22];
-	ld.param.f32 	%f64, [calcspinbeff_param_23];
-	ld.param.u32 	%r76, [calcspinbeff_param_24];
-	ld.param.u32 	%r77, [calcspinbeff_param_25];
-	ld.param.u32 	%r78, [calcspinbeff_param_26];
+	ld.param.u64 	%rd13, [addcavityfield_param_0];
+	ld.param.u64 	%rd14, [addcavityfield_param_1];
+	ld.param.u64 	%rd15, [addcavityfield_param_2];
+	ld.param.u64 	%rd16, [addcavityfield_param_3];
+	ld.param.u64 	%rd17, [addcavityfield_param_4];
+	ld.param.u64 	%rd18, [addcavityfield_param_5];
+	ld.param.u64 	%rd19, [addcavityfield_param_6];
+	ld.param.u64 	%rd20, [addcavityfield_param_7];
+	ld.param.u64 	%rd21, [addcavityfield_param_8];
+	ld.param.f32 	%f166, [addcavityfield_param_9];
+	ld.param.u64 	%rd22, [addcavityfield_param_10];
+	ld.param.f32 	%f167, [addcavityfield_param_11];
+	ld.param.u64 	%rd23, [addcavityfield_param_12];
+	ld.param.f32 	%f168, [addcavityfield_param_13];
+	ld.param.u64 	%rd24, [addcavityfield_param_14];
+	ld.param.f32 	%f169, [addcavityfield_param_15];
+	ld.param.u64 	%rd25, [addcavityfield_param_16];
+	ld.param.f32 	%f170, [addcavityfield_param_17];
+	ld.param.f32 	%f59, [addcavityfield_param_18];
+	ld.param.f32 	%f60, [addcavityfield_param_19];
+	ld.param.f32 	%f61, [addcavityfield_param_20];
+	ld.param.f32 	%f62, [addcavityfield_param_21];
+	ld.param.f32 	%f63, [addcavityfield_param_22];
+	ld.param.f32 	%f64, [addcavityfield_param_23];
+	ld.param.u32 	%r76, [addcavityfield_param_24];
+	ld.param.u32 	%r77, [addcavityfield_param_25];
+	ld.param.u32 	%r78, [addcavityfield_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -3685,43 +3685,43 @@ BB0_58:
 
 
 `
-   calcspinbeff_ptx_61 = `
+   addcavityfield_ptx_61 = `
 .version 6.4
 .target sm_61
 .address_size 64
 
-	// .globl	calcspinbeff
+	// .globl	addcavityfield
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry calcspinbeff(
-	.param .u64 calcspinbeff_param_0,
-	.param .u64 calcspinbeff_param_1,
-	.param .u64 calcspinbeff_param_2,
-	.param .u64 calcspinbeff_param_3,
-	.param .u64 calcspinbeff_param_4,
-	.param .u64 calcspinbeff_param_5,
-	.param .u64 calcspinbeff_param_6,
-	.param .u64 calcspinbeff_param_7,
-	.param .u64 calcspinbeff_param_8,
-	.param .f32 calcspinbeff_param_9,
-	.param .u64 calcspinbeff_param_10,
-	.param .f32 calcspinbeff_param_11,
-	.param .u64 calcspinbeff_param_12,
-	.param .f32 calcspinbeff_param_13,
-	.param .u64 calcspinbeff_param_14,
-	.param .f32 calcspinbeff_param_15,
-	.param .u64 calcspinbeff_param_16,
-	.param .f32 calcspinbeff_param_17,
-	.param .f32 calcspinbeff_param_18,
-	.param .f32 calcspinbeff_param_19,
-	.param .f32 calcspinbeff_param_20,
-	.param .f32 calcspinbeff_param_21,
-	.param .f32 calcspinbeff_param_22,
-	.param .f32 calcspinbeff_param_23,
-	.param .u32 calcspinbeff_param_24,
-	.param .u32 calcspinbeff_param_25,
-	.param .u32 calcspinbeff_param_26,
-	.param .u8 calcspinbeff_param_27
+.visible .entry addcavityfield(
+	.param .u64 addcavityfield_param_0,
+	.param .u64 addcavityfield_param_1,
+	.param .u64 addcavityfield_param_2,
+	.param .u64 addcavityfield_param_3,
+	.param .u64 addcavityfield_param_4,
+	.param .u64 addcavityfield_param_5,
+	.param .u64 addcavityfield_param_6,
+	.param .u64 addcavityfield_param_7,
+	.param .u64 addcavityfield_param_8,
+	.param .f32 addcavityfield_param_9,
+	.param .u64 addcavityfield_param_10,
+	.param .f32 addcavityfield_param_11,
+	.param .u64 addcavityfield_param_12,
+	.param .f32 addcavityfield_param_13,
+	.param .u64 addcavityfield_param_14,
+	.param .f32 addcavityfield_param_15,
+	.param .u64 addcavityfield_param_16,
+	.param .f32 addcavityfield_param_17,
+	.param .f32 addcavityfield_param_18,
+	.param .f32 addcavityfield_param_19,
+	.param .f32 addcavityfield_param_20,
+	.param .f32 addcavityfield_param_21,
+	.param .f32 addcavityfield_param_22,
+	.param .f32 addcavityfield_param_23,
+	.param .u32 addcavityfield_param_24,
+	.param .u32 addcavityfield_param_25,
+	.param .u32 addcavityfield_param_26,
+	.param .u8 addcavityfield_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -3734,33 +3734,33 @@ BB0_58:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd13, [calcspinbeff_param_0];
-	ld.param.u64 	%rd14, [calcspinbeff_param_1];
-	ld.param.u64 	%rd15, [calcspinbeff_param_2];
-	ld.param.u64 	%rd16, [calcspinbeff_param_3];
-	ld.param.u64 	%rd17, [calcspinbeff_param_4];
-	ld.param.u64 	%rd18, [calcspinbeff_param_5];
-	ld.param.u64 	%rd19, [calcspinbeff_param_6];
-	ld.param.u64 	%rd20, [calcspinbeff_param_7];
-	ld.param.u64 	%rd21, [calcspinbeff_param_8];
-	ld.param.f32 	%f166, [calcspinbeff_param_9];
-	ld.param.u64 	%rd22, [calcspinbeff_param_10];
-	ld.param.f32 	%f167, [calcspinbeff_param_11];
-	ld.param.u64 	%rd23, [calcspinbeff_param_12];
-	ld.param.f32 	%f168, [calcspinbeff_param_13];
-	ld.param.u64 	%rd24, [calcspinbeff_param_14];
-	ld.param.f32 	%f169, [calcspinbeff_param_15];
-	ld.param.u64 	%rd25, [calcspinbeff_param_16];
-	ld.param.f32 	%f170, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.f32 	%f63, [calcspinbeff_param_22];
-	ld.param.f32 	%f64, [calcspinbeff_param_23];
-	ld.param.u32 	%r76, [calcspinbeff_param_24];
-	ld.param.u32 	%r77, [calcspinbeff_param_25];
-	ld.param.u32 	%r78, [calcspinbeff_param_26];
+	ld.param.u64 	%rd13, [addcavityfield_param_0];
+	ld.param.u64 	%rd14, [addcavityfield_param_1];
+	ld.param.u64 	%rd15, [addcavityfield_param_2];
+	ld.param.u64 	%rd16, [addcavityfield_param_3];
+	ld.param.u64 	%rd17, [addcavityfield_param_4];
+	ld.param.u64 	%rd18, [addcavityfield_param_5];
+	ld.param.u64 	%rd19, [addcavityfield_param_6];
+	ld.param.u64 	%rd20, [addcavityfield_param_7];
+	ld.param.u64 	%rd21, [addcavityfield_param_8];
+	ld.param.f32 	%f166, [addcavityfield_param_9];
+	ld.param.u64 	%rd22, [addcavityfield_param_10];
+	ld.param.f32 	%f167, [addcavityfield_param_11];
+	ld.param.u64 	%rd23, [addcavityfield_param_12];
+	ld.param.f32 	%f168, [addcavityfield_param_13];
+	ld.param.u64 	%rd24, [addcavityfield_param_14];
+	ld.param.f32 	%f169, [addcavityfield_param_15];
+	ld.param.u64 	%rd25, [addcavityfield_param_16];
+	ld.param.f32 	%f170, [addcavityfield_param_17];
+	ld.param.f32 	%f59, [addcavityfield_param_18];
+	ld.param.f32 	%f60, [addcavityfield_param_19];
+	ld.param.f32 	%f61, [addcavityfield_param_20];
+	ld.param.f32 	%f62, [addcavityfield_param_21];
+	ld.param.f32 	%f63, [addcavityfield_param_22];
+	ld.param.f32 	%f64, [addcavityfield_param_23];
+	ld.param.u32 	%r76, [addcavityfield_param_24];
+	ld.param.u32 	%r77, [addcavityfield_param_25];
+	ld.param.u32 	%r78, [addcavityfield_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -4274,43 +4274,43 @@ BB0_58:
 
 
 `
-   calcspinbeff_ptx_70 = `
+   addcavityfield_ptx_70 = `
 .version 6.4
 .target sm_70
 .address_size 64
 
-	// .globl	calcspinbeff
+	// .globl	addcavityfield
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry calcspinbeff(
-	.param .u64 calcspinbeff_param_0,
-	.param .u64 calcspinbeff_param_1,
-	.param .u64 calcspinbeff_param_2,
-	.param .u64 calcspinbeff_param_3,
-	.param .u64 calcspinbeff_param_4,
-	.param .u64 calcspinbeff_param_5,
-	.param .u64 calcspinbeff_param_6,
-	.param .u64 calcspinbeff_param_7,
-	.param .u64 calcspinbeff_param_8,
-	.param .f32 calcspinbeff_param_9,
-	.param .u64 calcspinbeff_param_10,
-	.param .f32 calcspinbeff_param_11,
-	.param .u64 calcspinbeff_param_12,
-	.param .f32 calcspinbeff_param_13,
-	.param .u64 calcspinbeff_param_14,
-	.param .f32 calcspinbeff_param_15,
-	.param .u64 calcspinbeff_param_16,
-	.param .f32 calcspinbeff_param_17,
-	.param .f32 calcspinbeff_param_18,
-	.param .f32 calcspinbeff_param_19,
-	.param .f32 calcspinbeff_param_20,
-	.param .f32 calcspinbeff_param_21,
-	.param .f32 calcspinbeff_param_22,
-	.param .f32 calcspinbeff_param_23,
-	.param .u32 calcspinbeff_param_24,
-	.param .u32 calcspinbeff_param_25,
-	.param .u32 calcspinbeff_param_26,
-	.param .u8 calcspinbeff_param_27
+.visible .entry addcavityfield(
+	.param .u64 addcavityfield_param_0,
+	.param .u64 addcavityfield_param_1,
+	.param .u64 addcavityfield_param_2,
+	.param .u64 addcavityfield_param_3,
+	.param .u64 addcavityfield_param_4,
+	.param .u64 addcavityfield_param_5,
+	.param .u64 addcavityfield_param_6,
+	.param .u64 addcavityfield_param_7,
+	.param .u64 addcavityfield_param_8,
+	.param .f32 addcavityfield_param_9,
+	.param .u64 addcavityfield_param_10,
+	.param .f32 addcavityfield_param_11,
+	.param .u64 addcavityfield_param_12,
+	.param .f32 addcavityfield_param_13,
+	.param .u64 addcavityfield_param_14,
+	.param .f32 addcavityfield_param_15,
+	.param .u64 addcavityfield_param_16,
+	.param .f32 addcavityfield_param_17,
+	.param .f32 addcavityfield_param_18,
+	.param .f32 addcavityfield_param_19,
+	.param .f32 addcavityfield_param_20,
+	.param .f32 addcavityfield_param_21,
+	.param .f32 addcavityfield_param_22,
+	.param .f32 addcavityfield_param_23,
+	.param .u32 addcavityfield_param_24,
+	.param .u32 addcavityfield_param_25,
+	.param .u32 addcavityfield_param_26,
+	.param .u8 addcavityfield_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -4323,33 +4323,33 @@ BB0_58:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd13, [calcspinbeff_param_0];
-	ld.param.u64 	%rd14, [calcspinbeff_param_1];
-	ld.param.u64 	%rd15, [calcspinbeff_param_2];
-	ld.param.u64 	%rd16, [calcspinbeff_param_3];
-	ld.param.u64 	%rd17, [calcspinbeff_param_4];
-	ld.param.u64 	%rd18, [calcspinbeff_param_5];
-	ld.param.u64 	%rd19, [calcspinbeff_param_6];
-	ld.param.u64 	%rd20, [calcspinbeff_param_7];
-	ld.param.u64 	%rd21, [calcspinbeff_param_8];
-	ld.param.f32 	%f166, [calcspinbeff_param_9];
-	ld.param.u64 	%rd22, [calcspinbeff_param_10];
-	ld.param.f32 	%f167, [calcspinbeff_param_11];
-	ld.param.u64 	%rd23, [calcspinbeff_param_12];
-	ld.param.f32 	%f168, [calcspinbeff_param_13];
-	ld.param.u64 	%rd24, [calcspinbeff_param_14];
-	ld.param.f32 	%f169, [calcspinbeff_param_15];
-	ld.param.u64 	%rd25, [calcspinbeff_param_16];
-	ld.param.f32 	%f170, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.f32 	%f63, [calcspinbeff_param_22];
-	ld.param.f32 	%f64, [calcspinbeff_param_23];
-	ld.param.u32 	%r76, [calcspinbeff_param_24];
-	ld.param.u32 	%r77, [calcspinbeff_param_25];
-	ld.param.u32 	%r78, [calcspinbeff_param_26];
+	ld.param.u64 	%rd13, [addcavityfield_param_0];
+	ld.param.u64 	%rd14, [addcavityfield_param_1];
+	ld.param.u64 	%rd15, [addcavityfield_param_2];
+	ld.param.u64 	%rd16, [addcavityfield_param_3];
+	ld.param.u64 	%rd17, [addcavityfield_param_4];
+	ld.param.u64 	%rd18, [addcavityfield_param_5];
+	ld.param.u64 	%rd19, [addcavityfield_param_6];
+	ld.param.u64 	%rd20, [addcavityfield_param_7];
+	ld.param.u64 	%rd21, [addcavityfield_param_8];
+	ld.param.f32 	%f166, [addcavityfield_param_9];
+	ld.param.u64 	%rd22, [addcavityfield_param_10];
+	ld.param.f32 	%f167, [addcavityfield_param_11];
+	ld.param.u64 	%rd23, [addcavityfield_param_12];
+	ld.param.f32 	%f168, [addcavityfield_param_13];
+	ld.param.u64 	%rd24, [addcavityfield_param_14];
+	ld.param.f32 	%f169, [addcavityfield_param_15];
+	ld.param.u64 	%rd25, [addcavityfield_param_16];
+	ld.param.f32 	%f170, [addcavityfield_param_17];
+	ld.param.f32 	%f59, [addcavityfield_param_18];
+	ld.param.f32 	%f60, [addcavityfield_param_19];
+	ld.param.f32 	%f61, [addcavityfield_param_20];
+	ld.param.f32 	%f62, [addcavityfield_param_21];
+	ld.param.f32 	%f63, [addcavityfield_param_22];
+	ld.param.f32 	%f64, [addcavityfield_param_23];
+	ld.param.u32 	%r76, [addcavityfield_param_24];
+	ld.param.u32 	%r77, [addcavityfield_param_25];
+	ld.param.u32 	%r78, [addcavityfield_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;
@@ -4863,43 +4863,43 @@ BB0_58:
 
 
 `
-   calcspinbeff_ptx_75 = `
+   addcavityfield_ptx_75 = `
 .version 6.4
 .target sm_75
 .address_size 64
 
-	// .globl	calcspinbeff
+	// .globl	addcavityfield
 .const .align 4 .b8 __cudart_i2opi_f[24] = {65, 144, 67, 60, 153, 149, 98, 219, 192, 221, 52, 245, 209, 87, 39, 252, 41, 21, 68, 78, 110, 131, 249, 162};
 
-.visible .entry calcspinbeff(
-	.param .u64 calcspinbeff_param_0,
-	.param .u64 calcspinbeff_param_1,
-	.param .u64 calcspinbeff_param_2,
-	.param .u64 calcspinbeff_param_3,
-	.param .u64 calcspinbeff_param_4,
-	.param .u64 calcspinbeff_param_5,
-	.param .u64 calcspinbeff_param_6,
-	.param .u64 calcspinbeff_param_7,
-	.param .u64 calcspinbeff_param_8,
-	.param .f32 calcspinbeff_param_9,
-	.param .u64 calcspinbeff_param_10,
-	.param .f32 calcspinbeff_param_11,
-	.param .u64 calcspinbeff_param_12,
-	.param .f32 calcspinbeff_param_13,
-	.param .u64 calcspinbeff_param_14,
-	.param .f32 calcspinbeff_param_15,
-	.param .u64 calcspinbeff_param_16,
-	.param .f32 calcspinbeff_param_17,
-	.param .f32 calcspinbeff_param_18,
-	.param .f32 calcspinbeff_param_19,
-	.param .f32 calcspinbeff_param_20,
-	.param .f32 calcspinbeff_param_21,
-	.param .f32 calcspinbeff_param_22,
-	.param .f32 calcspinbeff_param_23,
-	.param .u32 calcspinbeff_param_24,
-	.param .u32 calcspinbeff_param_25,
-	.param .u32 calcspinbeff_param_26,
-	.param .u8 calcspinbeff_param_27
+.visible .entry addcavityfield(
+	.param .u64 addcavityfield_param_0,
+	.param .u64 addcavityfield_param_1,
+	.param .u64 addcavityfield_param_2,
+	.param .u64 addcavityfield_param_3,
+	.param .u64 addcavityfield_param_4,
+	.param .u64 addcavityfield_param_5,
+	.param .u64 addcavityfield_param_6,
+	.param .u64 addcavityfield_param_7,
+	.param .u64 addcavityfield_param_8,
+	.param .f32 addcavityfield_param_9,
+	.param .u64 addcavityfield_param_10,
+	.param .f32 addcavityfield_param_11,
+	.param .u64 addcavityfield_param_12,
+	.param .f32 addcavityfield_param_13,
+	.param .u64 addcavityfield_param_14,
+	.param .f32 addcavityfield_param_15,
+	.param .u64 addcavityfield_param_16,
+	.param .f32 addcavityfield_param_17,
+	.param .f32 addcavityfield_param_18,
+	.param .f32 addcavityfield_param_19,
+	.param .f32 addcavityfield_param_20,
+	.param .f32 addcavityfield_param_21,
+	.param .f32 addcavityfield_param_22,
+	.param .f32 addcavityfield_param_23,
+	.param .u32 addcavityfield_param_24,
+	.param .u32 addcavityfield_param_25,
+	.param .u32 addcavityfield_param_26,
+	.param .u8 addcavityfield_param_27
 )
 {
 	.local .align 4 .b8 	__local_depot0[28];
@@ -4912,33 +4912,33 @@ BB0_58:
 
 
 	mov.u64 	%SPL, __local_depot0;
-	ld.param.u64 	%rd13, [calcspinbeff_param_0];
-	ld.param.u64 	%rd14, [calcspinbeff_param_1];
-	ld.param.u64 	%rd15, [calcspinbeff_param_2];
-	ld.param.u64 	%rd16, [calcspinbeff_param_3];
-	ld.param.u64 	%rd17, [calcspinbeff_param_4];
-	ld.param.u64 	%rd18, [calcspinbeff_param_5];
-	ld.param.u64 	%rd19, [calcspinbeff_param_6];
-	ld.param.u64 	%rd20, [calcspinbeff_param_7];
-	ld.param.u64 	%rd21, [calcspinbeff_param_8];
-	ld.param.f32 	%f166, [calcspinbeff_param_9];
-	ld.param.u64 	%rd22, [calcspinbeff_param_10];
-	ld.param.f32 	%f167, [calcspinbeff_param_11];
-	ld.param.u64 	%rd23, [calcspinbeff_param_12];
-	ld.param.f32 	%f168, [calcspinbeff_param_13];
-	ld.param.u64 	%rd24, [calcspinbeff_param_14];
-	ld.param.f32 	%f169, [calcspinbeff_param_15];
-	ld.param.u64 	%rd25, [calcspinbeff_param_16];
-	ld.param.f32 	%f170, [calcspinbeff_param_17];
-	ld.param.f32 	%f59, [calcspinbeff_param_18];
-	ld.param.f32 	%f60, [calcspinbeff_param_19];
-	ld.param.f32 	%f61, [calcspinbeff_param_20];
-	ld.param.f32 	%f62, [calcspinbeff_param_21];
-	ld.param.f32 	%f63, [calcspinbeff_param_22];
-	ld.param.f32 	%f64, [calcspinbeff_param_23];
-	ld.param.u32 	%r76, [calcspinbeff_param_24];
-	ld.param.u32 	%r77, [calcspinbeff_param_25];
-	ld.param.u32 	%r78, [calcspinbeff_param_26];
+	ld.param.u64 	%rd13, [addcavityfield_param_0];
+	ld.param.u64 	%rd14, [addcavityfield_param_1];
+	ld.param.u64 	%rd15, [addcavityfield_param_2];
+	ld.param.u64 	%rd16, [addcavityfield_param_3];
+	ld.param.u64 	%rd17, [addcavityfield_param_4];
+	ld.param.u64 	%rd18, [addcavityfield_param_5];
+	ld.param.u64 	%rd19, [addcavityfield_param_6];
+	ld.param.u64 	%rd20, [addcavityfield_param_7];
+	ld.param.u64 	%rd21, [addcavityfield_param_8];
+	ld.param.f32 	%f166, [addcavityfield_param_9];
+	ld.param.u64 	%rd22, [addcavityfield_param_10];
+	ld.param.f32 	%f167, [addcavityfield_param_11];
+	ld.param.u64 	%rd23, [addcavityfield_param_12];
+	ld.param.f32 	%f168, [addcavityfield_param_13];
+	ld.param.u64 	%rd24, [addcavityfield_param_14];
+	ld.param.f32 	%f169, [addcavityfield_param_15];
+	ld.param.u64 	%rd25, [addcavityfield_param_16];
+	ld.param.f32 	%f170, [addcavityfield_param_17];
+	ld.param.f32 	%f59, [addcavityfield_param_18];
+	ld.param.f32 	%f60, [addcavityfield_param_19];
+	ld.param.f32 	%f61, [addcavityfield_param_20];
+	ld.param.f32 	%f62, [addcavityfield_param_21];
+	ld.param.f32 	%f63, [addcavityfield_param_22];
+	ld.param.f32 	%f64, [addcavityfield_param_23];
+	ld.param.u32 	%r76, [addcavityfield_param_24];
+	ld.param.u32 	%r77, [addcavityfield_param_25];
+	ld.param.u32 	%r78, [addcavityfield_param_26];
 	mov.u32 	%r79, %ntid.x;
 	mov.u32 	%r80, %ctaid.x;
 	mov.u32 	%r81, %tid.x;

@@ -11,26 +11,26 @@ import (
 )
 
 var (
-	Alpha                              = NewScalarParam("alpha", "", "Landau-Lifshitz damping constant")
-	Xi                                 = NewScalarParam("xi", "", "Non-adiabaticity of spin-transfer-torque")
-	Pol                                = NewScalarParam("Pol", "", "Electrical current polarization")
-	Lambda                             = NewScalarParam("Lambda", "", "Slonczewski Λ parameter")
-	EpsilonPrime                       = NewScalarParam("EpsilonPrime", "", "Slonczewski secondairy STT term ε'")
-	FrozenSpins                        = NewScalarParam("frozenspins", "", "Defines spins that should be fixed") // 1 - frozen, 0 - free. TODO: check if it only contains 0/1 values
-	FixedLayer                         = NewExcitation("FixedLayer", "", "Slonczewski fixed layer polarization")
-	Torque                             = NewVectorField("torque", "T", "Total torque/γ0", SetTorque)
-	LLTorque                           = NewVectorField("LLtorque", "T", "Landau-Lifshitz torque/γ0", SetLLTorque)
-	STTorque                           = NewVectorField("STTorque", "T", "Spin-transfer torque/γ0", AddSTTorque)
-	FreeLayerThickness                 = NewScalarParam("FreeLayerThickness", "m", "Slonczewski free layer thickness (if set to zero (default), then the thickness will be deduced from the mesh size)")
-	J                                  = NewExcitation("J", "A/m2", "Electrical current density")
-	MaxTorque                          = NewScalarValue("maxTorque", "T", "Motion term for LLG equation", GetMaxTorque)
-	GammaLL                    float64 = 1.7595e11 // Gyromagnetic ratio of spins, in rad/Ts
-	Precess                            = true
-	DisableZhangLiTorque               = false
-	DisableSlonczewskiTorque           = false
-	DisableTimeEvolutionTorque         = true
-	DisableBeffContributions           = false
-	fixedLayerPosition                 = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
+	Alpha                            = NewScalarParam("alpha", "", "Landau-Lifshitz damping constant")
+	Xi                               = NewScalarParam("xi", "", "Non-adiabaticity of spin-transfer-torque")
+	Pol                              = NewScalarParam("Pol", "", "Electrical current polarization")
+	Lambda                           = NewScalarParam("Lambda", "", "Slonczewski Λ parameter")
+	EpsilonPrime                     = NewScalarParam("EpsilonPrime", "", "Slonczewski secondairy STT term ε'")
+	FrozenSpins                      = NewScalarParam("frozenspins", "", "Defines spins that should be fixed") // 1 - frozen, 0 - free. TODO: check if it only contains 0/1 values
+	FixedLayer                       = NewExcitation("FixedLayer", "", "Slonczewski fixed layer polarization")
+	Torque                           = NewVectorField("torque", "T", "Total torque/γ0", SetTorque)
+	LLTorque                         = NewVectorField("LLtorque", "T", "Landau-Lifshitz torque/γ0", SetLLTorque)
+	STTorque                         = NewVectorField("STTorque", "T", "Spin-transfer torque/γ0", AddSTTorque)
+	FreeLayerThickness               = NewScalarParam("FreeLayerThickness", "m", "Slonczewski free layer thickness (if set to zero (default), then the thickness will be deduced from the mesh size)")
+	J                                = NewExcitation("J", "A/m2", "Electrical current density")
+	MaxTorque                        = NewScalarValue("maxTorque", "T", "Motion term for LLG equation", GetMaxTorque)
+	GammaLL                  float64 = 1.7595e11 // Gyromagnetic ratio of spins, in rad/Ts
+	Precess                          = true
+	DisableZhangLiTorque             = false
+	DisableSlonczewskiTorque         = false
+	DisableCavityTorque              = true
+	DisableBeffContributions         = false
+	fixedLayerPosition               = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
 	B_rms                        = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
 	Wc                           = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
@@ -67,7 +67,7 @@ func init() {
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
-	DeclVar("DisableTimeEvolutionTorque", &DisableTimeEvolutionTorque, "Disables Cavity Time evolution torque (default=true)")
+	DeclVar("DisableCavityTorque", &DisableCavityTorque, "Disables Cavity Time evolution torque (default=true)")
 	DeclVar("DisableBeffContributions", &DisableBeffContributions, "Disables Beff default contributions (default=false)")
 	DeclVar("DoPrecess", &Precess, "Enables LL precession (default=true)")
 	DeclLValue("FixedLayerPosition", &flposition{}, "Position of the fixed layer: FIXEDLAYER_TOP, FIXEDLAYER_BOTTOM (default=FIXEDLAYER_TOP)")
@@ -99,7 +99,7 @@ func SetLLTorque(dst *data.Slice) {
 }
 
 // Compute new extra term in effective field (see effectivefield.go)
-func ApplyExtraFieldBeff(dst *data.Slice) {
+func AddCavityField(dst *data.Slice) {
 
 	// start summation from t > 0
 	if Time == 0.0 {

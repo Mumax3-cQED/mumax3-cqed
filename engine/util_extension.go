@@ -23,7 +23,7 @@ func If_Ternary(statement bool, a, b interface{}) interface{} {
 // and insert this information into the log.txt file (see run.go)
 func PrintParametersTimeEvolution(simulationTime *float64) {
 
-	if !DisableTimeEvolutionTorque {
+	if !DisableCavityTorque {
 
 		// check if not empty
 		if mem_term.scn != nil {

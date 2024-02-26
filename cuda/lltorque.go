@@ -40,7 +40,7 @@ func SubSpinBextraBeff(dst, m, scn *data.Slice, brms, wc, kappa MSlice, x0, p0, 
 	pbc := mesh.PBC_code()
 	cfg := make3DConf(N)
 
-	k_calcspinbeff_async(dst.DevPtr(X), dst.DevPtr(Y), dst.DevPtr(Z),
+	k_addcavityfield_async(dst.DevPtr(X), dst.DevPtr(Y), dst.DevPtr(Z),
 		m.DevPtr(X), m.DevPtr(Y), m.DevPtr(Z),
 		scn.DevPtr(0), scn.DevPtr(1),
 		wc.DevPtr(0), wc.Mul(0),
