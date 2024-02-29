@@ -11,7 +11,7 @@ $ 📦src/github.com/mumax/3
   │   	 ├── 📄mumax3.exe (modified file)
   │   	 └── 📄main.go (modified file)
   ├── 📂cuda
-  │   ├── 📄calcspinbeff.cu (new file)
+  │   ├── 📄addcavityfield.cu (new file)
   │   ├── 📄lltorque.go (modified file)
   │   ├── 📄Makefile (modified file)
   │   ├── 📄make.ps1 (new file)
