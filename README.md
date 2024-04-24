@@ -38,7 +38,7 @@ $ mumax3 script-file.mx3
 It is required to install [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads). This mumax3-cqed software has been tested in Windows 10 with [CUDA Toolkit 10.2](https://developer.nvidia.com/cuda-10.2-download-archive) and Debian GNU/Linux (Debian 12 Bookworm) with latest [CUDA Toolkit 12.3](https://developer.nvidia.com/cuda-downloads), it is also required to install `git`.
 
 **IMPORTANT**: For Windows systems, install CUDA in `c:\cuda`<br/>
-**IMPORTANT**: For UNIX systems, here is a [tutorial to install CUDA](https://www.maketecheasier.com/install-nvidia-drivers-debian/)
+**IMPORTANT**: For UNIX systems, here is a [tutorial to install NVIDIA Drivers](https://www.maketecheasier.com/install-nvidia-drivers-debian/)
 
 #### INSTALLATION IN UNIX SYSTEMS
 ---------------------------------
