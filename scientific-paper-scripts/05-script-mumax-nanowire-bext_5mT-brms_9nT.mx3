@@ -1,0 +1,68 @@
+nx := 2048
+ny := 32
+nz := 4
+
+size_x := 15000e-9
+size_y := 4237e-9
+size_z := 60e-9
+
+SetGridSize(nx, ny, nz)
+SetCellSize(size_x/nx, size_y/ny, size_z/nz)
+
+RK45 := 5
+SetSolver(RK45)
+
+Aex = 13e-12
+alpha = 1e-2
+Msat = 0.86e+6
+
+bext_custom := 5e-3
+
+step_save := 1e-12
+FixDt = step_save
+
+DisableCavityTorque = false
+
+X0 = 0 // initial condition for cavity
+P0 = 0 // initial condition for cavity
+
+wc_temp := 4.2e9 * 2 * pi
+
+Kappa = 1e-3 * wc_temp
+
+Wc = wc_temp
+
+//factor := 7.49e-08 //--> 28nT
+//factor := 1.34e-7 // 50nT
+//bref := wc_temp / gammaLL
+//B_rms = vector(0, factor * bref, 0)
+
+brms_value := 9e-9
+B_rms = vector(0, brms_value, 0)
+
+my0 := bext_custom
+m = Uniform(my0, 0, 0)
+save(M)
+
+B_ext = vector(bext_custom,0,0)
+relax()
+
+amp := 1e-3 
+cutoff := 50e+9 //FREC
+offset := 1e-9
+
+B_ext = vector(bext_custom, amp * (sin(2 * pi * cutoff * (t-offset))/(2 * pi * cutoff * (t-offset))), 0)
+
+save(M)
+
+tableAdd(B_ext)
+tableAdd(B_rms)
+tableAdd(m_full)
+
+tableautosave(step_save)
+
+run(200e-9)
+
+snapshotas(m, "m_final.jpg")
+
+PrintScriptExecutionTime()

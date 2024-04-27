@@ -1,0 +1,76 @@
+OutputFormat = OVF2_TEXT
+// --> this is a comment in the script
+nx := 1 // num. cells in X-axis
+ny := 1 // num. cells in Y-axis
+nz := 1 // num. cells in Z-axis
+
+side := 5e-9 // cube side
+
+size_x := side
+size_y := side
+size_z := side
+
+// cube --> 5nm x 5nm x 5nm
+SetGridSize(nx, ny, nz) // number of cells 1 x 1 x 1
+SetCellSize(size_x/nx, size_y/ny, size_z/nz) // cell size --> 5nm x 5nm x 5nm
+
+RK45 := 5
+SetSolver(RK45) // Runge-Kutta45 selected (default)
+
+Aex = 13e-12 // exchange stiffness (J/m)
+alpha = 1e-3 // damping value
+MuB := 9.2740091523e-24
+gammaLL = 28e9 * 2 * pi // gyromagnetic factor (rad/Ts)
+
+// parameters
+wc_temp := 1.4e9 // Hz --> resonant frequency of the cavity
+ws_temp := 1.0 * wc_temp // Hz --> resonant frequency of the spins
+rho := 5.1e26 // m^-3 --> spins density
+c := 5.124350564859e-19 // compound of constant values
+nu := 0.25 // spin population in the cavity
+lam := sqrt(c * rho * nu * wc_temp)
+
+// derivated magnitudes
+bext_custom := (ws_temp * 2 * pi) / gammaLL
+Wc = wc_temp * 2 * pi // rad/s --> resonant frequency cavity
+Kappa = 0 // cavity dissipation (no dissipation)
+
+vol := size_x * size_y * size_z // magnetic sample volume
+N := 100
+NSpins = N // number of spins
+
+Msat = (N * MuB)/((side/nx) * (side/ny) * (side/nz)) // saturation magnetization
+
+FixDt = 0.01e-9 // fix timestep between solver steps (10 picoseconds)
+
+DisableSlonczewskiTorque = true // disable Slonczewski spin-transfer torque (default false)
+DisableZhangLiTorque = true // disable Zhang-li spin-transfer torque (default false)
+
+DisableBeffContributions = true // effective field contributions disabled (default false)
+DisableCavityTorque = false // cavity calculations enabled (default true)
+
+EnableDemag = true // enables/disables demagnetizing factor (default true)
+NoDemagSpins = 0 // disable magnetostatic interaction per-spin (set to 1 to disable)
+Temp = 0 // temperature
+
+if !DisableCavityTorque {
+    
+    test_brms := (2 * 2 * pi * lam) / (sqrt(N) * gammaLL)
+    B_rms = vector(test_brms, 0, 0) // zero point magnetic field of the cavity
+}
+
+my0 := 0.01
+m = Uniform(0, my0, sqrt(1 - my0*my0)) // initialize magnetization with uniform magnetic field
+
+save(M) // save the magnetization in all axes
+
+B_ext = vector(0, 0, bext_custom) // external magnetíc field
+
+tableAdd(B_ext) // add external field to output file
+tableAdd(m_full) // add full magnetization to output file
+
+save(M)
+
+tableautosave(0.01e-9) // data saving step
+
+run(200e-9) // run the system 200 microseconds
