@@ -166,7 +166,7 @@ func calcSpins() float64 {
 
 	if NSpins == 0 {
 
-		//util.AssertMsg(!Msat.isZero(), "saturation magnetization should not be 0")
+		util.AssertMsg(!Msat.isZero(), "saturation magnetization should not be 0")
 
 		m_sat := Msat.MSlice()
 		defer m_sat.Recycle()
