@@ -25,6 +25,10 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 	if !DisableCavityTorque {
 
+		if !ShowSimulationSummary {
+			return
+		}
+
 		// check if not empty
 		if mem_term.scn != nil {
 			mem_term.Free()

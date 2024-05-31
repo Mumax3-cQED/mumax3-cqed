@@ -30,6 +30,7 @@ var (
 	DisableSlonczewskiTorque         = false
 	DisableCavityTorque              = true
 	DisableBeffContributions         = false
+	ShowSimulationSummary            = true
 	fixedLayerPosition               = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
 	B_rms                        = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
@@ -60,6 +61,7 @@ func init() {
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
 
+	DeclVar("ShowSimulationSummary", &ShowSimulationSummary, "Show simulation data summary after run() function (default=true)")
 	DeclVar("StartCheckpoint", &StartCheckpoint, "Script launch starting date (default now() at the beginning of mumax3 allocation)")
 	DeclVar("NSpins", &NSpins, "Number of spins")
 	DeclVar("X0", &X0, "Initial condition for the cavity (default=0)")
@@ -123,8 +125,10 @@ func AddCavityField(dst *data.Slice) {
 	wc_slice := Wc.MSlice()
 	defer wc_slice.Recycle()
 
-	brms_slice := B_rms.MSlice()
-	defer brms_slice.Recycle()
+	brms_slice, rec := B_rms.Slice()
+	if rec {
+		defer cuda.Recycle(brms_slice)
+	}
 
 	kappa := Kappa.MSlice()
 	defer kappa.Recycle()

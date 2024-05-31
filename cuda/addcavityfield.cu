@@ -11,9 +11,7 @@ void addcavityfield(float* __restrict__  tx, float* __restrict__  ty, float* __r
             float* __restrict__ sn, float* __restrict__ cn,
             float* __restrict__ wc, float wc_mul,
             float* __restrict__ kappa, float kappa_mul,
-            float* __restrict__ brms_x, float brmsx_mul,
-            float* __restrict__ brms_y, float brmsy_mul,
-            float* __restrict__ brms_z, float brmsz_mul,
+            float* __restrict__ brms_x, float* __restrict__ brms_y,  float* __restrict__ brms_z,
             float x0, float p0, float nspins, float dt, float ctime, float gammaLL, int Nx, int Ny, int Nz, uint8_t PBC) {
 
     int ix = blockIdx.x * blockDim.x + threadIdx.x;
@@ -30,13 +28,9 @@ void addcavityfield(float* __restrict__  tx, float* __restrict__  ty, float* __r
 
     float kappa_val = amul(kappa, kappa_mul, i);
 
-    float brmsx = amul(brms_x, brmsx_mul, i);
-    float brmsy = amul(brms_y, brmsy_mul, i);
-    float brmsz = amul(brms_z, brmsz_mul, i);
-
     // Summatory
     float3 mi = make_float3(mx[i], my[i], mz[i]);
-    float3 brmsi = make_float3(brmsx, brmsy, brmsz);
+    float3 brmsi = make_float3(brms_x[i], brms_y[i], brms_z[i]);
 
     sn[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * dot(mi, brmsi) * dt;
     cn[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * dot(mi, brmsi) * dt;
@@ -44,9 +38,9 @@ void addcavityfield(float* __restrict__  tx, float* __restrict__  ty, float* __r
     float G = exp(-kappa_val * ctime) * (cos(wc_val * ctime) * (x0 - gammaLL * nspins * sn[i]) - sin(wc_val * ctime) * (p0 - gammaLL * nspins * cn[i]));
 
     // This is the new term to Beff
-    float new_term_x = brmsx * G;
-    float new_term_y = brmsy * G;
-    float new_term_z = brmsz * G;
+    float new_term_x = brms_x[i] * G;
+    float new_term_y = brms_y[i] * G;
+    float new_term_z = brms_z[i] * G;
 
     // Beff = Beff + new_term
     tx[i] += new_term_x;
