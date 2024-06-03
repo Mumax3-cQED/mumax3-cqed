@@ -197,6 +197,16 @@ func getCurrentDate() (int, int, int, int, int, int) {
 	return year, int(month), day, hour, minute, seconds
 }
 
+func getInfoFromTime(date_item time.Time) (int, int, int, int, int, int) {
+
+	year, month, day := date_item.Date()
+	hour := date_item.Hour()
+	minute := date_item.Minute()
+	seconds := date_item.Second()
+
+	return year, int(month), day, hour, minute, seconds
+}
+
 // Print elapsed time of script execution, this function can be invoked at the end of mumax3 script
 func PrintScriptExecutionTime() {
 
@@ -204,7 +214,12 @@ func PrintScriptExecutionTime() {
 
 	LogIn("\n ---> Full mumax3 script elapsed time:", diff_str)
 
-	year, month, day, hour, minute, seconds := getCurrentDate()
+	year, month, day, hour, minute, seconds := getInfoFromTime(StartCheckpoint)
+	full_date_start := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, seconds)
+
+	LogIn(" ---> Start simulation date (yyyy-MM-dd HH:mm:ss):", full_date_start)
+
+	year, month, day, hour, minute, seconds = getCurrentDate()
 	full_date_end := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, seconds)
 
 	LogIn(" ---> End simulation date (yyyy-MM-dd HH:mm:ss):", full_date_end, "\n")
