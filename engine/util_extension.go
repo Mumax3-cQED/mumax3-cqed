@@ -188,13 +188,7 @@ func calcSpins() float64 {
 // Get current date
 func getCurrentDate() (int, int, int, int, int, int) {
 
-	date_current := time.Now()
-	year, month, day := date_current.Date()
-	hour := date_current.Hour()
-	minute := date_current.Minute()
-	seconds := date_current.Second()
-
-	return year, int(month), day, hour, minute, seconds
+	return getInfoFromTime(time.Now())
 }
 
 func getInfoFromTime(date_item time.Time) (int, int, int, int, int, int) {
@@ -225,10 +219,13 @@ func PrintScriptExecutionTime() {
 	LogIn(" ---> End simulation date (yyyy-MM-dd HH:mm:ss):", full_date_end, "\n")
 }
 
-// Get time difference between two dates with a given starting date
 func getTimeDifference(start time.Time) string {
 
-	end := time.Now()
+	return getTimeDifferenceDates(start, time.Now())
+}
+
+// Get time difference between two dates with a given starting date
+func getTimeDifferenceDates(start time.Time, end time.Time) string {
 
 	if start.Location() != end.Location() {
 		end = end.In(start.Location())
