@@ -32,11 +32,6 @@ Kappa = 1e-3 * wc_temp
 
 Wc = wc_temp
 
-//factor := 7.49e-08 //--> 28nT
-//factor := 1.34e-7 // 50nT
-//bref := wc_temp / gammaLL
-//B_rms = vector(0, factor * bref, 0)
-
 brms_value := 9e-9
 B_rms = vector(0, brms_value, 0)
 
@@ -47,7 +42,7 @@ save(M)
 B_ext = vector(bext_custom,0,0)
 relax()
 
-amp := 1e-3 
+amp := 1e-3
 cutoff := 50e+9 //FREC
 offset := 1e-9
 
