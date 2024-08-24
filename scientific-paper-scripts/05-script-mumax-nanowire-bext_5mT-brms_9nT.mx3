@@ -29,10 +29,10 @@ DisableCavityTorque = false // cavity calculations enabled (default true)
 X0 = 0 // initial condition for cavity
 P0 = 0 // initial condition for cavity
 
-Kappa = 1e-3 * wc_temp  // cavity dissipation
-
 wc_temp := 4.2e9 * 2 * pi  // rad/s --> resonant frequency cavity
 Wc = wc_temp
+
+Kappa = 1e-3 * wc_temp  // cavity dissipation
 
 brms_value := 9e-9
 B_rms = vector(0, brms_value, 0) // zero point magnetic field of the cavity (vacuum field)
