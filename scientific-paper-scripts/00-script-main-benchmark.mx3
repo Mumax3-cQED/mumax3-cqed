@@ -54,7 +54,7 @@ NoDemagSpins = 0 // disable magnetostatic interaction per-spin (set to 1 to disa
 Temp = 0 // temperature
 
 if !DisableCavityTorque {
-    
+
     test_brms := (2 * 2 * pi * lam) / (sqrt(N) * gammaLL)
     B_rms = vector(test_brms, 0, 0) // zero point magnetic field of the cavity
 }
@@ -73,4 +73,4 @@ save(M)
 
 tableautosave(0.01e-9) // data saving step
 
-run(200e-9) // run the system 200 microseconds
+run(200e-9) // run the system 200 nanoseconds

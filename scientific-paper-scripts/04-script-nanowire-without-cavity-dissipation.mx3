@@ -23,7 +23,7 @@ FixDt = 1e-12 // fix timestep between solver steps (one picosecond)
 bext_custom := 1e-3
 wc_temp := 11.19e9 // Hz --> resonant frequency of the cavity
 wc_frec := wc_temp * 2 * pi // rad/s --> resonant frequency cavity
-Wc = wc_frec 
+Wc = wc_frec
 Kappa = 0 // cavity dissipation (no dissipation)
 
 DisableCavityTorque = false // cavity calculations enabled (default true)
@@ -35,16 +35,16 @@ my0 := bext_custom
 m = Uniform(my0, 0, 0) // initialize magnetization with uniform magnetic field
 save(M) // save the magnetization in all axes
 
-B_ext = vector(bext_custom, 0, 0) 
+B_ext = vector(bext_custom, 0, 0)
 relax()
 
-amp := 1e-3 
-cutoff := 50e+9 //FREC
+amp := 1e-3
+cutoff := 50e+9 // cutoff frequency
 offset := 1e-9
 
 // external magnetic field
 B_ext = vector(bext_custom,
-               amp * (sin(2 * pi * cutoff * (t-offset))/(2 * pi * cutoff * (t-offset))), 
+               amp * (sin(2 * pi * cutoff * (t-offset))/(2 * pi * cutoff * (t-offset))),
                0)
 save(M)
 
@@ -54,8 +54,8 @@ tableAdd(m_full) // add full magnetization to output file
 
 tableautosave(1e-12) // data saving step
 
-run(200e-9) // run the system 200 microseconds
+run(200e-9) // run the system 200 nanoseconds
 
 // post-execution actions
-snapshotas(m, "m_final.jpg") // snapshot image of final magentization
+snapshotas(m, "m_final.jpg") // snapshot image of final magnetization
 PrintScriptExecutionTime() // track and print script execution time

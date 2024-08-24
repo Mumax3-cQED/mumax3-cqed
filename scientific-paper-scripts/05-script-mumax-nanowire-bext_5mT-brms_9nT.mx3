@@ -1,63 +1,65 @@
-nx := 2048
-ny := 32
-nz := 4
-
+OutputFormat = OVF2_TEXT
+// --> this is a comment in the script
+nx := 2048 // num. cells in X-axis
+ny := 32 // num. cells in Y-axis
+nz := 4 // num. cells in Z-axis
+// nanowire: 15um x 4.237um x 60nm
 size_x := 15000e-9
 size_y := 4237e-9
 size_z := 60e-9
 
-SetGridSize(nx, ny, nz)
+SetGridSize(nx, ny, nz)  // number of cells 2048 x 32 x 4
 SetCellSize(size_x/nx, size_y/ny, size_z/nz)
 
 RK45 := 5
-SetSolver(RK45)
+SetSolver(RK45)  // Runge-Kutta45 selected (default)
 
-Aex = 13e-12
-alpha = 1e-2
-Msat = 0.86e+6
-
-bext_custom := 5e-3
+Aex = 13e-12  // exchange stiffness (J/m)
+alpha = 1e-2 // damping term
+Msat = 0.86e+6 // saturation magnetization
 
 step_save := 1e-12
-FixDt = step_save
+FixDt = step_save  // fix timestep between solver steps (one picosecond)
 
-DisableCavityTorque = false
+// Parameters
+bext_custom := 5e-3
+
+DisableCavityTorque = false // cavity calculations enabled (default true)
 
 X0 = 0 // initial condition for cavity
 P0 = 0 // initial condition for cavity
 
-wc_temp := 4.2e9 * 2 * pi
+Kappa = 1e-3 * wc_temp  // cavity dissipation
 
-Kappa = 1e-3 * wc_temp
-
+wc_temp := 4.2e9 * 2 * pi  // rad/s --> resonant frequency cavity
 Wc = wc_temp
 
 brms_value := 9e-9
-B_rms = vector(0, brms_value, 0)
+B_rms = vector(0, brms_value, 0) // zero point magnetic field of the cavity (vacuum field)
 
 my0 := bext_custom
-m = Uniform(my0, 0, 0)
-save(M)
+m = Uniform(my0, 0, 0) // initialize magnetization with uniform magnetic field
+save(M) // save the magnetization in all axes
 
 B_ext = vector(bext_custom,0,0)
 relax()
 
 amp := 1e-3
-cutoff := 50e+9 //FREC
+cutoff := 50e+9 // cutoff frequency
 offset := 1e-9
 
+// external magnetic field
 B_ext = vector(bext_custom, amp * (sin(2 * pi * cutoff * (t-offset))/(2 * pi * cutoff * (t-offset))), 0)
-
 save(M)
 
-tableAdd(B_ext)
-tableAdd(B_rms)
-tableAdd(m_full)
+tableAdd(B_ext) // add external field to output file
+tableAdd(B_rms) // add zero point magnetic field to output file
+tableAdd(m_full) // add full magnetization to output file
 
-tableautosave(step_save)
+tableautosave(step_save) // data saving step
 
-run(200e-9)
+run(200e-9) // run the system 200 nanoseconds
 
-snapshotas(m, "m_final.jpg")
-
-PrintScriptExecutionTime()
+// post-execution actions
+snapshotas(m, "m_final.jpg") // snapshot image of final magnetization
+PrintScriptExecutionTime() // track and print script execution time

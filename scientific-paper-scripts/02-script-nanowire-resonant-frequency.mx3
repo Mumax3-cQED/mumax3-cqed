@@ -30,7 +30,7 @@ tableAdd(B_ext) // add external field to output file
 tableAdd(m_full) // add full magnetization to output file
 
 offset := 1e-9
-amp := 1e-3 
+amp := 1e-3
 cutoff := 50e+9 // cutoff frequency
 // apply sinc function to send all frequencies to the magnetic material
 B_ext = vector(0.001, amp * (sin(2 * pi * cutoff * (t-offset))/(2 * pi * cutoff * (t-offset))), 0)
@@ -40,4 +40,4 @@ save(M)
 
 tableautosave(1e-12) // data saving step
 
-run(200e-9) // run the system 200 microseconds
+run(200e-9) // run the system 200 nanoseconds
