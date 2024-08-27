@@ -1,8 +1,8 @@
 # MUMAX3-CQED: mumax<sup>3</sup> Cavity QED
 
-This software adds a new feature to open source software called [mumax<sup>3</sup>](https://mumax.github.io/). The new MUMAX3-CQED is also open source and it is available at [https://github.com/sergiomtzlosa/mumax3-cqed](https://github.com/sergiomtzlosa/mumax3-cqed).
+This is a fork of the micromagnetic simulation open source software [mumax<sup>3</sup>](https://mumax.github.io/). MUMAX3-CQED, enhances mumax<sup>3</sup> by including the effect of coupling the magnet to an electromagnetic cavity.
 
-The original mumax<sup>3</sup> code contains lots of files managing the frontend and the CUDA calculations, and for this purpose we list below the files we modified or created to develop our new feature:
+The core implementation of the cavity effect in Mumax3-cQED is contained in the file cavity.cu}. To interface **cavity.cu** with the rest of Mumax3, several other files have been created or modified:
 
 ```bash
 $ 📦src/github.com/mumax/3
@@ -11,18 +11,20 @@ $ 📦src/github.com/mumax/3
   │   	 ├── 📄mumax3.exe (modified file)
   │   	 └── 📄main.go (modified file)
   ├── 📂cuda
-  │   ├── 📄addcavityfield.cu (new file)
-  │   ├── 📄lltorque.go (modified file)
+  │   ├── 📄cavity.cu (new file)
+  │   ├── 📄cavity.go (new file)
   │   ├── 📄Makefile (modified file)
   │   ├── 📄make.ps1 (new file)
   │   └── 📄realclean.ps1 (new file)
   └── 📂engine
-      ├── 📄run.go (modified file)
-      ├── 📄torque.go (modified file)
+      ├── 📄cavity.go (new file)
+      ├── 📄bib.go (modified file)
       ├── 📄effectivefield.go (modified file)
-      ├── 📄utils_extension.go (new file)
-      └── 📄bib.go (modified file)
+      ├── 📄run.go (modified file)
+      └── 📄utils_extension.go (new file)
 ```
+
+Besides the files properly belonging to the Mumax3-cQED source code, there are some Windows script files, `make.ps1` and `realclean.ps1`, and UNIX script file, `Makefile`, to compile CUDA files.
 
 The files under `cuda` folder manage the operations in the GPU and files below `engine` folder manage the input/output data from/to the GPU and also present the data to the user.
 
