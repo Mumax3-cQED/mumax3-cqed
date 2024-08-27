@@ -41,7 +41,6 @@ func AddCavityField(dst *data.Slice) {
 
 	mem_term.dt_time = Time - mem_term.last_time
 
-	// calculations with cavity dissipation
 	cuda.AddCavity(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, X0, P0, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
 
 	mem_term.last_time = Time
