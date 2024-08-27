@@ -1,4 +1,3 @@
-// CREATED AND MODIFIED INMA
 #include "amul.h"
 #include "float3.h"
 #include <stdint.h>

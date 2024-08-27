@@ -1,6 +1,5 @@
 package cuda
 
-// MODIFIED INMA
 import (
 	"github.com/mumax/3/data"
 )

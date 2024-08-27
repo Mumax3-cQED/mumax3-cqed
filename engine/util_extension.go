@@ -1,6 +1,5 @@
 package engine
 
-// CREATED AND MODIFIED INMA
 import (
 	"errors"
 	"fmt"
