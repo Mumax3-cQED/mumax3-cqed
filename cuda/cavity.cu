@@ -6,12 +6,11 @@
 // See cavity.go for more details.
 extern "C" __global__
 void addcavity(float* __restrict__  tx, float* __restrict__  ty, float* __restrict__  tz,
-            float* __restrict__  mx, float* __restrict__  my, float* __restrict__  mz,
             float* __restrict__ sn, float* __restrict__ cn,
             float* __restrict__ wc, float wc_mul,
             float* __restrict__ kappa, float kappa_mul,
             float* __restrict__ brms_x, float* __restrict__ brms_y,  float* __restrict__ brms_z,
-            float x0, float p0, float nspins, float dt, float ctime, float gammaLL, int Nx, int Ny, int Nz, uint8_t PBC) {
+            float x0, float p0, float nspins, float dt, float ctime, float gammaLL, float brms_m, int Nx, int Ny, int Nz, uint8_t PBC) {
 
     int ix = blockIdx.x * blockDim.x + threadIdx.x;
     int iy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -28,11 +27,8 @@ void addcavity(float* __restrict__  tx, float* __restrict__  ty, float* __restri
     float kappa_val = amul(kappa, kappa_mul, i);
 
     // Summatory
-    float3 mi = make_float3(mx[i], my[i], mz[i]);
-    float3 brmsi = make_float3(brms_x[i], brms_y[i], brms_z[i]);
-
-    sn[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * dot(mi, brmsi) * dt;
-    cn[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * dot(mi, brmsi) * dt;
+    sn[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * brms_m * dt;
+    cn[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * brms_m * dt;
 
     float G = exp(-kappa_val * ctime) * (cos(wc_val * ctime) * (x0 - gammaLL * nspins * sn[i]) - sin(wc_val * ctime) * (p0 - gammaLL * nspins * cn[i]));
 

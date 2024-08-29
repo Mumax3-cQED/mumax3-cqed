@@ -52,6 +52,7 @@ type MEMORY_TERM struct {
 	scn       *data.Slice
 	last_time float64
 	dt_time   float64
+	csn       [2]float64
 }
 
 func init() {

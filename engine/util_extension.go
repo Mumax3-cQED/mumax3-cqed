@@ -174,11 +174,10 @@ func calcSpins() float64 {
 		m_sat := Msat.MSlice()
 		defer m_sat.Recycle()
 
-		full_sizex, full_sizey, full_sizez, _, _ := calcFullSize()
+		c := Mesh().CellSize()
+		cell_volume := c[0] * c[1] * c[2]
 
-		full_vol := full_sizex * full_sizey * full_sizez
-
-		NSpins = (full_vol * float64(m_sat.Mul(0))) / MuB
+		NSpins = (cell_volume * float64(m_sat.Mul(0))) / MuB
 	}
 
 	return NSpins
