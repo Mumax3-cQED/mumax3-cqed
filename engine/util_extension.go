@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -90,13 +89,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 		msatCell_val := calcMsatCellVol()
 
-		if NSpins < 0 {
-			errStr := "Panic Error: Number of spins must be greater than zero"
-			LogErr(errStr)
-			util.PanicErr(errors.New(errStr))
-		} else {
-			LogIn(" Num. spins:", msatCell_val)
-		}
+		LogIn(" Msat per cell:", msatCell_val)
 
 		LogIn(" Cavity initial condition X0:", X0)
 		LogIn(" Cavity initial condition P0:", P0)
@@ -167,17 +160,12 @@ func calcFullSize() (float64, float64, float64, [3]float64, [3]int) {
 // Calculate number of spins as a function of saturation magnetisation, mandatory for calculations (Msat)
 func calcMsatCellVol() float64 {
 
-	if NSpins == 0 {
+	util.AssertMsg(!Msat.isZero(), "saturation magnetization should not be 0")
 
-		util.AssertMsg(!Msat.isZero(), "saturation magnetization should not be 0")
+	m_sat := Msat.MSlice()
+	defer m_sat.Recycle()
 
-		m_sat := Msat.MSlice()
-		defer m_sat.Recycle()
-
-		NSpins = (2 * cellVolume() * float64(m_sat.Mul(0))) / HBAR
-	}
-
-	return NSpins
+	return (2 * cellVolume() * float64(m_sat.Mul(0))) / HBAR
 }
 
 // Get current date

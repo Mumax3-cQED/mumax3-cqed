@@ -32,10 +32,10 @@ var (
 	ShowSimulationSummary            = true
 	fixedLayerPosition               = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
-	B_rms                        = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
-	Wc                           = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
-	Kappa                        = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
-	NSpins          float64      = 0          // Number of spins
+	B_rms = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
+	Wc    = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
+	Kappa = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
+
 	X0              float64      = 0          // Initial condition in X-axis
 	P0              float64      = 0          // Initial condition in Y-axis
 	StartCheckpoint time.Time    = time.Now() // Starting date for mumax3 script to measure elapsed execution time, to set starting date anywhere in the  --> StartCheckpoint = now()
@@ -43,7 +43,6 @@ var (
 )
 
 const (
-	//MuB = 9.2740091523E-24 // Bohr magneton in J/T
 	HBAR              = 1.05457173E-34
 	MEMORY_COMPONENTS = 2
 )
@@ -64,7 +63,6 @@ func init() {
 
 	DeclVar("ShowSimulationSummary", &ShowSimulationSummary, "Show simulation data summary after run() function (default=true)")
 	DeclVar("StartCheckpoint", &StartCheckpoint, "Script launch starting date (default now() at the beginning of mumax3 allocation)")
-	DeclVar("NSpins", &NSpins, "Number of spins")
 	DeclVar("X0", &X0, "Initial condition for the cavity (default=0)")
 	DeclVar("P0", &P0, "Initial condition for the cavity (default=0)")
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
