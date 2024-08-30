@@ -33,7 +33,7 @@ func AddCavity(dst, m, scn, brms *data.Slice, wc, kappa MSlice, x0, p0, msatCell
 		float32(x0), float32(p0), float32(msatCell), float32(deltah), float32(ctime), brms_m, N[X], N[Y], N[Z], pbc, cfg)
 }
 
-func AddCavity2(dst, m, brms *data.Slice, wc, kappa MSlice, x0, p0, msatCell, deltah, ctime, gammaLL float64, mem [2]float64, mesh *data.Mesh) {
+func AddCavity2(dst, m, brms *data.Slice, wc, kappa MSlice, x0, p0, msatCell, deltah, ctime float64, mem [2]float64, mesh *data.Mesh) {
 
 	N := mesh.Size()
 
@@ -49,6 +49,6 @@ func AddCavity2(dst, m, brms *data.Slice, wc, kappa MSlice, x0, p0, msatCell, de
 	op_cn := math.Exp(kappa_temp*ctime) * math.Cos(wc_temp*ctime) * brms_m * deltah
 	mem[1] += op_cn
 
-	G := math.Exp(-kappa_temp*ctime) * (math.Cos(wc_temp*ctime)*(x0-gammaLL*msatCell*mem[0]) - math.Sin(wc_temp*ctime)*(p0-gammaLL*msatCell*mem[1]))
+	G := math.Exp(-kappa_temp*ctime) * (math.Cos(wc_temp*ctime)*(x0-msatCell*mem[0]) - math.Sin(wc_temp*ctime)*(p0-msatCell*mem[1]))
 	Madd2(dst, dst, brms, 1.0, float32(G))
 }
