@@ -40,11 +40,9 @@ var (
 	P0              float64      = 0          // Initial condition in Y-axis
 	StartCheckpoint time.Time    = time.Now() // Starting date for mumax3 script to measure elapsed execution time, to set starting date anywhere in the  --> StartCheckpoint = now()
 	mem_term        *MEMORY_TERM = nil
-)
 
-const (
-	HBAR              = 1.05457173E-34
-	MEMORY_COMPONENTS = 2
+	HBAR              float64 = 1.05457173E-34 // Reduced Planck constant
+	MEMORY_COMPONENTS         = 2
 )
 
 // Equation Memory Term
@@ -66,6 +64,7 @@ func init() {
 	DeclVar("X0", &X0, "Initial condition for the cavity (default=0)")
 	DeclVar("P0", &P0, "Initial condition for the cavity (default=0)")
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
+	DeclVar("HBAR", &HBAR, "Reduced Planck constant")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
 	DeclVar("DisableCavityTorque", &DisableCavityTorque, "Disables Cavity Time evolution torque (default=true)")
