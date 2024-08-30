@@ -89,7 +89,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 		msatCell_val := calcMsatCellVol()
 
-		LogIn(" Msat per cell:", msatCell_val)
+		LogIn(" Spins per cell:", msatCell_val)
 
 		LogIn(" Cavity initial condition X0:", X0)
 		LogIn(" Cavity initial condition P0:", P0)
