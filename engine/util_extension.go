@@ -174,7 +174,7 @@ func calcMsatCellVol() float64 {
 		m_sat := Msat.MSlice()
 		defer m_sat.Recycle()
 
-		NSpins = (cellVolume() * float64(m_sat.Mul(0))) / MuB
+		NSpins = (2 * cellVolume() * float64(m_sat.Mul(0))) / HBAR
 	}
 
 	return NSpins

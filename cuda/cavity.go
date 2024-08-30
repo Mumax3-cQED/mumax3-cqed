@@ -15,7 +15,7 @@ import (
 //  x0: Cavity initial condtion
 //  p0: Cavity initial condtion
 // see cavity.cu
-func AddCavity(dst, m, scn, brms *data.Slice, wc, kappa MSlice, x0, p0, msatCell, deltah, ctime, gammaLL float64, mesh *data.Mesh) {
+func AddCavity(dst, m, scn, brms *data.Slice, wc, kappa MSlice, x0, p0, msatCell, deltah, ctime float64, mesh *data.Mesh) {
 
 	N := mesh.Size()
 	pbc := mesh.PBC_code()
@@ -30,7 +30,7 @@ func AddCavity(dst, m, scn, brms *data.Slice, wc, kappa MSlice, x0, p0, msatCell
 		brms.DevPtr(X),
 		brms.DevPtr(Y),
 		brms.DevPtr(Z),
-		float32(x0), float32(p0), float32(msatCell), float32(deltah), float32(ctime), float32(gammaLL), brms_m, N[X], N[Y], N[Z], pbc, cfg)
+		float32(x0), float32(p0), float32(msatCell), float32(deltah), float32(ctime), brms_m, N[X], N[Y], N[Z], pbc, cfg)
 }
 
 func AddCavity2(dst, m, brms *data.Slice, wc, kappa MSlice, x0, p0, msatCell, deltah, ctime, gammaLL float64, mem [2]float64, mesh *data.Mesh) {
