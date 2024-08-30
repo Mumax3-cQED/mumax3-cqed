@@ -26,7 +26,7 @@ func AddCavityField(dst *data.Slice) {
 		mem_term.dt_time = 0.0
 	}
 
-	nspinsCalc := calcSpins()
+	msatCell := calcMsatCellVol()
 
 	wc_slice := Wc.MSlice()
 	defer wc_slice.Recycle()
@@ -41,8 +41,8 @@ func AddCavityField(dst *data.Slice) {
 
 	mem_term.dt_time = Time - mem_term.last_time
 
-	cuda.AddCavity(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, X0, P0, nspinsCalc, mem_term.dt_time, Time, GammaLL, Mesh())
-	//cuda.AddCavity2(dst, M.Buffer(), brms_slice, wc_slice, kappa, X0, P0, nspinsCalc, mem_term.dt_time, Time, GammaLL, mem_term.csn, Mesh())
+	cuda.AddCavity(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, X0, P0, msatCell, mem_term.dt_time, Time, GammaLL, Mesh())
+	//cuda.AddCavity2(dst, M.Buffer(), brms_slice, wc_slice, kappa, X0, P0, msatCell, mem_term.dt_time, Time, GammaLL, mem_term.csn, Mesh())
 
 	mem_term.last_time = Time
 }

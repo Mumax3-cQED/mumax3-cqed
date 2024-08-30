@@ -10,7 +10,7 @@ void addcavity(float* __restrict__  tx, float* __restrict__  ty, float* __restri
             float* __restrict__ wc, float wc_mul,
             float* __restrict__ kappa, float kappa_mul,
             float* __restrict__ brms_x, float* __restrict__ brms_y,  float* __restrict__ brms_z,
-            float x0, float p0, float nspins, float dt, float ctime, float gammaLL, float brms_m, int Nx, int Ny, int Nz, uint8_t PBC) {
+            float x0, float p0, float msat_cell, float dt, float ctime, float gammaLL, float brms_m, int Nx, int Ny, int Nz, uint8_t PBC) {
 
     int ix = blockIdx.x * blockDim.x + threadIdx.x;
     int iy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -30,7 +30,8 @@ void addcavity(float* __restrict__  tx, float* __restrict__  ty, float* __restri
     sn[i] += exp(kappa_val * ctime) * sin(wc_val * ctime) * brms_m * dt;
     cn[i] += exp(kappa_val * ctime) * cos(wc_val * ctime) * brms_m * dt;
 
-    float G = exp(-kappa_val * ctime) * (cos(wc_val * ctime) * (x0 - gammaLL * nspins * sn[i]) - sin(wc_val * ctime) * (p0 - gammaLL * nspins * cn[i]));
+    float msat_gamma = gammaLL * msat_cell;
+    float G = exp(-kappa_val * ctime) * (cos(wc_val * ctime) * (x0 - msat_gamma * sn[i]) - sin(wc_val * ctime) * (p0 - msat_gamma * cn[i]));
 
     // This is the new term to Beff
     float new_term_x = brms_x[i] * G;

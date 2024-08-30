@@ -88,14 +88,14 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		// }
 		LogIn(" Msat (A/m):", If_Ternary(m_sat.Mul(0) != 0, m_sat.Mul(0), 0.0).(float32))
 
-		spins_val := calcSpins()
+		msatCell_val := calcMsatCellVol()
 
 		if NSpins < 0 {
 			errStr := "Panic Error: Number of spins must be greater than zero"
 			LogErr(errStr)
 			util.PanicErr(errors.New(errStr))
 		} else {
-			LogIn(" Num. spins:", spins_val)
+			LogIn(" Num. spins:", msatCell_val)
 		}
 
 		LogIn(" Cavity initial condition X0:", X0)
@@ -165,7 +165,7 @@ func calcFullSize() (float64, float64, float64, [3]float64, [3]int) {
 }
 
 // Calculate number of spins as a function of saturation magnetisation, mandatory for calculations (Msat)
-func calcSpins() float64 {
+func calcMsatCellVol() float64 {
 
 	if NSpins == 0 {
 
@@ -174,10 +174,7 @@ func calcSpins() float64 {
 		m_sat := Msat.MSlice()
 		defer m_sat.Recycle()
 
-		c := Mesh().CellSize()
-		cell_volume := c[0] * c[1] * c[2]
-
-		NSpins = (cell_volume * float64(m_sat.Mul(0))) / MuB
+		NSpins = (cellVolume() * float64(m_sat.Mul(0))) / MuB
 	}
 
 	return NSpins

@@ -31,7 +31,7 @@ type addcavity_args_t struct{
 	 arg_brms_z unsafe.Pointer
 	 arg_x0 float32
 	 arg_p0 float32
-	 arg_nspins float32
+	 arg_msat_cell float32
 	 arg_dt float32
 	 arg_ctime float32
 	 arg_gammaLL float32
@@ -63,7 +63,7 @@ func init(){
 	 addcavity_args.argptr[11] = unsafe.Pointer(&addcavity_args.arg_brms_z)
 	 addcavity_args.argptr[12] = unsafe.Pointer(&addcavity_args.arg_x0)
 	 addcavity_args.argptr[13] = unsafe.Pointer(&addcavity_args.arg_p0)
-	 addcavity_args.argptr[14] = unsafe.Pointer(&addcavity_args.arg_nspins)
+	 addcavity_args.argptr[14] = unsafe.Pointer(&addcavity_args.arg_msat_cell)
 	 addcavity_args.argptr[15] = unsafe.Pointer(&addcavity_args.arg_dt)
 	 addcavity_args.argptr[16] = unsafe.Pointer(&addcavity_args.arg_ctime)
 	 addcavity_args.argptr[17] = unsafe.Pointer(&addcavity_args.arg_gammaLL)
@@ -75,7 +75,7 @@ func init(){
 	 }
 
 // Wrapper for addcavity CUDA kernel, asynchronous.
-func k_addcavity_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, sn unsafe.Pointer, cn unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, kappa unsafe.Pointer, kappa_mul float32, brms_x unsafe.Pointer, brms_y unsafe.Pointer, brms_z unsafe.Pointer, x0 float32, p0 float32, nspins float32, dt float32, ctime float32, gammaLL float32, brms_m float32, Nx int, Ny int, Nz int, PBC byte,  cfg *config) {
+func k_addcavity_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer, sn unsafe.Pointer, cn unsafe.Pointer, wc unsafe.Pointer, wc_mul float32, kappa unsafe.Pointer, kappa_mul float32, brms_x unsafe.Pointer, brms_y unsafe.Pointer, brms_z unsafe.Pointer, x0 float32, p0 float32, msat_cell float32, dt float32, ctime float32, gammaLL float32, brms_m float32, Nx int, Ny int, Nz int, PBC byte,  cfg *config) {
 	if Synchronous{ // debug
 		Sync()
 		timer.Start("addcavity")
@@ -102,7 +102,7 @@ func k_addcavity_async ( tx unsafe.Pointer, ty unsafe.Pointer, tz unsafe.Pointer
 	 addcavity_args.arg_brms_z = brms_z
 	 addcavity_args.arg_x0 = x0
 	 addcavity_args.arg_p0 = p0
-	 addcavity_args.arg_nspins = nspins
+	 addcavity_args.arg_msat_cell = msat_cell
 	 addcavity_args.arg_dt = dt
 	 addcavity_args.arg_ctime = ctime
 	 addcavity_args.arg_gammaLL = gammaLL
