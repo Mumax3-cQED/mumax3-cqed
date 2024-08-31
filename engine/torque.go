@@ -55,7 +55,10 @@ type MEMORY_TERM struct {
 
 func init() {
 
-	mem_term = new(MEMORY_TERM)  // init new memory term for equation
+	mem_term = new(MEMORY_TERM) // init new memory term for equation
+	mem_term.last_time = 0.0
+	mem_term.dt_time = 0.0
+
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
 

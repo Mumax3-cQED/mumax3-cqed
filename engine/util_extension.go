@@ -28,7 +28,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		}
 
 		// check if not empty
-		if mem_term.scn != nil {
+		if UseCustomKernel && mem_term.scn != nil {
 			mem_term.Free()
 		}
 
