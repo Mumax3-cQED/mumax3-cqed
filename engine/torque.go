@@ -30,26 +30,30 @@ var (
 	DisableCavityTorque              = true
 	DisableBeffContributions         = false
 	ShowSimulationSummary            = true
+	UseCustomKernel                  = true
 	fixedLayerPosition               = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
 
 	B_rms = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
 	Wc    = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
 	Kappa = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
 
-	X0                float64      = 0          // Initial condition in X-axis
-	P0                float64      = 0          // Initial condition in Y-axis
-	StartCheckpoint   time.Time    = time.Now() // Starting date for mumax3 script to measure elapsed execution time, to set starting date anywhere in the  --> StartCheckpoint = now()
-	mem_term          *MEMORY_TERM = nil
-	UseCustomKernel                = true
-	HBAR              float64      = 1.05457173E-34 // Reduced Planck constant
-	MEMORY_COMPONENTS              = 2
+	X0              float64      = 0          // Initial condition in X-axis
+	P0              float64      = 0          // Initial condition in Y-axis
+	StartCheckpoint time.Time    = time.Now() // Starting date for mumax3 script to measure elapsed execution time, to set starting date anywhere in the  --> StartCheckpoint = now()
+	mem_term        *MEMORY_TERM = nil
+
+	HBAR float64 = 1.05457173E-34 // Reduced Planck constant
+)
+
+const (
+	MEMORY_COMPONENTS = 2
 )
 
 // Equation Memory Term
 type MEMORY_TERM struct {
 	last_time float64
 	dt_time   float64
-	csn       [2]float64
+	csn       [MEMORY_COMPONENTS]float64
 }
 
 func init() {
@@ -57,6 +61,7 @@ func init() {
 	mem_term = new(MEMORY_TERM) // init new memory term for equation
 	mem_term.last_time = 0.0
 	mem_term.dt_time = 0.0
+	mem_term.csn = [MEMORY_COMPONENTS]float64{0, 0}
 
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
