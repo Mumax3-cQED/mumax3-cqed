@@ -16,14 +16,16 @@ func AddCavityField(dst *data.Slice) {
 
 	sizeMesh := Mesh().Size()
 
-	if UseCustomKernel && mem_term.scn != nil && mem_term.scn.Size() != sizeMesh {
-		mem_term.Free()
-	}
+	if UseCustomKernel {
+		if mem_term.scn != nil && mem_term.scn.Size() != sizeMesh {
+			mem_term.Free()
+		}
 
-	if UseCustomKernel && mem_term.scn == nil {
-		mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, sizeMesh)
-		mem_term.last_time = 0.0
-		mem_term.dt_time = 0.0
+		if mem_term.scn == nil {
+			mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, sizeMesh)
+			mem_term.last_time = 0.0
+			mem_term.dt_time = 0.0
+		}
 	}
 
 	msatCell := calcMsatCellVol()
