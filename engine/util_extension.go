@@ -27,11 +27,6 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			return
 		}
 
-		// check if not empty
-		if UseCustomKernel && mem_term.scn != nil {
-			mem_term.Free()
-		}
-
 		c, rec := B_rms.Slice()
 		if rec {
 			defer cuda.Recycle(c)

@@ -47,7 +47,6 @@ var (
 
 // Equation Memory Term
 type MEMORY_TERM struct {
-	scn       *data.Slice
 	last_time float64
 	dt_time   float64
 	csn       [2]float64
@@ -158,14 +157,6 @@ func FreezeSpins(dst *data.Slice) {
 	if !FrozenSpins.isZero() {
 		cuda.ZeroMask(dst, FrozenSpins.gpuLUT1(), regions.Gpu())
 	}
-}
-
-// Free memory resources
-func (rk *MEMORY_TERM) Free() {
-	rk.scn.Free()
-	rk.scn = nil
-	rk.last_time = 0.0
-	rk.dt_time = 0.0
 }
 
 func GetMaxTorque() float64 {

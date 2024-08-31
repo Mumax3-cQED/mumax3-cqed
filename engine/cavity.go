@@ -14,14 +14,6 @@ func AddCavityField(dst *data.Slice) {
 		return
 	}
 
-	sizeMesh := Mesh().Size()
-
-	if UseCustomKernel && mem_term.scn == nil {
-		mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, sizeMesh)
-		mem_term.last_time = 0.0
-		mem_term.dt_time = 0.0
-	}
-
 	msatCell := calcMsatCellVol()
 
 	wc_slice := Wc.MSlice()
@@ -37,11 +29,7 @@ func AddCavityField(dst *data.Slice) {
 
 	mem_term.dt_time = Time - mem_term.last_time
 
-	if UseCustomKernel {
-		cuda.AddCavity(dst, M.Buffer(), mem_term.scn, brms_slice, wc_slice, kappa, X0, P0, msatCell, mem_term.dt_time, Time, Mesh())
-	} else {
-		cuda.AddCavity2(dst, M.Buffer(), brms_slice, wc_slice, kappa, X0, P0, msatCell, mem_term.dt_time, Time, &mem_term.csn, Mesh())
-	}
+	cuda.AddCavity(dst, M.Buffer(), brms_slice, wc_slice, kappa, X0, P0, msatCell, mem_term.dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
 
 	mem_term.last_time = Time
 }
