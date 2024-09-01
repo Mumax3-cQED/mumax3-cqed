@@ -18,12 +18,13 @@ import (
 func AddCavity(dst, m, brms, scn *data.Slice, wc, kappa MSlice, x0, p0, msatCell, deltah, ctime float64, mem *[2]float64, mesh *data.Mesh, customKernel bool) {
 
 	N := mesh.Size()
-	pbc := mesh.PBC_code()
-	cfg := make3DConf(N)
 	brms = data.Resample(brms, N) // reshape of OVF Brms file to mesh size
 	brms_m := Dot(brms, m)
 
 	if customKernel {
+		cfg := make3DConf(N)
+		pbc := mesh.PBC_code()
+
 		k_addcavity_async(dst.DevPtr(X), dst.DevPtr(Y), dst.DevPtr(Z),
 			scn.DevPtr(0), scn.DevPtr(1),
 			wc.DevPtr(0), wc.Mul(0),
