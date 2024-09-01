@@ -14,9 +14,9 @@ func AddCavityField(dst *data.Slice) {
 		return
 	}
 
-	sizeMesh := Mesh().Size()
-
 	if UseCustomKernel {
+		sizeMesh := Mesh().Size()
+
 		if mem_term.scn != nil && mem_term.scn.Size() != sizeMesh {
 			mem_term.Free()
 		}
