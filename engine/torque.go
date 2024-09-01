@@ -51,6 +51,7 @@ const (
 
 // Equation Memory Term
 type MEMORY_TERM struct {
+	scn       *data.Slice
 	last_time float64
 	dt_time   float64
 	csn       [MEMORY_COMPONENTS]float64
@@ -168,6 +169,15 @@ func GetMaxTorque() float64 {
 	torque := ValueOf(Torque)
 	defer cuda.Recycle(torque)
 	return cuda.MaxVecNorm(torque)
+}
+
+// Free memory resources
+
+func (rk *MEMORY_TERM) Free() {
+	rk.scn.Free()
+	rk.scn = nil
+	rk.last_time = 0.0
+	rk.dt_time = 0.0
 }
 
 type FixedLayerPosition int
