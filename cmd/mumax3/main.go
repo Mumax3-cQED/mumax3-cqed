@@ -24,6 +24,10 @@ var (
 	// more flags in engine/gofiles.go
 )
 
+const (
+	BUILD_DATE = "09-02-2024"
+)
+
 func main() {
 	flag.Parse()
 	log.SetPrefix("")
@@ -171,6 +175,7 @@ func printVersion() {
 	engine.LogOut("|                                                                    |")
 	engine.LogOut("|               MUMAX3 Cavity QED feature developed by:              |")
 	engine.LogOut("|             INMA/UNIZAR, Universidad de Zaragoza, Spain            |")
+	engine.LogOut("|               Build date:", BUILD_DATE, "(MM-dd-yyyy)              |")
 	engine.LogOut("|____________________________________________________________________|")
 	engine.LogOut("")
 	engine.LogOut(engine.UNAME)
