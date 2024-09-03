@@ -81,7 +81,7 @@ The binary file is placed in `$HOME/go/bin`
 #### INSTALLATION IN WINDOWS SYSTEMS
 ------------------------------------
 
-For Windows systems, you must install [Visual Studio Community 2019](https://visualstudio.microsoft.com/en/vs/older-downloads/) with **.Net desktop development**, **Desktop development with C++**, **Universal Windows Platform development**.
+For Windows systems, you must install [Visual Studio Community 2019](https://visualstudio.microsoft.com/en/vs/older-downloads/) with **.Net desktop development**, **Desktop development with C++**, **Universal Windows Platform development**. If you cannot find the Visual Studio Community 2019 file, here is [an alternative link to download the exe file](https://archive.org/details/vs_Community).
 
 ![vs2019-community-installer](./images/vs2019-community-installer.png)
 
