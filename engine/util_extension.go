@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 	"time"
@@ -15,6 +16,57 @@ func If_Ternary(statement bool, a, b interface{}) interface{} {
 		return a
 	}
 	return b
+}
+
+// Reset memory term to start again the cavity calculus
+func ResetMemoryTerm() {
+
+	LogIn("")
+	LogIn("--------------------------------------------------------------------")
+	LogIn("|               Resetting memory... please wait!                   |")
+	LogIn("--------------------------------------------------------------------")
+	mem_term.Free()
+
+	status := []byte{0, 0, 0, 0}
+
+	if mem_term.scn == nil {
+		LogIn("|           * Init memory component 1... SUCCESS!                  |")
+	} else {
+		LogIn("|           * Init memory component 1... ERROR!                    |")
+		status[0] = 1
+	}
+
+	if mem_term.last_time == 0.0 {
+		LogIn("|           * Init memory component 2... SUCCESS!                  |")
+	} else {
+		LogIn("|           * Init memory component 2... ERROR!                    |")
+		status[1] = 1
+	}
+
+	if mem_term.dt_time == 0.0 {
+		LogIn("|           * Init memory component 3... SUCCESS!                  |")
+	} else {
+		LogIn("|           * Init memory component 3... ERROR!                    |")
+		status[2] = 1
+	}
+
+	if mem_term.csn[0] == 0 && mem_term.csn[1] == 0 {
+		LogIn("|           * Init memory component 4... SUCCESS!                  |")
+	} else {
+		LogIn("|           * Init memory component 4... ERROR!                    |")
+		status[3] = 1
+	}
+
+	LogIn("--------------------------------------------------------------------")
+
+	if bytes.ContainsRune(status, 1) {
+		LogIn("|            ----> Full memory init... ERROR! <----                |")
+	} else {
+		LogIn("|            ----> Full memory init... DONE! <----                 |")
+	}
+
+	LogIn("--------------------------------------------------------------------")
+	LogIn("")
 }
 
 // Display script configuration summary in script output

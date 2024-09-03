@@ -57,13 +57,15 @@ type MEMORY_TERM struct {
 	csn       [MEMORY_COMPONENTS]float64
 }
 
-func init() {
-
+func memory_init() {
 	mem_term = new(MEMORY_TERM) // init new memory term for equation
 	mem_term.last_time = 0.0
 	mem_term.dt_time = 0.0
 	mem_term.csn = [MEMORY_COMPONENTS]float64{0, 0}
+}
 
+func init() {
+	memory_init()
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
 
@@ -83,6 +85,7 @@ func init() {
 	DeclROnly("FIXEDLAYER_TOP", FIXEDLAYER_TOP, "FixedLayerPosition = FIXEDLAYER_TOP instructs mumax3 that fixed layer is on top of the free layer")
 	DeclROnly("FIXEDLAYER_BOTTOM", FIXEDLAYER_BOTTOM, "FixedLayerPosition = FIXEDLAYER_BOTTOM instructs mumax3 that fixed layer is underneath of the free layer")
 	DeclFunc("PrintScriptExecutionTime", PrintScriptExecutionTime, "Print and save to log the script execution time")
+	DeclFunc("ResetMemoryTerm", ResetMemoryTerm, "Reset memory term for cavity solution")
 }
 
 // Sets dst to the current total torque
@@ -178,6 +181,7 @@ func (rk *MEMORY_TERM) Free() {
 	rk.scn = nil
 	rk.last_time = 0.0
 	rk.dt_time = 0.0
+	rk.csn = [MEMORY_COMPONENTS]float64{0, 0}
 }
 
 type FixedLayerPosition int
