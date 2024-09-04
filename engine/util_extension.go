@@ -8,6 +8,7 @@ import (
 
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
+	"github.com/mumax/3/util"
 )
 
 func If_Ternary(statement bool, a, b interface{}) interface{} {
@@ -71,6 +72,8 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		if !ShowSimulationSummary {
 			return
 		}
+
+		util.AssertMsg(!Msat.isZero(), "saturation magnetization should not be 0")
 
 		// check if not empty
 		if UseCustomKernel && mem_term.scn != nil {
@@ -204,9 +207,6 @@ func calcFullSize() (float64, float64, float64, [3]float64, [3]int) {
 
 // Calculate number of spins as a function of saturation magnetisation, mandatory for calculations (Msat)
 func calcMsatCellVol() float64 {
-
-	// util.AssertMsg(!Msat.isZero(), "saturation magnetization should not be 0")
-
 	return (2 * cellVolume()) / HBAR
 }
 
