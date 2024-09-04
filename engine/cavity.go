@@ -54,7 +54,7 @@ func IsCavityActive() bool {
 			return false
 		}
 
-		scriptFileContents = strings.Trim(string(bytes), " ")
+		scriptFileContents = strings.Replace(string(bytes), " ", "", -1)
 		cavityStatus = strings.Contains(scriptFileContents, "B_rms=vector")
 	}
 
