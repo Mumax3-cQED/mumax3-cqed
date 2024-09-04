@@ -111,7 +111,6 @@ func AddCavityField(dst *data.Slice) {
 	defer full_m.Free()
 
 	msat_slice, rec := Msat.Slice()
-
 	if rec {
 		defer cuda.Recycle(msat_slice)
 	}
