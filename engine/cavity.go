@@ -107,7 +107,7 @@ func AddCavityField(dst *data.Slice) {
 	kappa := Kappa.MSlice()
 	defer kappa.Recycle()
 
-	full_m := cuda.NewSlice(brms_slice.NComp(), brms_slice.Size())
+	full_m := cuda.NewSlice(M.Buffer().NComp(), M.Buffer().Size())
 	defer full_m.Free()
 
 	msat_slice, rec := Msat.Slice()
