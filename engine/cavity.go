@@ -2,17 +2,22 @@
 package engine
 
 import (
+	"strings"
 	"time"
 
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
+	"github.com/mumax/3/httpfs"
 )
 
 var (
-	DisableCavityTorque      = true
+	// DisableCavityTorque      = true
 	DisableBeffContributions = false
 	ShowSimulationSummary    = true
 	UseCustomKernel          = true
+
+	scriptFileContents = ""
+	cavityStatus       = false // internal variable to hold the status of cavity feature
 
 	B_rms = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
 	Wc    = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
@@ -37,8 +42,23 @@ const (
 	MEMORY_COMPONENTS = 2
 )
 
+// Check whether the cavity feature is active or not by checking the Brms vector,
+// If Brms vector is NOT declared in script the cavity feature is DISABLED otherwise is ENABLED
 func IsCavityActive() bool {
-	return B_rms.isZero()
+
+	if scriptFileContents == "" {
+
+		bytes, err := httpfs.Read(InputFile)
+
+		if err != nil {
+			return false
+		}
+
+		scriptFileContents = strings.Trim(string(bytes), " ")
+		cavityStatus = strings.Contains(scriptFileContents, "B_rms=vector")
+	}
+
+	return cavityStatus
 }
 
 // Init memory term
@@ -56,7 +76,7 @@ func declareNewCavityCommands() {
 	DeclVar("P0", &P0, "Initial condition for the cavity (default=0)")
 	DeclVar("HBAR", &HBAR, "Reduced Planck constant")
 	DeclVar("UseCustomKernel", &UseCustomKernel, "Use custom CUDA kernel (default=true)")
-	DeclVar("DisableCavityTorque", &DisableCavityTorque, "Disables Cavity Time evolution torque (default=true)")
+	// DeclVar("DisableCavityTorque", &DisableCavityTorque, "Disables Cavity Time evolution torque (default=true)")
 	DeclVar("DisableBeffContributions", &DisableBeffContributions, "Disables Beff default contributions (default=false)")
 	DeclFunc("PrintScriptExecutionTime", PrintScriptExecutionTime, "Print and save to log the script execution time")
 	DeclFunc("ResetMemoryTerm", ResetMemoryTerm, "Reset memory term for cavity solution")

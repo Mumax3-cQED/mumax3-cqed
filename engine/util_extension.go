@@ -67,7 +67,7 @@ func ResetMemoryTerm() {
 // and insert this information into the log.txt file (see run.go)
 func PrintParametersTimeEvolution(simulationTime *float64) {
 
-	if !DisableCavityTorque {
+	if IsCavityActive() {
 
 		if !ShowSimulationSummary {
 			return

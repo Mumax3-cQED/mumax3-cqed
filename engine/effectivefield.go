@@ -26,7 +26,7 @@ func SetEffectiveField(dst *data.Slice) {
 		B_ext.AddTo(dst)
 	}
 	// Apply new term in effective field
-	if !DisableCavityTorque {
+	if IsCavityActive() {
 		AddCavityField(dst)
 	}
 }
