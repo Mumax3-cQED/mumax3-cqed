@@ -94,7 +94,7 @@ func AddCavityField(dst *data.Slice) {
 		}
 	}
 
-	msatCell := (2 * cellVolume()) / HBAR
+	vc2_hbar := (2 * cellVolume()) / HBAR
 
 	wc_slice := Wc.MSlice()
 	defer wc_slice.Recycle()
@@ -119,7 +119,7 @@ func AddCavityField(dst *data.Slice) {
 
 	dt_time := Time - mem_term.last_time
 
-	cuda.AddCavity(dst, full_m, brms_slice, mem_term.scn, wc_slice, kappa, X0, P0, msatCell, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
+	cuda.AddCavity(dst, full_m, brms_slice, mem_term.scn, wc_slice, kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
 
 	mem_term.last_time = Time
 
