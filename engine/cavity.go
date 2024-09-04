@@ -2,12 +2,10 @@
 package engine
 
 import (
-	"strings"
 	"time"
 
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
-	"github.com/mumax/3/httpfs"
 )
 
 var (
@@ -45,20 +43,7 @@ const (
 // Check whether the cavity feature is active or not by checking the Brms vector,
 // If Brms vector is NOT declared in script the cavity feature is DISABLED otherwise is ENABLED
 func IsCavityActive() bool {
-
-	if scriptFileContents == "" {
-
-		bytes, err := httpfs.Read(InputFile)
-
-		if err != nil {
-			return false
-		}
-
-		scriptFileContents = strings.Replace(string(bytes), " ", "", -1)
-		cavityStatus = strings.Contains(scriptFileContents, "B_rms=vector")
-	}
-
-	return cavityStatus
+	return !B_rms.isZero()
 }
 
 // Init memory term
