@@ -2,7 +2,6 @@ package engine
 
 import (
 	"reflect"
-	"time"
 
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
@@ -27,65 +26,22 @@ var (
 	Precess                          = true
 	DisableZhangLiTorque             = false
 	DisableSlonczewskiTorque         = false
-	DisableCavityTorque              = true
-	DisableBeffContributions         = false
-	ShowSimulationSummary            = true
-	UseCustomKernel                  = true
 	fixedLayerPosition               = FIXEDLAYER_TOP // instructs mumax3 how free and fixed layers are stacked along +z direction
-
-	B_rms = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
-	Wc    = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
-	Kappa = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
-
-	X0              float64      = 0          // Initial condition in X-axis
-	P0              float64      = 0          // Initial condition in Y-axis
-	StartCheckpoint time.Time    = time.Now() // Starting date for mumax3 script to measure elapsed execution time, to set starting date anywhere in the  --> StartCheckpoint = now()
-	mem_term        *MEMORY_TERM = nil
-
-	HBAR float64 = 1.05457173E-34 // Reduced Planck constant
 )
-
-const (
-	MEMORY_COMPONENTS = 2
-)
-
-// Equation Memory Term
-type MEMORY_TERM struct {
-	scn       *data.Slice
-	last_time float64
-	dt_time   float64
-	csn       [MEMORY_COMPONENTS]float64
-}
-
-func memory_init() {
-	mem_term = new(MEMORY_TERM) // init new memory term for equation
-	mem_term.last_time = 0.0
-	mem_term.dt_time = 0.0
-	mem_term.csn = [MEMORY_COMPONENTS]float64{0, 0}
-}
 
 func init() {
-	memory_init()
+	memoryInit()
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
 
-	DeclVar("ShowSimulationSummary", &ShowSimulationSummary, "Show simulation data summary after run() function (default=true)")
-	DeclVar("StartCheckpoint", &StartCheckpoint, "Script launch starting date (default now() at the beginning of mumax3 allocation)")
-	DeclVar("X0", &X0, "Initial condition for the cavity (default=0)")
-	DeclVar("P0", &P0, "Initial condition for the cavity (default=0)")
+	declareNewCavityCommands()
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
-	DeclVar("HBAR", &HBAR, "Reduced Planck constant")
-	DeclVar("UseCustomKernel", &UseCustomKernel, "Use custom CUDA kernel (default=true)")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")
-	DeclVar("DisableCavityTorque", &DisableCavityTorque, "Disables Cavity Time evolution torque (default=true)")
-	DeclVar("DisableBeffContributions", &DisableBeffContributions, "Disables Beff default contributions (default=false)")
 	DeclVar("DoPrecess", &Precess, "Enables LL precession (default=true)")
 	DeclLValue("FixedLayerPosition", &flposition{}, "Position of the fixed layer: FIXEDLAYER_TOP, FIXEDLAYER_BOTTOM (default=FIXEDLAYER_TOP)")
 	DeclROnly("FIXEDLAYER_TOP", FIXEDLAYER_TOP, "FixedLayerPosition = FIXEDLAYER_TOP instructs mumax3 that fixed layer is on top of the free layer")
 	DeclROnly("FIXEDLAYER_BOTTOM", FIXEDLAYER_BOTTOM, "FixedLayerPosition = FIXEDLAYER_BOTTOM instructs mumax3 that fixed layer is underneath of the free layer")
-	DeclFunc("PrintScriptExecutionTime", PrintScriptExecutionTime, "Print and save to log the script execution time")
-	DeclFunc("ResetMemoryTerm", ResetMemoryTerm, "Reset memory term for cavity solution")
 }
 
 // Sets dst to the current total torque
@@ -180,7 +136,6 @@ func (rk *MEMORY_TERM) Free() {
 	rk.scn.Free()
 	rk.scn = nil
 	rk.last_time = 0.0
-	rk.dt_time = 0.0
 	rk.csn = [MEMORY_COMPONENTS]float64{0, 0}
 }
 

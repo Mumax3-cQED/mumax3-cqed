@@ -44,13 +44,6 @@ func ResetMemoryTerm() {
 		status[1] = 1
 	}
 
-	if mem_term.dt_time == 0.0 {
-		LogIn("|           * Init memory component 3... SUCCESS!                  |")
-	} else {
-		LogIn("|           * Init memory component 3... ERROR!                    |")
-		status[2] = 1
-	}
-
 	if mem_term.csn[0] == 0 && mem_term.csn[1] == 0 {
 		LogIn("|           * Init memory component 4... SUCCESS!                  |")
 	} else {
