@@ -120,7 +120,7 @@ func AddCavityField(dst *data.Slice) {
 
 	dt_time := Time - mem_term.last_time
 
-	cuda.AddCavity(dst, M.Buffer(), full_m, brms_slice, mem_term.scn, wc_slice, kappa, X0, P0, msatCell, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
+	cuda.AddCavity(dst, full_m, brms_slice, mem_term.scn, wc_slice, kappa, X0, P0, msatCell, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
 
 	mem_term.last_time = Time
 
