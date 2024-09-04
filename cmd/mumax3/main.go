@@ -25,7 +25,7 @@ var (
 )
 
 const (
-	BUILD_DATE = "09-02-2024"
+	BUILD_DATE = "09-04-2024"
 )
 
 func main() {

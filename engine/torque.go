@@ -30,11 +30,10 @@ var (
 )
 
 func init() {
-	memoryInit()
+
 	Pol.setUniform([]float64{1}) // default spin polarization
 	Lambda.Set(1)                // sensible default value (?).
 
-	declareNewCavityCommands()
 	DeclVar("GammaLL", &GammaLL, "Gyromagnetic ratio in rad/Ts")
 	DeclVar("DisableZhangLiTorque", &DisableZhangLiTorque, "Disables Zhang-Li torque (default=false)")
 	DeclVar("DisableSlonczewskiTorque", &DisableSlonczewskiTorque, "Disables Slonczewski torque (default=false)")

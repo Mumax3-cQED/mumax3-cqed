@@ -55,14 +55,13 @@ func IsCavityActive() bool {
 }
 
 // Init memory term
-func memoryInit() {
-	mem_term = new(MEMORY_TERM) // init new memory term for equation
+func init() {
+	// init new memory term for equation
+	mem_term = new(MEMORY_TERM)
 	mem_term.last_time = 0.0
 	mem_term.csn = [MEMORY_COMPONENTS]float64{0, 0}
-}
 
-// Declaration of new script instructions and functions
-func declareNewCavityCommands() {
+	// Declaration of new script instructions and functions
 	DeclVar("ShowSimulationSummary", &ShowSimulationSummary, "Show simulation data summary after run() function (default=true)")
 	DeclVar("StartCheckpoint", &StartCheckpoint, "Script launch starting date (default now() at the beginning of mumax3 allocation)")
 	DeclVar("X0", &X0, "Initial condition for the cavity (default=0)")
