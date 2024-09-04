@@ -9,17 +9,25 @@ import (
 )
 
 var (
-	// DisableCavityTorque      = true
 	DisableBeffContributions = false
 	ShowSimulationSummary    = true
 	UseCustomKernel          = true
 
-	scriptFileContents = ""
-	cavityStatus       = false // internal variable to hold the status of cavity feature
-
 	B_rms = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
 	Wc    = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
 	Kappa = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
+
+	// Read-only variable to check the cavity feature status
+	// Calling this variable before setting B_rms in the script will give always 0-status (DISABLED)
+	// 1 --> ENABLED (Cavity feature enabled)
+	// 0 --> DISABLED (Cavity feature disabled)
+	_ = NewScalarValue("CavityFeatureStatus", "", "Check status of cavity feature (1 --> ENABLED, 0 --> DISABLED)", func() float64 {
+		status := 0.0
+		if IsCavityActive() {
+			status = 1.0
+		}
+		return status
+	})
 
 	X0              float64      = 0          // Initial condition in X-axis
 	P0              float64      = 0          // Initial condition in Y-axis
@@ -41,7 +49,7 @@ const (
 )
 
 // Check whether the cavity feature is active or not by checking the Brms vector,
-// If Brms vector is NOT declared in script the cavity feature is DISABLED otherwise is ENABLED
+// If Brms vector is NOT declared in script or Zero-vector the cavity feature is DISABLED otherwise is ENABLED
 func IsCavityActive() bool {
 	return !B_rms.isZero()
 }
@@ -61,7 +69,6 @@ func declareNewCavityCommands() {
 	DeclVar("P0", &P0, "Initial condition for the cavity (default=0)")
 	DeclVar("HBAR", &HBAR, "Reduced Planck constant")
 	DeclVar("UseCustomKernel", &UseCustomKernel, "Use custom CUDA kernel (default=true)")
-	// DeclVar("DisableCavityTorque", &DisableCavityTorque, "Disables Cavity Time evolution torque (default=true)")
 	DeclVar("DisableBeffContributions", &DisableBeffContributions, "Disables Beff default contributions (default=false)")
 	DeclFunc("PrintScriptExecutionTime", PrintScriptExecutionTime, "Print and save to log the script execution time")
 	DeclFunc("ResetMemoryTerm", ResetMemoryTerm, "Reset memory term for cavity solution")
