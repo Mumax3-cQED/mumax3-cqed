@@ -8,7 +8,6 @@ import (
 
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
-	"github.com/mumax/3/util"
 )
 
 func If_Ternary(statement bool, a, b interface{}) interface{} {
@@ -206,12 +205,9 @@ func calcFullSize() (float64, float64, float64, [3]float64, [3]int) {
 // Calculate number of spins as a function of saturation magnetisation, mandatory for calculations (Msat)
 func calcMsatCellVol() float64 {
 
-	util.AssertMsg(!Msat.isZero(), "saturation magnetization should not be 0")
+	// util.AssertMsg(!Msat.isZero(), "saturation magnetization should not be 0")
 
-	m_sat := Msat.MSlice()
-	defer m_sat.Recycle()
-
-	return (2 * cellVolume() * float64(m_sat.Mul(0))) / HBAR
+	return (2 * cellVolume()) / HBAR
 }
 
 // Get current date

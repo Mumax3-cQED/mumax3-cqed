@@ -15,11 +15,11 @@ import (
 //  x0: Cavity initial condtion
 //  p0: Cavity initial condtion
 // see cavity.cu
-func AddCavity(dst, m, brms, scn *data.Slice, wc, kappa MSlice, x0, p0, msatCell, dt, ctime float64, mem *[2]float64, mesh *data.Mesh, customKernel bool) {
+func AddCavity(dst, m, full_m, brms, scn *data.Slice, wc, kappa MSlice, x0, p0, msatCell, dt, ctime float64, mem *[2]float64, mesh *data.Mesh, customKernel bool) {
 
 	N := mesh.Size()
 	brms = data.Resample(brms, N) // reshape of OVF Brms file to mesh size
-	brms_m := Dot(brms, m)
+	brms_m := Dot(brms, full_m)
 
 	if customKernel {
 		cfg := make3DConf(N)
