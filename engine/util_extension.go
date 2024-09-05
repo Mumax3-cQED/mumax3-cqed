@@ -128,20 +128,9 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			LogIn(" Alpha:", alpha.Mul(0))
 		}
 
-		// if m_sat.Mul(0) != 0 {
-		// 	LogIn(" Msat (A/m):", m_sat.Mul(0))
-		// } else {
-		// 	LogIn(" Msat (A/m): 0.0")
-		// }
 		LogIn(" Msat (A/m):", If_Ternary(m_sat.Mul(0) != 0, m_sat.Mul(0), 0.0).(float32))
-
-		msatCell_val := calcMsatCellVol()
-
-		LogIn(" Spins per cell:", msatCell_val)
-
 		LogIn(" Cavity initial condition X0:", X0)
 		LogIn(" Cavity initial condition P0:", P0)
-
 		LogIn(" GammaLL (rad/Ts):", GammaLL)
 
 		if v.Mul(0) != 0 {
@@ -203,11 +192,6 @@ func calcFullSize() (float64, float64, float64, [3]float64, [3]int) {
 	full_sizez := size_cellz * num_cellz
 
 	return full_sizex, full_sizey, full_sizez, cell_size, num_cells
-}
-
-// Calculate number of spins as a function of saturation magnetisation, mandatory for calculations (Msat)
-func calcMsatCellVol() float64 {
-	return (2 * cellVolume()) / HBAR
 }
 
 // Get current date
