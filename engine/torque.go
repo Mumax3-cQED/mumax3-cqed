@@ -129,15 +129,6 @@ func GetMaxTorque() float64 {
 	return cuda.MaxVecNorm(torque)
 }
 
-// Free memory resources
-
-func (rk *MEMORY_TERM) Free() {
-	rk.scn.Free()
-	rk.scn = nil
-	rk.last_time = 0.0
-	rk.csn = [MEMORY_COMPONENTS]float64{0, 0}
-}
-
 type FixedLayerPosition int
 
 const (

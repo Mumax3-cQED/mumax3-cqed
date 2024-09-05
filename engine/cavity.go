@@ -122,5 +122,12 @@ func AddCavityField(dst *data.Slice) {
 	cuda.AddCavity(dst, full_m, brms_slice, mem_term.scn, wc_slice, kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
 
 	mem_term.last_time = Time
+}
 
+// Free memory resources
+func (memory *MEMORY_TERM) Free() {
+	memory.scn.Free()
+	memory.scn = nil
+	memory.last_time = 0.0
+	memory.csn = [MEMORY_COMPONENTS]float64{0, 0}
 }
