@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 	"time"
@@ -11,56 +10,22 @@ import (
 	"github.com/mumax/3/util"
 )
 
+var (
+	ShowSimulationSummary           = true
+	StartCheckpoint       time.Time = time.Now() // Starting date for mumax3 script to measure elapsed execution time, to set starting date anywhere in the  --> StartCheckpoint = now()
+)
+
+func init() {
+	DeclVar("StartCheckpoint", &StartCheckpoint, "Script launch starting date (default now() at the beginning of mumax3 allocation)")
+	DeclVar("ShowSimulationSummary", &ShowSimulationSummary, "Show simulation data summary after run() function (default=true)")
+	DeclFunc("PrintScriptExecutionTime", PrintScriptExecutionTime, "Print and save to log the script execution time")
+}
+
 func If_Ternary(statement bool, a, b interface{}) interface{} {
 	if statement {
 		return a
 	}
 	return b
-}
-
-// Reset memory term to start again the cavity calculus
-func ResetMemoryTerm() {
-
-	LogIn("")
-	LogIn("--------------------------------------------------------------------")
-	LogIn("|               Resetting memory... please wait!                   |")
-	LogIn("--------------------------------------------------------------------")
-
-	mem_term.Free()
-
-	status := []byte{0, 0, 0, 0}
-
-	if mem_term.scn == nil {
-		LogIn("|           * Init memory component 1... SUCCESS!                  |")
-	} else {
-		LogIn("|           * Init memory component 1... ERROR!                    |")
-		status[0] = 1
-	}
-
-	if mem_term.last_time == 0.0 {
-		LogIn("|           * Init memory component 2... SUCCESS!                  |")
-	} else {
-		LogIn("|           * Init memory component 2... ERROR!                    |")
-		status[1] = 1
-	}
-
-	if mem_term.csn[0] == 0 && mem_term.csn[1] == 0 {
-		LogIn("|           * Init memory component 4... SUCCESS!                  |")
-	} else {
-		LogIn("|           * Init memory component 4... ERROR!                    |")
-		status[3] = 1
-	}
-
-	LogIn("--------------------------------------------------------------------")
-
-	if bytes.ContainsRune(status, 1) {
-		LogIn("|            ----> Full memory init... ERROR! <----                |")
-	} else {
-		LogIn("|            ----> Full memory init... DONE! <----                 |")
-	}
-
-	LogIn("--------------------------------------------------------------------")
-	LogIn("")
 }
 
 // Display script configuration summary in script output
@@ -111,7 +76,6 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn(" Simulation date (yyyy-MM-dd HH:mm:ss):", full_date)
 		LogIn(" Time evolution factor in LLG equation: Enabled")
 		LogIn(" Cavity feature: Enabled")
-		LogIn(" Beff default contributions:", If_Ternary(DisableBeffContributions, "Disabled", "Enabled").(string))
 		LogIn(" B_demag (magnetostatic field):", If_Ternary(EnableDemag, "Enabled", "Disabled").(string))
 		LogIn(" Zhang-Li Spin-Transfer Torque:", If_Ternary(DisableZhangLiTorque, "Disabled", "Enabled").(string))
 		LogIn(" Slonczewski Spin-Transfer Torque:", If_Ternary(DisableSlonczewskiTorque, "Disabled", "Enabled").(string))
@@ -164,6 +128,10 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		}
 
 		LogIn("------------------------------------------------")
+		LogIn("")
+		if FixDt == 0 {
+			LogIn(" WARNING: FixDt undefined, consider set FixDt for better results ")
+		}
 		LogIn("")
 	}
 }

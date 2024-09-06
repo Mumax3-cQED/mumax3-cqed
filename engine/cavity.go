@@ -2,16 +2,14 @@
 package engine
 
 import (
-	"time"
+	"bytes"
 
 	"github.com/mumax/3/cuda"
 	"github.com/mumax/3/data"
 )
 
 var (
-	DisableBeffContributions = false
-	ShowSimulationSummary    = true
-	UseCustomKernel          = true
+	UseCustomKernel = true
 
 	B_rms = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
 	Wc    = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
@@ -29,10 +27,9 @@ var (
 		return status
 	})
 
-	X0              float64      = 0          // Initial condition in X-axis
-	P0              float64      = 0          // Initial condition in Y-axis
-	StartCheckpoint time.Time    = time.Now() // Starting date for mumax3 script to measure elapsed execution time, to set starting date anywhere in the  --> StartCheckpoint = now()
-	mem_term        *MEMORY_TERM = nil
+	X0       float64      = 0 // Initial condition in X-axis
+	P0       float64      = 0 // Initial condition in Y-axis
+	mem_term *MEMORY_TERM = nil
 
 	HBAR float64 = 1.05457173E-34 // Reduced Planck constant
 )
@@ -62,14 +59,10 @@ func init() {
 	mem_term.csn = [MEMORY_COMPONENTS]float64{0, 0}
 
 	// Declaration of new script instructions and functions
-	DeclVar("ShowSimulationSummary", &ShowSimulationSummary, "Show simulation data summary after run() function (default=true)")
-	DeclVar("StartCheckpoint", &StartCheckpoint, "Script launch starting date (default now() at the beginning of mumax3 allocation)")
 	DeclVar("X0", &X0, "Initial condition for the cavity (default=0)")
 	DeclVar("P0", &P0, "Initial condition for the cavity (default=0)")
 	DeclVar("HBAR", &HBAR, "Reduced Planck constant")
 	DeclVar("UseCustomKernel", &UseCustomKernel, "Use custom CUDA kernel (default=true)")
-	DeclVar("DisableBeffContributions", &DisableBeffContributions, "Disables Beff default contributions (default=false)")
-	DeclFunc("PrintScriptExecutionTime", PrintScriptExecutionTime, "Print and save to log the script execution time")
 	DeclFunc("ResetMemoryTerm", ResetMemoryTerm, "Reset memory term for cavity solution")
 }
 
@@ -122,6 +115,51 @@ func AddCavityField(dst *data.Slice) {
 	cuda.AddCavity(dst, full_m, brms_slice, mem_term.scn, wc_slice, kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
 
 	mem_term.last_time = Time
+}
+
+// Reset memory term to start again the cavity calculus
+func ResetMemoryTerm() {
+
+	LogIn("")
+	LogIn("--------------------------------------------------------------------")
+	LogIn("|               Resetting memory... please wait!                   |")
+	LogIn("--------------------------------------------------------------------")
+
+	mem_term.Free()
+
+	status := []byte{0, 0, 0, 0}
+
+	if mem_term.scn == nil {
+		LogIn("|           * Init memory component 1... SUCCESS!                  |")
+	} else {
+		LogIn("|           * Init memory component 1... ERROR!                    |")
+		status[0] = 1
+	}
+
+	if mem_term.last_time == 0.0 {
+		LogIn("|           * Init memory component 2... SUCCESS!                  |")
+	} else {
+		LogIn("|           * Init memory component 2... ERROR!                    |")
+		status[1] = 1
+	}
+
+	if mem_term.csn[0] == 0 && mem_term.csn[1] == 0 {
+		LogIn("|           * Init memory component 4... SUCCESS!                  |")
+	} else {
+		LogIn("|           * Init memory component 4... ERROR!                    |")
+		status[3] = 1
+	}
+
+	LogIn("--------------------------------------------------------------------")
+
+	if bytes.ContainsRune(status, 1) {
+		LogIn("|            ----> Full memory init... ERROR! <----                |")
+	} else {
+		LogIn("|            ----> Full memory init... DONE! <----                 |")
+	}
+
+	LogIn("--------------------------------------------------------------------")
+	LogIn("")
 }
 
 // Free memory resources
