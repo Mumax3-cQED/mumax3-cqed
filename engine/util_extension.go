@@ -130,7 +130,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn("------------------------------------------------")
 		LogIn("")
 		if FixDt == 0 {
-			LogIn(" WARNING: FixDt undefined, consider set FixDt for better results ")
+			LogIn(" WARNING: FixDt undefined, consider setting FixDt for better results")
 		}
 		LogIn("")
 	}
