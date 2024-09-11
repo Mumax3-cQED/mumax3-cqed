@@ -15,7 +15,7 @@ import (
 //  x0: Cavity initial condtion
 //  p0: Cavity initial condtion
 // see cavity.cu
-func AddCavity(dst, full_m, brms, scn *data.Slice, wc, kappa MSlice, x0, p0, vc2_hbar, dt, ctime float64, mem *[2]float64, mesh *data.Mesh) {
+func AddCavity(dst, full_m, brms *data.Slice, wc, kappa MSlice, x0, p0, vc2_hbar, dt, ctime float64, mem *[2]float64, mesh *data.Mesh) {
 
 	N := mesh.Size()
 	brms = data.Resample(brms, N) // reshape of OVF Brms file to mesh size

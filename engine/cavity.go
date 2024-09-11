@@ -34,7 +34,6 @@ var (
 
 // Equation Memory Term
 type MEMORY_TERM struct {
-	scn       *data.Slice
 	last_time float64
 	csn       [MEMORY_COMPONENTS]float64
 }
@@ -71,19 +70,6 @@ func AddCavityField(dst *data.Slice) {
 		return
 	}
 
-	if UseCustomKernel {
-		sizeMesh := Mesh().Size()
-
-		if mem_term.scn != nil && mem_term.scn.Size() != sizeMesh {
-			mem_term.Free()
-		}
-
-		if mem_term.scn == nil {
-			mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, sizeMesh)
-			mem_term.last_time = 0.0
-		}
-	}
-
 	vc2_hbar := (2 * cellVolume()) / HBAR
 
 	wc_slice := Wc.MSlice()
@@ -109,7 +95,7 @@ func AddCavityField(dst *data.Slice) {
 
 	dt_time := Time - mem_term.last_time
 
-	cuda.AddCavity(dst, full_m, brms_slice, mem_term.scn, wc_slice, kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh())
+	cuda.AddCavity(dst, full_m, brms_slice, wc_slice, kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh())
 
 	mem_term.last_time = Time
 }
@@ -126,24 +112,17 @@ func ResetMemoryTerm() {
 
 	status := []byte{0, 0, 0, 0}
 
-	if mem_term.scn == nil {
+	if mem_term.last_time == 0.0 {
 		LogIn("|           * Init memory component 1... SUCCESS!                  |")
 	} else {
 		LogIn("|           * Init memory component 1... ERROR!                    |")
-		status[0] = 1
-	}
-
-	if mem_term.last_time == 0.0 {
-		LogIn("|           * Init memory component 2... SUCCESS!                  |")
-	} else {
-		LogIn("|           * Init memory component 2... ERROR!                    |")
 		status[1] = 1
 	}
 
 	if mem_term.csn[0] == 0 && mem_term.csn[1] == 0 {
-		LogIn("|           * Init memory component 4... SUCCESS!                  |")
+		LogIn("|           * Init memory component 2... SUCCESS!                  |")
 	} else {
-		LogIn("|           * Init memory component 4... ERROR!                    |")
+		LogIn("|           * Init memory component 2... ERROR!                    |")
 		status[3] = 1
 	}
 
@@ -161,8 +140,6 @@ func ResetMemoryTerm() {
 
 // Free memory resources
 func (memory *MEMORY_TERM) Free() {
-	memory.scn.Free()
-	memory.scn = nil
 	memory.last_time = 0.0
 	memory.csn = [MEMORY_COMPONENTS]float64{0, 0}
 }
