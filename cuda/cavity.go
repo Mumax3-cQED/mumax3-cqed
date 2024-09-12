@@ -16,7 +16,7 @@ import (
 //  p0: Cavity initial condtion
 // see cavity.cu
 
-func AddCavity(dst, full_m, brms, scn *data.Slice, wc, kappa MSlice, x0, p0, vc2_hbar, dt, ctime float64, mem *[2]float64, mesh *data.Mesh, customKernel bool) {
+func AddCavity(dst, full_m, brms, scn *data.Slice, wc, kappa MSlice, x0, p0, vc2_hbar, dt, ctime float64, mem *[2]float32, mesh *data.Mesh, customKernel bool) {
 
 	N := mesh.Size()
 	brms = data.Resample(brms, N) // reshape of OVF Brms file to mesh size
@@ -39,10 +39,10 @@ func AddCavity(dst, full_m, brms, scn *data.Slice, wc, kappa MSlice, x0, p0, vc2
 		kappa_temp := float64(kappa.Mul(0))
 		wc_temp := float64(wc.Mul(0))
 
-		(*mem)[0] += math.Exp(kappa_temp*ctime) * math.Sin(wc_temp*ctime) * float64(brms_m) * dt
-		(*mem)[1] += math.Exp(kappa_temp*ctime) * math.Cos(wc_temp*ctime) * float64(brms_m) * dt
+		(*mem)[0] += float32(math.Exp(kappa_temp*ctime)*math.Sin(wc_temp*ctime)) * brms_m * float32(dt)
+		(*mem)[1] += float32(math.Exp(kappa_temp*ctime)*math.Cos(wc_temp*ctime)) * brms_m * float32(dt)
 
-		G := math.Exp(-kappa_temp*ctime) * (math.Cos(wc_temp*ctime)*(x0-vc2_hbar*(*mem)[0]) - math.Sin(wc_temp*ctime)*(p0-vc2_hbar*(*mem)[1]))
+		G := float32(math.Exp(-kappa_temp*ctime)) * (float32(math.Cos(wc_temp*ctime))*(float32(x0-vc2_hbar)*(*mem)[0]) - float32(math.Sin(wc_temp*ctime))*(float32(p0-vc2_hbar)*(*mem)[1]))
 
 		Madd2(dst, dst, brms, 1.0, float32(G))
 	}

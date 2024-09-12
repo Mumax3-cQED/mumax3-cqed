@@ -38,7 +38,7 @@ var (
 type MEMORY_TERM struct {
 	scn       *data.Slice
 	last_time float64
-	csn       [MEMORY_COMPONENTS]float64
+	csn       [MEMORY_COMPONENTS]float32
 }
 
 const (
@@ -56,7 +56,7 @@ func init() {
 	// init new memory term for equation
 	mem_term = new(MEMORY_TERM)
 	mem_term.last_time = 0.0
-	mem_term.csn = [MEMORY_COMPONENTS]float64{0, 0}
+	mem_term.csn = [MEMORY_COMPONENTS]float32{0, 0}
 
 	// Declaration of new script instructions and functions
 	DeclVar("X0", &X0, "Initial condition for the cavity (default=0)")
@@ -89,6 +89,10 @@ func AddCavityField(dst *data.Slice) {
 
 	vc2_hbar := (2 * cellVolume()) / HBAR
 
+	// 	msat_temp := Msat.MSlice()
+	// 	defer msat_temp.Recycle()
+	// 	vc2_hbar = (2 * cellVolume() * float64(msat_temp.Mul(0))) / HBAR
+
 	wc_slice := Wc.MSlice()
 	defer wc_slice.Recycle()
 
@@ -113,6 +117,7 @@ func AddCavityField(dst *data.Slice) {
 	dt_time := Time - mem_term.last_time
 
 	cuda.AddCavity(dst, full_m, brms_slice, mem_term.scn, wc_slice, kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
+	//cuda.AddCavity(dst, M.Buffer(), brms_slice, mem_term.scn, wc_slice, kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
 
 	mem_term.last_time = Time
 }
@@ -167,5 +172,5 @@ func (memory *MEMORY_TERM) Free() {
 	memory.scn.Free()
 	memory.scn = nil
 	memory.last_time = 0.0
-	memory.csn = [MEMORY_COMPONENTS]float64{0, 0}
+	memory.csn = [MEMORY_COMPONENTS]float32{0, 0}
 }
