@@ -36,7 +36,6 @@ var (
 
 // Equation Memory Term
 type MEMORY_TERM struct {
-	scn       *data.Slice
 	last_time float64
 	csn       [MEMORY_COMPONENTS]float32
 }
@@ -76,24 +75,7 @@ func AddCavityField(dst *data.Slice) {
 		return
 	}
 
-	if UseCustomKernel {
-		sizeMesh := Mesh().Size()
-
-		if mem_term.scn != nil && mem_term.scn.Size() != sizeMesh {
-			mem_term.Free()
-		}
-
-		if mem_term.scn == nil {
-			mem_term.scn = cuda.NewSlice(MEMORY_COMPONENTS, sizeMesh)
-			mem_term.last_time = 0.0
-		}
-	}
-
 	vc2_hbar := (2 * cellVolume()) / HBAR
-
-	// 	msat_temp := Msat.MSlice()
-	// 	defer msat_temp.Recycle()
-	// 	vc2_hbar = (2 * cellVolume() * float64(msat_temp.Mul(0))) / HBAR
 
 	brms_slice, rec := B_rms.Slice()
 	if rec {
@@ -112,8 +94,7 @@ func AddCavityField(dst *data.Slice) {
 
 	dt_time := Time - mem_term.last_time
 
-	cuda.AddCavity(dst, full_m, brms_slice, mem_term.scn, Wc, Kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
-	//cuda.AddCavity(dst, M.Buffer(), brms_slice, mem_term.scn, wc_slice, kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
+	cuda.AddCavity(dst, full_m, brms_slice, Wc, Kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
 
 	mem_term.last_time = Time
 }
@@ -128,27 +109,20 @@ func ResetMemoryTerm() {
 
 	mem_term.Free()
 
-	status := []byte{0, 0, 0, 0}
+	status := []byte{0, 0}
 
-	if mem_term.scn == nil {
+	if mem_term.last_time == 0.0 {
 		LogIn("|           * Init memory component 1... SUCCESS!                  |")
 	} else {
 		LogIn("|           * Init memory component 1... ERROR!                    |")
 		status[0] = 1
 	}
 
-	if mem_term.last_time == 0.0 {
+	if mem_term.csn[0] == 0 && mem_term.csn[1] == 0 {
 		LogIn("|           * Init memory component 2... SUCCESS!                  |")
 	} else {
 		LogIn("|           * Init memory component 2... ERROR!                    |")
-		status[1] = 1
-	}
-
-	if mem_term.csn[0] == 0 && mem_term.csn[1] == 0 {
-		LogIn("|           * Init memory component 4... SUCCESS!                  |")
-	} else {
-		LogIn("|           * Init memory component 4... ERROR!                    |")
-		status[3] = 1
+		status[2] = 1
 	}
 
 	LogIn("--------------------------------------------------------------------")
@@ -165,8 +139,6 @@ func ResetMemoryTerm() {
 
 // Free memory resources
 func (memory *MEMORY_TERM) Free() {
-	memory.scn.Free()
-	memory.scn = nil
 	memory.last_time = 0.0
 	memory.csn = [MEMORY_COMPONENTS]float32{0, 0}
 }
