@@ -55,17 +55,11 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 			defer cuda.Recycle(be)
 		}
 
-		v := Wc.MSlice()
-		defer v.Recycle()
-
 		m_sat := Msat.MSlice()
 		defer m_sat.Recycle()
 
 		alpha := Alpha.MSlice()
 		defer alpha.Recycle()
-
-		kappa := Kappa.MSlice()
-		defer kappa.Recycle()
 
 		LogIn("")
 		LogIn("------------------------------------------------")
@@ -86,7 +80,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn(" Num. cells:", num_cells[X], "x", num_cells[Y], "x", num_cells[Z])
 		LogIn(" Cell size (m):", cell_size[X], "x", cell_size[Y], "x", cell_size[Z])
 
-		LogIn(" Kappa (rad/s):", kappa.Mul(0))
+		LogIn(" Kappa (rad/s):", Kappa)
 
 		if alpha.Mul(0) != 0 {
 			LogIn(" Alpha:", alpha.Mul(0))
@@ -96,10 +90,7 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 		LogIn(" Cavity initial condition X0:", X0)
 		LogIn(" Cavity initial condition P0:", P0)
 		LogIn(" GammaLL (rad/Ts):", GammaLL)
-
-		if v.Mul(0) != 0 {
-			LogIn(" Wc (rad/s):", v.Mul(0))
-		}
+		LogIn(" Wc (rad/s):", Wc)
 
 		if uniform_vector.X() != 0.0 || uniform_vector.Y() != 0.0 || uniform_vector.Z() != 0.0 {
 			LogIn(" Uniform vector (T): [", uniform_vector.X(), ",", uniform_vector.Y(), ",", uniform_vector.Z(), "]")

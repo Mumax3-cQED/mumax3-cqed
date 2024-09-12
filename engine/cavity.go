@@ -12,8 +12,6 @@ var (
 	UseCustomKernel = true
 
 	B_rms = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
-	Wc    = NewScalarParam("Wc", "rad/s", "Resonant frequency of the cavity")
-	Kappa = NewScalarParam("Kappa", "rad/s", "Cavity dissipation")
 
 	// Read-only variable to check the cavity feature status
 	// Calling this variable before setting B_rms in the script will give always 0-status (DISABLED)
@@ -27,6 +25,8 @@ var (
 		return status
 	})
 
+	Wc       float64      = 0 // Resonant frequency of the cavity (rad/s)
+	Kappa    float64      = 0 // Cavity dissipation (rad/s)
 	X0       float64      = 0 // Initial condition in X-axis
 	P0       float64      = 0 // Initial condition in Y-axis
 	mem_term *MEMORY_TERM = nil
@@ -61,6 +61,8 @@ func init() {
 	// Declaration of new script instructions and functions
 	DeclVar("X0", &X0, "Initial condition for the cavity (default=0)")
 	DeclVar("P0", &P0, "Initial condition for the cavity (default=0)")
+	DeclVar("Kappa", &Kappa, "Cavity dissipation (default=0)")
+	DeclVar("Wc", &Wc, "Resonant frequency of the cavity (default=0)")
 	DeclVar("HBAR", &HBAR, "Reduced Planck constant")
 	DeclVar("UseCustomKernel", &UseCustomKernel, "Use custom CUDA kernel (default=true)")
 	DeclFunc("ResetMemoryTerm", ResetMemoryTerm, "Reset memory term for cavity solution")
@@ -93,16 +95,10 @@ func AddCavityField(dst *data.Slice) {
 	// 	defer msat_temp.Recycle()
 	// 	vc2_hbar = (2 * cellVolume() * float64(msat_temp.Mul(0))) / HBAR
 
-	wc_slice := Wc.MSlice()
-	defer wc_slice.Recycle()
-
 	brms_slice, rec := B_rms.Slice()
 	if rec {
 		defer cuda.Recycle(brms_slice)
 	}
-
-	kappa := Kappa.MSlice()
-	defer kappa.Recycle()
 
 	full_m := cuda.NewSlice(M.Buffer().NComp(), M.Buffer().Size())
 	defer full_m.Free()
@@ -116,7 +112,7 @@ func AddCavityField(dst *data.Slice) {
 
 	dt_time := Time - mem_term.last_time
 
-	cuda.AddCavity(dst, full_m, brms_slice, mem_term.scn, wc_slice, kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
+	cuda.AddCavity(dst, full_m, brms_slice, mem_term.scn, Wc, Kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
 	//cuda.AddCavity(dst, M.Buffer(), brms_slice, mem_term.scn, wc_slice, kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
 
 	mem_term.last_time = Time
