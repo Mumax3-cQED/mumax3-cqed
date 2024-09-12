@@ -15,7 +15,6 @@ import (
 //  x0: Cavity initial condtion
 //  p0: Cavity initial condtion
 // see cavity.cu
-
 func AddCavity(dst, full_m, brms *data.Slice, wc, kappa, x0, p0, vc2_hbar, dt, ctime float64, mem *[2]float32, mesh *data.Mesh) {
 
 	N := mesh.Size()

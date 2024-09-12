@@ -60,7 +60,7 @@ func init() {
 	DeclVar("P0", &P0, "Initial condition for the cavity (default=0)")
 	DeclVar("Kappa", &Kappa, "Cavity dissipation (default=0)")
 	DeclVar("Wc", &Wc, "Resonant frequency of the cavity (default=0)")
-	DeclVar("HBAR", &HBAR, "Reduced Planck constant")
+	DeclVar("HBAR", &HBAR, "Reduced Planck constant (Js)")
 	DeclFunc("ResetMemoryTerm", ResetMemoryTerm, "Reset memory term for cavity solution")
 }
 
