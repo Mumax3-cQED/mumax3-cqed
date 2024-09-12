@@ -40,6 +40,11 @@ func PrintParametersTimeEvolution(simulationTime *float64) {
 
 		util.AssertMsg(!Msat.isZero(), "saturation magnetization should not be 0")
 
+		// check if not empty
+		if UseCustomKernel && mem_term.scn != nil {
+			mem_term.Free()
+		}
+
 		c, rec := B_rms.Slice()
 		if rec {
 			defer cuda.Recycle(c)
