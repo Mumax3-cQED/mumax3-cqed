@@ -122,7 +122,7 @@ func ResetMemoryTerm() {
 		LogIn("|           * Init memory component 2... SUCCESS!                  |")
 	} else {
 		LogIn("|           * Init memory component 2... ERROR!                    |")
-		status[2] = 1
+		status[1] = 1
 	}
 
 	LogIn("--------------------------------------------------------------------")
