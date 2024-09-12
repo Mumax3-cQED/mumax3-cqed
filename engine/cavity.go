@@ -9,8 +9,6 @@ import (
 )
 
 var (
-	UseCustomKernel = true
-
 	B_rms = NewExcitation("B_rms", "T", "Zero point magnetic field of the cavity")
 
 	// Read-only variable to check the cavity feature status
@@ -63,7 +61,6 @@ func init() {
 	DeclVar("Kappa", &Kappa, "Cavity dissipation (default=0)")
 	DeclVar("Wc", &Wc, "Resonant frequency of the cavity (default=0)")
 	DeclVar("HBAR", &HBAR, "Reduced Planck constant")
-	DeclVar("UseCustomKernel", &UseCustomKernel, "Use custom CUDA kernel (default=true)")
 	DeclFunc("ResetMemoryTerm", ResetMemoryTerm, "Reset memory term for cavity solution")
 }
 
@@ -94,7 +91,7 @@ func AddCavityField(dst *data.Slice) {
 
 	dt_time := Time - mem_term.last_time
 
-	cuda.AddCavity(dst, full_m, brms_slice, Wc, Kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh(), UseCustomKernel)
+	cuda.AddCavity(dst, full_m, brms_slice, Wc, Kappa, X0, P0, vc2_hbar, dt_time, Time, &mem_term.csn, Mesh())
 
 	mem_term.last_time = Time
 }
