@@ -12,11 +12,11 @@ import (
 
 var (
 	ShowSimulationSummary           = true
-	StartCheckpoint       time.Time = time.Now() // Starting date for mumax3 script to measure elapsed execution time, to set starting date anywhere in the  --> StartCheckpoint = now()
+	StartCheckpoint       time.Time = time.Now() // Starting date for mumax3 script to measure elapsed execution time, to set starting date anywhere in the script use --> StartCheckpoint = now()
 )
 
 func init() {
-	DeclVar("StartCheckpoint", &StartCheckpoint, "Script launch starting date (default now() at the beginning of mumax3 allocation)")
+	DeclVar("StartCheckpoint", &StartCheckpoint, "Starting date for script launch (default now() at the beginning of mumax3 allocation)")
 	DeclVar("ShowSimulationSummary", &ShowSimulationSummary, "Show simulation data summary after run() function (default=true)")
 	DeclFunc("PrintScriptExecutionTime", PrintScriptExecutionTime, "Print and save to log the script execution time")
 }
