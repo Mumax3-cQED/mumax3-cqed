@@ -24,10 +24,6 @@ var (
 	// more flags in engine/gofiles.go
 )
 
-const (
-	BUILD_DATE = "09-04-2024"
-)
-
 func main() {
 	flag.Parse()
 	log.SetPrefix("")
@@ -170,20 +166,20 @@ func printVersion() {
 	engine.LogOut("")
 	engine.LogOut(" ____________________________________________________________________ ")
 	engine.LogOut("|                                                                    |")
-	engine.LogOut("|                            MUMAX3-CQED                             |")
+	engine.LogOut("|                            Mumax3-cQED                             |")
 	engine.LogOut("|____________________________________________________________________|")
 	engine.LogOut("|                                                                    |")
-	engine.LogOut("|               MUMAX3 Cavity QED feature developed by:              |")
-	engine.LogOut("|             INMA/UNIZAR, Universidad de Zaragoza, Spain            |")
-	engine.LogOut("|               Build date:", BUILD_DATE, "(MM-dd-yyyy)                  |")
+	engine.LogOut("|          Like Mumax3 but for a magnet coupled to a cavity          |")
+	engine.LogOut("|                Mumax-cQED 1.0 (based on mumax 3.10)                |")
 	engine.LogOut("|____________________________________________________________________|")
 	engine.LogOut("")
 	engine.LogOut(engine.UNAME)
 	engine.LogOut(fmt.Sprintf("GPU info: %s, using cc=%d PTX", cuda.GPUInfo, cuda.UseCC))
+	engine.LogOut("(c) Sergio Martinez-Losa, INMA, Universidad de Zaragoza, Spain")
 	engine.LogOut("(c) Arne Vansteenkiste, Dynamat LAB, Ghent University, Belgium")
 	engine.LogOut("This is free software without any warranty. See license.txt")
 	engine.LogOut("********************************************************************//")
-	engine.LogOut("  If you use mumax in any work or publication,                      //")
+	engine.LogOut("  If you use mumax3-cQED in any work or publication,                //")
 	engine.LogOut("  we kindly ask you to cite the references in references.bib        //")
 	engine.LogOut("********************************************************************//")
 }

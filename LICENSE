@@ -1,8 +1,13 @@
-Mumax3 GPU-accelerated micromagnetic simulator
+Mumax3-cQED like Mumax3 but for a magnet coupled to a cavity
+Copyright (C) 2024  Sergio Martínez-Losa.
+Contributions by Juan Román, Andrés Martín-Megino, María José (Pepa) Martínez-Pérez, David Zueco.
+
+Mumax3-cQED is a fork of Mumax3.
+
 Copyright (C) 2012-2014  Arne Vansteenkiste.
 Contributions by Ahmad Syukri, Colin Jermain, Jonathan Leliaert, Mykola Dvornik.
 
-Mumax3 is free software: you can redistribute it and/or modify
+Mumax3-cQED is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
@@ -13,11 +18,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 Mumax3 uses svgo (http://github.com/ajstarks/svgo), copyright Anthony Starks,
-licensed under the Creative Commons Attribution 3.0 license 
+licensed under the Creative Commons Attribution 3.0 license
 as described in http://creativecommons.org/licenses/by/3.0/us/ .
 
-Mumax3 uses freetype-go (http://code.google.com/p/freetype-go/), 
+Mumax3 uses freetype-go (http://code.google.com/p/freetype-go/),
 copyright Google Inc., Jeff R. Allen, Rémy Oudompheng, Roger Peppe,
-licensed under the FreeType License or the GNU General Public License (GPL), version 2 or later. 
+licensed under the FreeType License or the GNU General Public License (GPL), version 2 or later.
 
 Mumax3 uses CUDA libraries, copyright NVIDIA.
