@@ -1,6 +1,7 @@
-# MUMAX3-CQED: mumax<sup>3</sup> Cavity QED
+# Mumax<sup>3<sup>-cQED: like Mumax<sup>3</sup> but for a magnet coupled to a cavity
+------------------------------------------------------------------------------------
 
-This is a fork of the micromagnetic simulation open source software [mumax<sup>3</sup>](https://mumax.github.io/). MUMAX3-CQED, enhances mumax<sup>3</sup> by including the effect of coupling the magnet to an electromagnetic cavity.
+This is a fork of the micromagnetic simulation open source software [mumax<sup>3</sup>](https://mumax.github.io/). Mumax3-cQED, enhances mumax<sup>3</sup> by including the effect of coupling the magnet to an electromagnetic cavity.
 
 The core implementation of the cavity effect in Mumax3-cQED is contained in the file cavity.cu}. To interface **cavity.cu** with the rest of Mumax3, several other files have been created or modified:
 
@@ -8,17 +9,14 @@ The core implementation of the cavity effect in Mumax3-cQED is contained in the 
 $ 📦src/github.com/mumax/3
   ├── 📂cmd
   │   └─ 📂mumax3
-  │   	 ├── 📄mumax3.exe (modified file)
   │   	 └── 📄main.go (modified file)
   ├── 📂cuda
-  │   ├── 📄cavity.cu (new file)
   │   ├── 📄cavity.go (new file)
   │   ├── 📄Makefile (modified file)
   │   ├── 📄make.ps1 (new file)
   │   └── 📄realclean.ps1 (new file)
   └── 📂engine
       ├── 📄cavity.go (new file)
-      ├── 📄bib.go (modified file)
       ├── 📄effectivefield.go (modified file)
       ├── 📄run.go (modified file)
       └── 📄utils_extension.go (new file)
@@ -28,7 +26,7 @@ Besides the files properly belonging to the Mumax3-cQED source code, there are s
 
 The files under `cuda` folder manage the operations in the GPU and files below `engine` folder manage the input/output data from/to the GPU and also present the data to the user.
 
-To run the mumax3-cqed binary, open a shell and run your script as:
+To run the Mumax3-cQED binary, open a shell and run your script as:
 ```console
 $ mumax3.exe script-file.mx3
 ```
@@ -37,7 +35,7 @@ or in UNIX systems:
 $ mumax3 script-file.mx3
 ```
 
-It is required to install [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads). This mumax3-cqed software has been tested in Windows 10 with [CUDA Toolkit 10.2](https://developer.nvidia.com/cuda-10.2-download-archive) and Debian GNU/Linux (Debian 12 Bookworm) with latest [CUDA Toolkit 12.3](https://developer.nvidia.com/cuda-downloads), it is also required to install `git`.
+It is required to install [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads). This Mumax3-cQED software has been tested in Windows 10 with [CUDA Toolkit 10.2](https://developer.nvidia.com/cuda-10.2-download-archive) and Debian GNU/Linux (Debian 12 Bookworm) with latest [CUDA Toolkit 12.3](https://developer.nvidia.com/cuda-downloads), it is also required to install `git`.
 
 **IMPORTANT**: For Windows systems, install CUDA in `c:\cuda`<br/>
 **IMPORTANT**: For UNIX systems, here is a [tutorial to install NVIDIA Drivers](https://www.maketecheasier.com/install-nvidia-drivers-debian/)
@@ -91,7 +89,7 @@ Once the installation of Visual Studio Community 2019 finishes, put the followin
 c:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\bin\Hostx64\x64
 ```
 
-Install [CUDA Tollkit 10.2](https://developer.nvidia.com/cuda-10.2-download-archive) (or later) in `c:\cuda`. Follow these steps to install mumax3-cqed in Windows 10:
+Install [CUDA Tollkit 10.2](https://developer.nvidia.com/cuda-10.2-download-archive) (or later) in `c:\cuda`. Follow these steps to install Mumax3-cQED in Windows 10:
 
 1. Install [Git for Windows](https://git-scm.com/download/win)
 2. Download [Golang 1.9](https://dl.google.com/go/go1.9.windows-amd64.zip) and uncompress the file in `c:\`, rename the folder to go1.9: `c:\go1.9`
@@ -102,7 +100,7 @@ Install [CUDA Tollkit 10.2](https://developer.nvidia.com/cuda-10.2-download-arch
 7. Open a PowerShell window and type: `cd c:\go\src\github.com\mumax\3\cuda`
 8. Compile the CUDA files with the following command: `.\make.ps1`
 9. Navigate to binary folder: `cd c:\go\src\github.com\mumax\3\cmd\mumax3`
-10. Compile mumax3-cqed main binary file: `go install -v "github.com/mumax/3/..."`
+10. Compile Mumax3-cQED main binary file: `go install -v "github.com/mumax/3/..."`
 
 Alternatively, you can use Windows Subsystem Linux (WSL) just to compile CUDA code:
 
