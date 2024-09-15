@@ -2,7 +2,7 @@
 
 This is a fork of the micromagnetic simulation open source software [mumax<sup>3</sup>](https://mumax.github.io/). Mumax3-cQED, enhances mumax<sup>3</sup> by including the effect of coupling the magnet to an electromagnetic cavity.
 
-The core implementation of the cavity effect in Mumax3-cQED is contained in the file cavity.cu}. To interface **cavity.cu** with the rest of Mumax3, several other files have been created or modified:
+The core implementation of the cavity effect in Mumax3-cQED is contained in the file **cavity.go** with the rest of Mumax3, several other files have been created or modified:
 
 ```bash
 $ 📦src/github.com/mumax/3

@@ -1,9 +1,9 @@
 # Mumax3-cQED: like Mumax3 but for a magnet coupled to a cavity
 ===============================================================
 
-This software adds a new feature to open source software called mumax3 (https://mumax.github.io/). The new Mumax3-cQED is also open source and it is available at https://github.com/sergiomtzlosa/mumax3-cqed.
+This is a fork of the micromagnetic simulation open source software Mumax3 (https://mumax.github.io/). Mumax3-cQED, enhances Mumax3 by including the effect of coupling the magnet to an electromagnetic cavity.
 
-The original mumax3 code contains lots of files managing the frontend and the CUDA calculations, and for this purpose we list below the files we modified or created to develop our new feature:
+The core implementation of the cavity effect in Mumax3-cQED is contained in the file **cavity.go** with the rest of Mumax3, several other files have been created or modified:
 
 src/github.com/mumax/3
 ├── cmd
@@ -20,7 +20,10 @@ src/github.com/mumax/3
     ├── run.go (modified file)
     └── utils_extension.go (new file)
 
+Besides the files properly belonging to the Mumax3-cQED source code, there are some Windows script files, make.ps1 and realclean.ps1, and UNIX script file, Makefile, to compile CUDA files.
+
 The files under cuda folder manage the operations in the GPU and files below engine folder manage the input/output data from/to the GPU and also present the data to the user.
+To run the Mumax3-cQED binary, open a shell and run your script as:
 
 To run the Mumax3-cQED binary, open a shell and run your script as:
 
@@ -98,3 +101,5 @@ Alternatively, you can use Windows Subsystem Linux (WSL) just to compile CUDA co
 The binary file is placed in c:\go\bin
 
 Add c:\go\bin to Path to call the mumax3.exe binary file from shell.
+
+IMPORTANT: This repository is not the official Mumax3 repository. The official Mumax3 is available in: https://github.com/mumax/3.
