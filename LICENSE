@@ -2,9 +2,7 @@ Mumax3-cQED like Mumax3 but for a magnet coupled to a cavity
 Copyright (C) 2024  Sergio Martínez-Losa.
 Contributions by Juan Román, Andrés Martín-Megino, María José (Pepa) Martínez-Pérez, David Zueco.
 
-Mumax3-cQED is a fork of Mumax3.
-
-Copyright (C) 2012-2014  Arne Vansteenkiste.
+Mumax3-cQED is a fork of Mumax3. Copyright (C) 2012-2014  Arne Vansteenkiste.
 Contributions by Ahmad Syukri, Colin Jermain, Jonathan Leliaert, Mykola Dvornik.
 
 Mumax3-cQED is free software: you can redistribute it and/or modify
