@@ -1,4 +1,4 @@
-# Mumax<sup>3<sup>-cQED: like Mumax<sup>3</sup> but for a magnet coupled to a cavity
+# Mumax<sup>3</sup>-cQED: like Mumax<sup>3</sup> but for a magnet coupled to a cavity
 ------------------------------------------------------------------------------------
 
 This is a fork of the micromagnetic simulation open source software [mumax<sup>3</sup>](https://mumax.github.io/). Mumax3-cQED, enhances mumax<sup>3</sup> by including the effect of coupling the magnet to an electromagnetic cavity.
