@@ -65,7 +65,7 @@ $ mv go go1.9
 $ export PATH=$(pwd)/go1.9/bin:$PATH
 $ export GOPATH=$(pwd)/go
 $ mkdir -p go/src/github.com/mumax/3
-$ git clone https://github.com/sergiomtzlosa/mumax3-cqed go/src/github.com/mumax/3
+$ git clone https://github.com/Mumax3-cQED/mumax3-cqed go/src/github.com/mumax/3
 $ cd go/src/github.com/mumax/3/cuda    
 $ make
 $ cd go/src/github.com/mumax/3/cmd/mumax3
@@ -95,7 +95,7 @@ Install [CUDA Tollkit 10.2](https://developer.nvidia.com/cuda-10.2-download-arch
 3. Add to Path enviroment variable the golang binaries path: `c:\go1.9\bin`
 4. Set a environment variable called `GOPATH` poiting to `c:\go` and create the folder in your system, this folder will be your working path for the source code
 5. Run in PowerShell window: `mkdir -p c:\go\src\github.com\mumax\3`
-6. Clone the repository: `git clone https://github.com/sergiomtzlosa/mumax3-cqed c:\go\src\github.com\mumax\3`
+6. Clone the repository: `git clone https://github.com/Mumax3-cQED/mumax3-cqed c:\go\src\github.com\mumax\3`
 7. Open a PowerShell window and type: `cd c:\go\src\github.com\mumax\3\cuda`
 8. Compile the CUDA files with the following command: `.\make.ps1`
 9. Navigate to binary folder: `cd c:\go\src\github.com\mumax\3\cmd\mumax3`
