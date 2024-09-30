@@ -8,8 +8,8 @@ size_x := 10000e-9
 size_y := 600e-9
 size_z := 120e-9
 
-SetGridSize(nx, ny, nz)  // number of cells 512 x 64 x 4
-SetCellSize(size_x/nx, size_y/ny, size_z/nz) // cell size --> 19.5nm x 9.37nm x 30nm
+SetGridSize(nx, ny, nz) // number of cells 512 x 64 x 4
+SetCellSize(size_x/nx, size_y/ny, size_z/nz)
 
 RK45 := 5
 SetSolver(RK45) // Runge-Kutta45 selected (default)
@@ -19,33 +19,35 @@ alpha = 1e-3 // damping term
 Msat = 0.86e+6 // saturation magnetization
 FixDt = 1e-12 // fix timestep between solver steps (one picosecond)
 
-// Parameters
 bext_custom := 1e-3
-wc_temp := 11.19e9 // Hz --> resonant frequency of the cavity
-wc_frec := wc_temp * 2 * pi // rad/s --> resonant frequency cavity
+wc_temp := 11.19e9 // cavity resonant frequency (Hz)
+wc_frec := wc_temp * 2 * pi // cavity resonant frequency (rad/s)
 Wc = wc_frec
-Kappa = 0 // cavity dissipation (no dissipation)
+Kappa = 1e-3 * wc_frec // cavity dissipation (rad/s)
 
-DisableCavityTorque = false // cavity calculations enabled (default true)
+X0 = 0 // initial condition real part (default 0)
+P0 = 0 // initial condition imagenary part (default 0)
 
+// add cavity field
+// zero point magnetic field of the cavity (vacuum field)
 brms_value := 30e-9
-B_rms = vector(0, brms_value, 0) // zero point magnetic field of the cavity (vacuum field)
+B_rms = vector(0, brms_value, 0)
 
+// initialize magnetization with uniform magnetic field
 my0 := bext_custom
-m = Uniform(my0, 0, 0) // initialize magnetization with uniform magnetic field
+m = Uniform(my0, 0, 0)
 save(M) // save the magnetization in all axes
 
+// add external magnetic field
 B_ext = vector(bext_custom, 0, 0)
-relax()
+relax() // system relaxation
 
 amp := 1e-3
-cutoff := 50e+9 // cutoff frequency
+cutoff := 50e+9 //FREC
 offset := 1e-9
 
 // external magnetic field
-B_ext = vector(bext_custom,
-               amp * (sin(2 * pi * cutoff * (t-offset))/(2 * pi * cutoff * (t-offset))),
-               0)
+B_ext = vector(bext_custom, amp * (sin(2 * pi * cutoff * (t-offset))/(2 * pi * cutoff * (t-offset))), 0)
 save(M)
 
 tableAdd(B_ext) // add external field to output file
@@ -54,8 +56,8 @@ tableAdd(m_full) // add full magnetization to output file
 
 tableautosave(1e-12) // data saving step
 
-run(200e-9) // run the system 200 nanoseconds
+run(200e-9) // run the system 200 microseconds
 
 // post-execution actions
-snapshotas(m, "m_final.jpg") // snapshot image of final magnetization
+snapshotas(m, "m_final.jpg") // snapshot image of final magentization
 PrintScriptExecutionTime() // track and print script execution time

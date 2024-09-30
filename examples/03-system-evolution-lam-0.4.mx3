@@ -1,0 +1,68 @@
+OutputFormat = OVF2_TEXT
+// --> this is a comment in the script
+nx := 1 // num. cells in X-axis
+ny := 1 // num. cells in Y-axis
+nz := 1 // num. cells in Z-axis
+// cube: 5nm x 5nm x 5nm
+side := 5e-9 // side of cube
+
+size_x := side
+size_y := side
+size_z := side
+
+SetGridSize(nx, ny, nz) // number of cells 1 x 1 x 1
+SetCellSize(size_x/nx, size_y/ny, size_z/nz)
+
+RK45 := 5
+SetSolver(RK45) // Runge-Kutta45 selected (default)
+
+Aex = 13e-12 // exchange stiffness (J/m)
+alpha = 1e-3 // damping term
+gammaLL = 28e9 * 2 * pi // gyromagnetic factor (rad/Ts)
+
+wc_temp := 1.4e9 // cavity resonant frequency (Hz)
+wz := 1.0 * wc_temp // spins resonant frequency (Hz)
+lam := 0.4 * wc_temp
+
+bext_custom := (wz * 2 * pi) / gammaLL
+
+wc_frec := wc_temp * 2 * pi
+Wc = wc_frec // cavity resonant frequency (rad/s)
+
+Kappa = 1e-3 * wc_frec // cavity dissipation (rad/s)
+
+vol := size_x * size_y * size_z // shape volume
+N := 100 // number of spins
+
+Msat = (HBAR * GammaLL * N)/(2 * (side/nx) * (side/ny) * (side/nz))
+
+FixDt = 0.01e-9 // fix timestep between solver steps (ten picosecond)
+
+DisableSlonczewskiTorque = true // disable Slonczewski torque
+DisableZhangLiTorque = true // disable Zhang-Li torque
+
+X0 = 0 // initial condition for cavity
+P0 = 0 // initial condition for cavity
+
+EnableDemag = true // Enables/disables demag (default=true)
+NoDemagSpins = 0 // Disable magnetostatic interaction per-spin (set to 1 to disable)
+Temp = 0 // temperature
+
+// add cavity field
+test_brms := (2 * 2 * pi * lam) / (sqrt(N) * gammaLL)
+B_rms = vector(test_brms, 0, 0)
+
+// initial magnetization
+my0 := 0.01
+m = Uniform(sqrt(1 - my0*my0), my0, 0)
+save(M) // save magnetization value
+
+// add external magnetic field
+B_ext = vector(0, 0, bext_custom)
+
+tableAdd(B_ext) // add external field to output file
+tableAdd(m_full) // add full magnetization to output file
+save(M)
+tableautosave(0.01e-9) // data saving step
+
+run(1000e-9) // run simulation one microsecond

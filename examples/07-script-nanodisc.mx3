@@ -1,0 +1,44 @@
+OutputFormat = OVF2_TEXT
+// --> this is a comment in the script
+Nx := 128 // num. cells in X-axis
+Ny := 128 // num. cells in Y-axis
+Nz := 32 // num. cells in Z-axis
+// nanodisc: 800nm x 150nm
+sizeX := 800e-9
+sizeY := 800e-9
+sizeZ := 150e-9
+
+SetGridSize(Nx, Ny, Nz) // number of cells 128 x 128 x 32
+SetCellSize(sizeX/Nx, sizeY/Ny, sizeZ/Nz)
+SetGeom(Cylinder(800e-09, 150e-09)) // set disc geometry
+
+Msat = 0.860e6 // saturation magnetization
+Aex = 1.3e-11 // exchange stiffness (J/m)
+alpha = 1e-2 // damping term
+Temp = 0 // temperature
+
+m = Vortex(1, 1) // new vortex creation
+B_ext = vector(0.0, 0.0, 0.0) // initial external magnetíc field
+relax() // relax system
+
+X0 = 0 // initial condition for cavity
+P0 = 0 // initial condition for cavity
+
+Wc = 1.3939E9 * 2 * pi // cavity resonant frequency (rad/s)
+Kappa = 1e-3 * 1.3939E9 * 2 * pi // cavity dissipation (rad/s)
+
+// add cavity field
+B_rms = vector(0, 0, 0)
+B_rms.Add(LoadFile("brmsfile.ovf"))
+
+amp := 1e6
+w_cutoff := 10e9 * 2 * pi
+simutime := 0.5e-6 // simulation time (500 nanoseconds)
+
+// add external magnetic field
+B_ext.Add(LoadFile("brmsfile.ovf"), amp*sin(t*w_cutoff)/(t*w_cutoff))
+run(simutime) // run simulation one microsecond
+
+// post-execution actions
+snapshotas(m, "m_final.jpg") // snapshot image of final magentization
+PrintScriptExecutionTime() // track and print script execution time
