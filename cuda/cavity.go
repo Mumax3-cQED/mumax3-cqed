@@ -8,10 +8,10 @@ import (
 )
 
 // Add exchange field to Beff.
-// 	full_m: normalized magnetization
+//  full_m: normalized magnetization
 //  brms: Zero point magnetic field in Tesla
 //  wc: Cavity frequency in rad/s
-// 	kappa: Cavity dissipation in rad/s
+//  kappa: Cavity dissipation in rad/s
 //  x0: Cavity initial condtion
 //  p0: Cavity initial condtion
 // see cavity.cu
