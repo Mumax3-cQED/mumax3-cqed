@@ -185,7 +185,7 @@ func buildLibrary() {
 
 	library["rincn2024mumax3cqed"] = &bibEntry{
 		reason:   "Mumax3-cQED: an extension of Mumax3 to simulate magnon-photon interactions in cavity QED",
-		shortref: "Martinez-Losa et al., AIP Adv. 7, 125010 (2017).",
+		shortref: "Martinez-Losa del Rincón et al., Preprint arxiv (2024).",
 		bibtex: `
 @misc{rincn2024mumax3cqed,
     title={Mumax3-cQED: an extension of Mumax3 to simulate magnon-photon interactions in cavity QED},
@@ -194,7 +194,7 @@ func buildLibrary() {
     eprint={2410.00966},
     archivePrefix={arXiv},
     primaryClass={quant-ph},
-		url={https://arxiv.org/abs/2410.00966}, 
+		url={https://arxiv.org/abs/2410.00966},
 }`}
 
 }
