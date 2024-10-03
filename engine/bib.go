@@ -1,9 +1,10 @@
 package engine
 
 import (
+	"io"
+
 	"github.com/mumax/3/httpfs"
 	"github.com/mumax/3/util"
-	"io"
 )
 
 const separationline = `
@@ -37,7 +38,8 @@ func initBib() { // inited in engine.InitIO
 	util.FatalErr(err)
 	fprintln(bibfile, bibheader)
 	fprintln(bibfile, separationline)
-	Refer("vansteenkiste2014") // Make sure that Mumax3 is always referenced
+	Refer("vansteenkiste2014")   // Make sure that Mumax3 is always referenced
+	Refer("rincn2024mumax3cqed") // Mumax3-cQED citation
 }
 
 type bibEntry struct {
@@ -179,6 +181,20 @@ func buildLibrary() {
     year    = {2017},
     doi     = {doi.org/10.1063/1.5003957},
     url     = {http://aip.scitation.org/doi/10.1063/1.5003957},
+}`}
+
+	library["rincn2024mumax3cqed"] = &bibEntry{
+		reason:   "Mumax3-cQED: an extension of Mumax3 to simulate magnon-photon interactions in cavity QED",
+		shortref: "Martinez-Losa et al., AIP Adv. 7, 125010 (2017).",
+		bibtex: `
+@misc{rincn2024mumax3cqed,
+    title={Mumax3-cQED: an extension of Mumax3 to simulate magnon-photon interactions in cavity QED},
+    author={Sergio Martínez-Losa del Rincón and Juan Román-Roche and Andrés Martín-Megino and David Zueco and María José Martínez-Pérez},
+    year={2024},
+    eprint={2410.00966},
+    archivePrefix={arXiv},
+    primaryClass={quant-ph},
+		url={https://arxiv.org/abs/2410.00966}, 
 }`}
 
 }

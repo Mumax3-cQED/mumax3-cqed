@@ -103,3 +103,15 @@ The binary file is placed in c:\go\bin
 Add c:\go\bin to Path to call the mumax3.exe binary file from shell.
 
 IMPORTANT: This repository is not the official Mumax3 repository. The official Mumax3 is available in: https://github.com/mumax/3.
+
+- BiBTeX citation:
+
+@misc{rincn2024mumax3cqed,
+    title={Mumax3-cQED: an extension of Mumax3 to simulate magnon-photon interactions in cavity QED},
+    author={Sergio Martínez-Losa del Rincón and Juan Román-Roche and Andrés Martín-Megino and David Zueco and María José Martínez-Pérez},
+    year={2024},
+    eprint={2410.00966},
+    archivePrefix={arXiv},
+    primaryClass={quant-ph},
+    url={https://arxiv.org/abs/2410.00966}, 
+}
